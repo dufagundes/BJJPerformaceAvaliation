@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Phase {
+  TINY_CHAMPS
+  LITTLE_CHAMPS_1
+  LITTLE_CHAMPS_2
+  JUNIORS_TEENS
+}
+
+enum Domain {
+  MOTOR_DEVELOPMENT
+  TECHNICAL_DEVELOPMENT
+  BEHAVIOR_EMOTIONAL
+  SOCIAL_VALUES
+}
+
+model Student {
+  id          String       @id @default(cuid())
+  firstName   String
+  lastName    String
+  dateOfBirth DateTime
+  phase       Phase
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  evaluations Evaluation[]
+}
+
+model Criterion {
+  id              String           @id @default(cuid())
+  phase           Phase
+  domain          Domain
+  name            String
+  description     String
+  displayOrder    Int
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  evaluationItems EvaluationItem[]
+
+  @@unique([phase, displayOrder])
+}
+
+model Evaluation {
+  id           String           @id @default(cuid())
+  studentId    String
+  phase        Phase
+  evaluator    String
+  evaluatedAt  DateTime
+  totalScore   Int
+  percentScore Float
+  band         String
+  notes        String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  student      Student          @relation(fields: [studentId], references: [id])
+  items        EvaluationItem[]
+}
+
+model EvaluationItem {
+  id           String     @id @default(cuid())
+  evaluationId String
+  criterionId  String
+  score        Int
+  notes        String?
+  createdAt    DateTime   @default(now())
+  evaluation   Evaluation @relation(fields: [evaluationId], references: [id])
+  criterion    Criterion  @relation(fields: [criterionId], references: [id])
+
+  @@unique([evaluationId, criterionId])
+}
