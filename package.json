@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "send:test-email": "node --env-file=.env scripts/send-test-email.mjs",
     "test": "vitest",
