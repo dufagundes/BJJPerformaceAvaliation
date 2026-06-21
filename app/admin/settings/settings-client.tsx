@@ -280,9 +280,9 @@ export default function SettingsClient() {
     ? isExactOne(groupWeightTotal) &&
       ["PEER", "PARENT_STUDENT"].every((groupName) => {
         const sessions = scorecardWeights.sessions.filter((session) => session.audienceType === groupName);
-        const sessionTotal = toTwoDecimals(sessions.reduce((sum, session) => sum + session.weight, 0));
+        const sessionTotal = normalizeWeight(sessions.reduce((sum, session) => sum + session.weight, 0));
         const factorsValid = sessions.every((session) => {
-          const factorTotal = toTwoDecimals(
+          const factorTotal = normalizeWeight(
             session.factors.reduce((sum, factor) => sum + factor.weight, 0),
           );
           return isExactOne(factorTotal);

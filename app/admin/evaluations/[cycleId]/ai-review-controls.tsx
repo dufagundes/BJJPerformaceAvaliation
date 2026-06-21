@@ -165,7 +165,7 @@ export default function AiReviewControls({ cycleId }: Props) {
           {isGenerating ? "Generating..." : "Generate AI Review"}
         </Button>
 
-        <Button variant="secondary" onClick={handleSaveReview} disabled={!reviewMarkdown}>
+        <Button variant="outline" onClick={handleSaveReview} disabled={!reviewMarkdown}>
           Save AI Review
         </Button>
 
@@ -177,7 +177,7 @@ export default function AiReviewControls({ cycleId }: Props) {
           Print AI Review
         </Button>
 
-        <Button variant="ghost" onClick={handleClearSaved}>
+        <Button variant="outline" onClick={handleClearSaved}>
           Clear Saved
         </Button>
       </div>
