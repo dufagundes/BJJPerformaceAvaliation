@@ -1,0 +1,213 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  STAFF
+  PEER
+  PARENT_STUDENT
+}
+
+enum EvaluationCycleStatus {
+  IN_PROGRESS
+  COMPLETED
+  OVERDUE
+  CANCELLED
+}
+
+enum ReviewerType {
+  PARENT_STUDENT
+  PEER
+}
+
+enum ReviewerStatus {
+  PENDING
+  COMPLETED
+}
+
+enum EvaluationQuestionType {
+  RATING
+  MULTIPLE_CHOICE
+  TEXT
+}
+
+enum EvaluationAudienceType {
+  PEER
+  PARENT_STUDENT
+  ALL
+}
+
+enum ContactType {
+  STUDENT
+  PARENT
+}
+
+model User {
+  id        String      @id @default(uuid()) @db.Uuid
+  name      String
+  email     String      @unique
+  passwordHash String
+  role      UserRole
+  isActive  Boolean     @default(true)
+  createdAt DateTime    @default(now())
+
+  subjectCycles   EvaluationCycle[] @relation("CycleSubject")
+  createdCycles   EvaluationCycle[] @relation("CycleCreatedBy")
+  staffProfile    StaffMember?
+  reviewAssignments Reviewer[]
+
+  @@index([isActive])
+}
+
+model StaffMember {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @unique @db.Uuid
+  title     String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([isActive])
+}
+
+model Contact {
+  id        String   @id @default(uuid()) @db.Uuid
+  type      ContactType
+  name      String
+  email     String   @unique
+  studentName String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  reviewAssignments Reviewer[]
+
+  @@index([isActive])
+  @@index([email])
+}
+
+model AdminConfig {
+  id                          String @id @default("default")
+  defaultCycleDurationDays    Int    @default(15)
+  defaultContactsToInvite     Int    @default(5)
+  reminderScheduleDaysBefore  Int[]  @default([3, 1])
+  updatedAt                   DateTime @updatedAt
+}
+
+model EvaluationCycle {
+  id        String               @id @default(uuid()) @db.Uuid
+  subjectId String               @db.Uuid
+  description String
+  status    EvaluationCycleStatus @default(IN_PROGRESS)
+  deadline  DateTime
+  createdAt DateTime             @default(now())
+  createdBy String               @db.Uuid
+
+  subject    User       @relation("CycleSubject", fields: [subjectId], references: [id], onDelete: Restrict)
+  creator    User       @relation("CycleCreatedBy", fields: [createdBy], references: [id], onDelete: Restrict)
+  reviewers  Reviewer[]
+
+  @@index([subjectId])
+  @@index([createdBy])
+  @@index([status])
+  @@index([deadline])
+}
+
+model Reviewer {
+  id            String        @id @default(uuid()) @db.Uuid
+  cycleId       String        @db.Uuid
+  userId        String?       @db.Uuid
+  contactId     String?       @db.Uuid
+  type          ReviewerType
+  status        ReviewerStatus @default(PENDING)
+  inviteToken   String        @unique
+  tokenExpiresAt DateTime
+
+  cycle    EvaluationCycle      @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  user     User?                @relation(fields: [userId], references: [id], onDelete: Restrict)
+  contact  Contact?             @relation(fields: [contactId], references: [id], onDelete: Restrict)
+  response EvaluationResponse?
+
+  @@index([cycleId])
+  @@index([userId])
+  @@index([contactId])
+  @@index([type])
+  @@index([status])
+  @@index([tokenExpiresAt])
+  @@unique([cycleId, userId, type])
+  @@unique([cycleId, contactId, type])
+}
+
+model EvaluationResponse {
+  id            String        @id @default(uuid()) @db.Uuid
+  reviewerId    String        @unique @db.Uuid
+  submittedAt   DateTime      @default(now())
+  answers       Json
+
+  reviewer Reviewer @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+
+  @@index([reviewerId])
+}
+
+model EvaluationGroup {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      ReviewerType @unique
+  weight    Decimal  @db.Decimal(8, 6)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+}
+
+model EvaluationSession {
+  id           String                 @id @default(uuid()) @db.Uuid
+  name         String
+  audienceType EvaluationAudienceType
+  weight       Decimal                @db.Decimal(8, 6)
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+
+  questions EvaluationQuestion[]
+
+  @@index([audienceType])
+  @@unique([audienceType, name])
+}
+
+model EvaluationQuestion {
+  id           String                 @id @default(uuid()) @db.Uuid
+  sessionId    String                 @db.Uuid
+  text         String
+  type         EvaluationQuestionType
+  weight       Decimal                @db.Decimal(8, 6)
+  order        Int
+
+  session EvaluationSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([order])
+  @@unique([sessionId, order])
+}
+
+model EvaluationFormQuestion {
+  id           String                 @id @default(uuid()) @db.Uuid
+  staffRole    String                 @default("")
+  audienceType EvaluationAudienceType  @default(ALL)
+  text         String
+  type         EvaluationQuestionType
+  isRequired   Boolean                @default(true)
+  options      Json?
+  order        Int
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+
+  @@index([staffRole])
+  @@index([audienceType])
+  @@index([order])
+  @@unique([staffRole, audienceType, order])
+}

@@ -1,0 +1,2156 @@
+
+> gb-staff-performance@0.0.0 dev
+> next dev
+
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.254:3000
+- Environments: .env
+✓ Ready in 485ms
+
+ POST /api/admin/test-email 200 in 778ms (next.js: 153ms, application-code: 625ms)
+ GET /admin/test-email 200 in 795ms (next.js: 597ms, application-code: 197ms)
+ POST /api/admin/test-email 200 in 244ms (next.js: 3ms, application-code: 241ms)
+✓ Compiled in 164ms
+ GET /admin/test-email 200 in 191ms (next.js: 58ms, application-code: 133ms)
+ GET /admin/test-email 200 in 104ms (next.js: 4ms, application-code: 100ms)
+ GET /admin/test-email 200 in 72ms (next.js: 4ms, application-code: 68ms)
+ GET /admin/test-email 200 in 72ms (next.js: 25ms, application-code: 47ms)
+ GET /admin/test-email 200 in 72ms (next.js: 46ms, application-code: 26ms)
+ GET /admin 200 in 711ms (next.js: 28ms, application-code: 683ms)
+ GET /admin/test-email 200 in 756ms (next.js: 260ms, application-code: 495ms)
+ GET /admin/test-email 200 in 165ms (next.js: 34ms, application-code: 131ms)
+ GET /admin/test-email 200 in 101ms (next.js: 3ms, application-code: 98ms)
+ GET /admin/test-email 200 in 101ms (next.js: 48ms, application-code: 53ms)
+ GET /admin/test-email 200 in 102ms (next.js: 27ms, application-code: 75ms)
+ GET /admin/test-email 200 in 102ms (next.js: 69ms, application-code: 33ms)
+⨯ ./app/evaluate/page.tsx:9:16
+the name `CardContent` is defined multiple times
+  [90m 7 |[0m [36mimport[0m { [33mTextarea[0m } [36mfrom[0m [32m"../../components/ui/textarea"[0m;
+  [90m 8 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"next/link"[0m;
+[31m[1m>[0m [90m 9 |[0m [36mimport[0m { [33mCard[0m, [33mCardContent[0m, [33mCardHeader[0m, [33mCardTitle[0m } [36mfrom[0m [32m"../../components/ui/card"[0m;
+  [90m   |[0m                [31m[1m^^^^^^^^^^^[0m
+  [90m10 |[0m
+  [90m11 |[0m [36mconst[0m reviewerTypes = [
+  [90m12 |[0m   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component]
+
+
+
+./app/evaluate/page.tsx:9:29
+the name `CardHeader` is defined multiple times
+  [90m 7 |[0m [36mimport[0m { [33mTextarea[0m } [36mfrom[0m [32m"../../components/ui/textarea"[0m;
+  [90m 8 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"next/link"[0m;
+[31m[1m>[0m [90m 9 |[0m [36mimport[0m { [33mCard[0m, [33mCardContent[0m, [33mCardHeader[0m, [33mCardTitle[0m } [36mfrom[0m [32m"../../components/ui/card"[0m;
+  [90m   |[0m                             [31m[1m^^^^^^^^^^[0m
+  [90m10 |[0m
+  [90m11 |[0m [36mconst[0m reviewerTypes = [
+  [90m12 |[0m   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component]
+
+
+
+./app/evaluate/page.tsx:9:41
+the name `CardTitle` is defined multiple times
+  [90m 7 |[0m [36mimport[0m { [33mTextarea[0m } [36mfrom[0m [32m"../../components/ui/textarea"[0m;
+  [90m 8 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"next/link"[0m;
+[31m[1m>[0m [90m 9 |[0m [36mimport[0m { [33mCard[0m, [33mCardContent[0m, [33mCardHeader[0m, [33mCardTitle[0m } [36mfrom[0m [32m"../../components/ui/card"[0m;
+  [90m   |[0m                                         [31m[1m^^^^^^^^^[0m
+  [90m10 |[0m
+  [90m11 |[0m [36mconst[0m reviewerTypes = [
+  [90m12 |[0m   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component]
+
+
+
+./app/evaluate/page.tsx:9:10
+the name `Card` is defined multiple times
+  [90m 7 |[0m [36mimport[0m { [33mTextarea[0m } [36mfrom[0m [32m"../../components/ui/textarea"[0m;
+  [90m 8 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"next/link"[0m;
+[31m[1m>[0m [90m 9 |[0m [36mimport[0m { [33mCard[0m, [33mCardContent[0m, [33mCardHeader[0m, [33mCardTitle[0m } [36mfrom[0m [32m"../../components/ui/card"[0m;
+  [90m   |[0m          [31m[1m^^^^[0m
+  [90m10 |[0m
+  [90m11 |[0m [36mconst[0m reviewerTypes = [
+  [90m12 |[0m   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component]
+
+
+ GET /evaluate 500 in 363ms (next.js: 189ms, application-code: 174ms)
+[browser] ./app/evaluate/page.tsx:9:16
+the name `CardContent` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                ^^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:29
+the name `CardHeader` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                             ^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:41
+the name `CardTitle` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                                         ^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:10
+the name `Card` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |          ^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:16
+the name `CardContent` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                ^^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:29
+the name `CardHeader` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                             ^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:41
+the name `CardTitle` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                                         ^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:10
+the name `Card` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |          ^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+⨯ ./app/evaluate/page.tsx:9:16
+the name `CardContent` is defined multiple times
+  [90m 7 |[0m [36mimport[0m { [33mTextarea[0m } [36mfrom[0m [32m"../../components/ui/textarea"[0m;
+  [90m 8 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"next/link"[0m;
+[31m[1m>[0m [90m 9 |[0m [36mimport[0m { [33mCard[0m, [33mCardContent[0m, [33mCardHeader[0m, [33mCardTitle[0m } [36mfrom[0m [32m"../../components/ui/card"[0m;
+  [90m   |[0m                [31m[1m^^^^^^^^^^^[0m
+  [90m10 |[0m
+  [90m11 |[0m [36mconst[0m reviewerTypes = [
+  [90m12 |[0m   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component]
+
+
+
+./app/evaluate/page.tsx:9:29
+the name `CardHeader` is defined multiple times
+  [90m 7 |[0m [36mimport[0m { [33mTextarea[0m } [36mfrom[0m [32m"../../components/ui/textarea"[0m;
+  [90m 8 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"next/link"[0m;
+[31m[1m>[0m [90m 9 |[0m [36mimport[0m { [33mCard[0m, [33mCardContent[0m, [33mCardHeader[0m, [33mCardTitle[0m } [36mfrom[0m [32m"../../components/ui/card"[0m;
+  [90m   |[0m                             [31m[1m^^^^^^^^^^[0m
+  [90m10 |[0m
+  [90m11 |[0m [36mconst[0m reviewerTypes = [
+  [90m12 |[0m   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component]
+
+
+
+./app/evaluate/page.tsx:9:41
+the name `CardTitle` is defined multiple times
+  [90m 7 |[0m [36mimport[0m { [33mTextarea[0m } [36mfrom[0m [32m"../../components/ui/textarea"[0m;
+  [90m 8 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"next/link"[0m;
+[31m[1m>[0m [90m 9 |[0m [36mimport[0m { [33mCard[0m, [33mCardContent[0m, [33mCardHeader[0m, [33mCardTitle[0m } [36mfrom[0m [32m"../../components/ui/card"[0m;
+  [90m   |[0m                                         [31m[1m^^^^^^^^^[0m
+  [90m10 |[0m
+  [90m11 |[0m [36mconst[0m reviewerTypes = [
+  [90m12 |[0m   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component]
+
+
+
+./app/evaluate/page.tsx:9:10
+the name `Card` is defined multiple times
+  [90m 7 |[0m [36mimport[0m { [33mTextarea[0m } [36mfrom[0m [32m"../../components/ui/textarea"[0m;
+  [90m 8 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m"next/link"[0m;
+[31m[1m>[0m [90m 9 |[0m [36mimport[0m { [33mCard[0m, [33mCardContent[0m, [33mCardHeader[0m, [33mCardTitle[0m } [36mfrom[0m [32m"../../components/ui/card"[0m;
+  [90m   |[0m          [31m[1m^^^^[0m
+  [90m10 |[0m
+  [90m11 |[0m [36mconst[0m reviewerTypes = [
+  [90m12 |[0m   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component]
+
+
+ GET /evaluate 500 in 17ms (next.js: 8ms, application-code: 9ms)
+[browser] ./app/evaluate/page.tsx:9:16
+the name `CardContent` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                ^^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:29
+the name `CardHeader` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                             ^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:41
+the name `CardTitle` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                                         ^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:10
+the name `Card` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |          ^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:16
+the name `CardContent` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                ^^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:29
+the name `CardHeader` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                             ^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:41
+the name `CardTitle` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                                         ^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:10
+the name `Card` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |          ^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:16
+the name `CardContent` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                ^^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:29
+the name `CardHeader` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                             ^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:41
+the name `CardTitle` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                                         ^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:10
+the name `Card` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |          ^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:16
+the name `CardContent` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                ^^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:29
+the name `CardHeader` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                             ^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:41
+the name `CardTitle` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                                         ^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:10
+the name `Card` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |          ^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:16
+the name `CardContent` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                ^^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:29
+the name `CardHeader` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                             ^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:41
+the name `CardTitle` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                                         ^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:10
+the name `Card` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |          ^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:16
+the name `CardContent` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                ^^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:29
+the name `CardHeader` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                             ^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:41
+the name `CardTitle` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                                         ^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:10
+the name `Card` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |          ^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:16
+the name `CardContent` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                ^^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:29
+the name `CardHeader` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                             ^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:41
+the name `CardTitle` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                                         ^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:10
+the name `Card` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |          ^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:16
+the name `CardContent` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                ^^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:29
+the name `CardHeader` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                             ^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:41
+the name `CardTitle` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                                         ^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:10
+the name `Card` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |          ^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:16
+the name `CardContent` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                ^^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:29
+the name `CardHeader` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                             ^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:41
+the name `CardTitle` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                                         ^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:10
+the name `Card` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |          ^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:16
+the name `CardContent` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                ^^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:29
+the name `CardHeader` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                             ^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:41
+the name `CardTitle` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                                         ^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:10
+the name `Card` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |          ^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:16
+the name `CardContent` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                ^^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:29
+the name `CardHeader` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                             ^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:41
+the name `CardTitle` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                                         ^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:10
+the name `Card` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |          ^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:16
+the name `CardContent` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                ^^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:29
+the name `CardHeader` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                             ^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:41
+the name `CardTitle` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                                         ^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:10
+the name `Card` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |          ^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:16
+the name `CardContent` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                ^^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:29
+the name `CardHeader` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                             ^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:41
+the name `CardTitle` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                                         ^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:10
+the name `Card` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |          ^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:16
+the name `CardContent` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                ^^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:29
+the name `CardHeader` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                             ^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:41
+the name `CardTitle` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                                         ^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:10
+the name `Card` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |          ^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:16
+the name `CardContent` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                ^^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:29
+the name `CardHeader` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                             ^^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:41
+the name `CardTitle` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |                                         ^^^^^^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+[browser] ./app/evaluate/page.tsx:9:10
+the name `Card` is defined multiple times
+   7 | import { Textarea } from "../../components/ui/textarea";
+   8 | import Link from "next/link";
+>  9 | import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+     |          ^^^^
+  10 |
+  11 | const reviewerTypes = [
+  12 |   {
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./app/evaluate/page.tsx [Client Component Browser]
+    ./app/evaluate/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/evaluate/page.tsx [Client Component SSR]
+    ./app/evaluate/page.tsx [Server Component] 
+✓ Compiled in 90ms
+ GET /admin/test-email 200 in 177ms (next.js: 50ms, application-code: 127ms)
+ GET /admin/test-email 200 in 99ms (next.js: 5ms, application-code: 94ms)
+ GET /admin/test-email 200 in 61ms (next.js: 3ms, application-code: 58ms)
+ GET /admin/test-email 200 in 61ms (next.js: 21ms, application-code: 40ms)
+ GET /admin/test-email 200 in 61ms (next.js: 40ms, application-code: 21ms)
+ GET /evaluate 200 in 167ms (next.js: 48ms, application-code: 119ms)
+✓ Compiled in 186ms
+ GET /admin 200 in 624ms (next.js: 92ms, application-code: 531ms)
+✓ Compiled in 149ms
+ GET /admin 200 in 121ms (next.js: 36ms, application-code: 85ms)
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+⨯ ./middleware.ts:2:1
+Module not found: Can't resolve 'next-auth/jwt'
+  [90m1 |[0m [36mimport[0m { [33mNextRequest[0m, [33mNextResponse[0m } [36mfrom[0m [32m"next/server"[0m;
+[31m[1m>[0m [90m2 |[0m [36mimport[0m { getToken } [36mfrom[0m [32m"next-auth/jwt"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m3 |[0m
+  [90m4 |[0m [36mconst[0m [33mPUBLIC_ADMIN_PATHS[0m = [
+  [90m5 |[0m   [32m"/admin/login"[0m,
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./middleware.ts:2:1
+Module not found: Can't resolve 'next-auth/jwt'
+  [90m1 |[0m [36mimport[0m { [33mNextRequest[0m, [33mNextResponse[0m } [36mfrom[0m [32m"next/server"[0m;
+[31m[1m>[0m [90m2 |[0m [36mimport[0m { getToken } [36mfrom[0m [32m"next-auth/jwt"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m3 |[0m
+  [90m4 |[0m [36mconst[0m [33mPUBLIC_ADMIN_PATHS[0m = [
+  [90m5 |[0m   [32m"/admin/login"[0m,
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./middleware.ts:2:1
+Module not found: Can't resolve 'next-auth/jwt'
+  [90m1 |[0m [36mimport[0m { [33mNextRequest[0m, [33mNextResponse[0m } [36mfrom[0m [32m"next/server"[0m;
+[31m[1m>[0m [90m2 |[0m [36mimport[0m { getToken } [36mfrom[0m [32m"next-auth/jwt"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m3 |[0m
+  [90m4 |[0m [36mconst[0m [33mPUBLIC_ADMIN_PATHS[0m = [
+  [90m5 |[0m   [32m"/admin/login"[0m,
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./middleware.ts:2:1
+Module not found: Can't resolve 'next-auth/jwt'
+  [90m1 |[0m [36mimport[0m { [33mNextRequest[0m, [33mNextResponse[0m } [36mfrom[0m [32m"next/server"[0m;
+[31m[1m>[0m [90m2 |[0m [36mimport[0m { getToken } [36mfrom[0m [32m"next-auth/jwt"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m3 |[0m
+  [90m4 |[0m [36mconst[0m [33mPUBLIC_ADMIN_PATHS[0m = [
+  [90m5 |[0m   [32m"/admin/login"[0m,
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./lib/auth.ts:2:1
+Module not found: Can't resolve 'bcryptjs'
+  [90m1 |[0m [36mimport[0m { [33mUserRole[0m } [36mfrom[0m [32m"@prisma/client"[0m;
+[31m[1m>[0m [90m2 |[0m [36mimport[0m { compare } [36mfrom[0m [32m"bcryptjs"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m3 |[0m [36mimport[0m [36mtype[0m { [33mNextAuthOptions[0m } [36mfrom[0m [32m"next-auth"[0m;
+  [90m4 |[0m [36mimport[0m [33mCredentialsProvider[0m [36mfrom[0m [32m"next-auth/providers/credentials"[0m;
+  [90m5 |[0m [36mimport[0m { prisma } [36mfrom[0m [32m"./prisma"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./lib/auth.ts
+    ./lib/adminAuth.ts
+    ./app/admin/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./lib/auth.ts:2:1
+Module not found: Can't resolve 'bcryptjs'
+  [90m1 |[0m [36mimport[0m { [33mUserRole[0m } [36mfrom[0m [32m"@prisma/client"[0m;
+[31m[1m>[0m [90m2 |[0m [36mimport[0m { compare } [36mfrom[0m [32m"bcryptjs"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m3 |[0m [36mimport[0m [36mtype[0m { [33mNextAuthOptions[0m } [36mfrom[0m [32m"next-auth"[0m;
+  [90m4 |[0m [36mimport[0m [33mCredentialsProvider[0m [36mfrom[0m [32m"next-auth/providers/credentials"[0m;
+  [90m5 |[0m [36mimport[0m { prisma } [36mfrom[0m [32m"./prisma"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./lib/auth.ts
+    ./lib/adminAuth.ts
+    ./app/admin/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./lib/adminAuth.ts:1:1
+Module not found: Can't resolve 'next-auth'
+[31m[1m>[0m [90m1 |[0m [36mimport[0m { getServerSession } [36mfrom[0m [32m"next-auth"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m2 |[0m [36mimport[0m { [33mNextResponse[0m } [36mfrom[0m [32m"next/server"[0m;
+  [90m3 |[0m [36mimport[0m { authOptions } [36mfrom[0m [32m"./auth"[0m;
+  [90m4 |[0m
+
+
+
+Import trace:
+  Server Component:
+    ./lib/adminAuth.ts
+    ./app/admin/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./lib/adminAuth.ts:1:1
+Module not found: Can't resolve 'next-auth'
+[31m[1m>[0m [90m1 |[0m [36mimport[0m { getServerSession } [36mfrom[0m [32m"next-auth"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m2 |[0m [36mimport[0m { [33mNextResponse[0m } [36mfrom[0m [32m"next/server"[0m;
+  [90m3 |[0m [36mimport[0m { authOptions } [36mfrom[0m [32m"./auth"[0m;
+  [90m4 |[0m
+
+
+
+Import trace:
+  Server Component:
+    ./lib/adminAuth.ts
+    ./app/admin/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./lib/auth.ts:4:1
+Module not found: Can't resolve 'next-auth/providers/credentials'
+  [90m2 |[0m [36mimport[0m { compare } [36mfrom[0m [32m"bcryptjs"[0m;
+  [90m3 |[0m [36mimport[0m [36mtype[0m { [33mNextAuthOptions[0m } [36mfrom[0m [32m"next-auth"[0m;
+[31m[1m>[0m [90m4 |[0m [36mimport[0m [33mCredentialsProvider[0m [36mfrom[0m [32m"next-auth/providers/credentials"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m5 |[0m [36mimport[0m { prisma } [36mfrom[0m [32m"./prisma"[0m;
+  [90m6 |[0m
+  [90m7 |[0m [36mexport[0m [36mconst[0m authOptions: [33mNextAuthOptions[0m = {
+
+
+
+Import trace:
+  Server Component:
+    ./lib/auth.ts
+    ./lib/adminAuth.ts
+    ./app/admin/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./lib/auth.ts:4:1
+Module not found: Can't resolve 'next-auth/providers/credentials'
+  [90m2 |[0m [36mimport[0m { compare } [36mfrom[0m [32m"bcryptjs"[0m;
+  [90m3 |[0m [36mimport[0m [36mtype[0m { [33mNextAuthOptions[0m } [36mfrom[0m [32m"next-auth"[0m;
+[31m[1m>[0m [90m4 |[0m [36mimport[0m [33mCredentialsProvider[0m [36mfrom[0m [32m"next-auth/providers/credentials"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m5 |[0m [36mimport[0m { prisma } [36mfrom[0m [32m"./prisma"[0m;
+  [90m6 |[0m
+  [90m7 |[0m [36mexport[0m [36mconst[0m authOptions: [33mNextAuthOptions[0m = {
+
+
+
+Import trace:
+  Server Component:
+    ./lib/auth.ts
+    ./lib/adminAuth.ts
+    ./app/admin/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./lib/auth.ts:2:1
+Module not found: Can't resolve 'bcryptjs'
+  [90m1 |[0m [36mimport[0m { [33mUserRole[0m } [36mfrom[0m [32m"@prisma/client"[0m;
+[31m[1m>[0m [90m2 |[0m [36mimport[0m { compare } [36mfrom[0m [32m"bcryptjs"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m3 |[0m [36mimport[0m [36mtype[0m { [33mNextAuthOptions[0m } [36mfrom[0m [32m"next-auth"[0m;
+  [90m4 |[0m [36mimport[0m [33mCredentialsProvider[0m [36mfrom[0m [32m"next-auth/providers/credentials"[0m;
+  [90m5 |[0m [36mimport[0m { prisma } [36mfrom[0m [32m"./prisma"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./lib/auth.ts
+    ./lib/adminAuth.ts
+    ./app/admin/test-email/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./lib/auth.ts:2:1
+Module not found: Can't resolve 'bcryptjs'
+  [90m1 |[0m [36mimport[0m { [33mUserRole[0m } [36mfrom[0m [32m"@prisma/client"[0m;
+[31m[1m>[0m [90m2 |[0m [36mimport[0m { compare } [36mfrom[0m [32m"bcryptjs"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m3 |[0m [36mimport[0m [36mtype[0m { [33mNextAuthOptions[0m } [36mfrom[0m [32m"next-auth"[0m;
+  [90m4 |[0m [36mimport[0m [33mCredentialsProvider[0m [36mfrom[0m [32m"next-auth/providers/credentials"[0m;
+  [90m5 |[0m [36mimport[0m { prisma } [36mfrom[0m [32m"./prisma"[0m;
+
+
+
+Import trace:
+  Server Component:
+    ./lib/auth.ts
+    ./lib/adminAuth.ts
+    ./app/admin/test-email/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./lib/adminAuth.ts:1:1
+Module not found: Can't resolve 'next-auth'
+[31m[1m>[0m [90m1 |[0m [36mimport[0m { getServerSession } [36mfrom[0m [32m"next-auth"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m2 |[0m [36mimport[0m { [33mNextResponse[0m } [36mfrom[0m [32m"next/server"[0m;
+  [90m3 |[0m [36mimport[0m { authOptions } [36mfrom[0m [32m"./auth"[0m;
+  [90m4 |[0m
+
+
+
+Import trace:
+  Server Component:
+    ./lib/adminAuth.ts
+    ./app/admin/test-email/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./lib/adminAuth.ts:1:1
+Module not found: Can't resolve 'next-auth'
+[31m[1m>[0m [90m1 |[0m [36mimport[0m { getServerSession } [36mfrom[0m [32m"next-auth"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m2 |[0m [36mimport[0m { [33mNextResponse[0m } [36mfrom[0m [32m"next/server"[0m;
+  [90m3 |[0m [36mimport[0m { authOptions } [36mfrom[0m [32m"./auth"[0m;
+  [90m4 |[0m
+
+
+
+Import trace:
+  Server Component:
+    ./lib/adminAuth.ts
+    ./app/admin/test-email/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./lib/auth.ts:4:1
+Module not found: Can't resolve 'next-auth/providers/credentials'
+  [90m2 |[0m [36mimport[0m { compare } [36mfrom[0m [32m"bcryptjs"[0m;
+  [90m3 |[0m [36mimport[0m [36mtype[0m { [33mNextAuthOptions[0m } [36mfrom[0m [32m"next-auth"[0m;
+[31m[1m>[0m [90m4 |[0m [36mimport[0m [33mCredentialsProvider[0m [36mfrom[0m [32m"next-auth/providers/credentials"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m5 |[0m [36mimport[0m { prisma } [36mfrom[0m [32m"./prisma"[0m;
+  [90m6 |[0m
+  [90m7 |[0m [36mexport[0m [36mconst[0m authOptions: [33mNextAuthOptions[0m = {
+
+
+
+Import trace:
+  Server Component:
+    ./lib/auth.ts
+    ./lib/adminAuth.ts
+    ./app/admin/test-email/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./lib/auth.ts:4:1
+Module not found: Can't resolve 'next-auth/providers/credentials'
+  [90m2 |[0m [36mimport[0m { compare } [36mfrom[0m [32m"bcryptjs"[0m;
+  [90m3 |[0m [36mimport[0m [36mtype[0m { [33mNextAuthOptions[0m } [36mfrom[0m [32m"next-auth"[0m;
+[31m[1m>[0m [90m4 |[0m [36mimport[0m [33mCredentialsProvider[0m [36mfrom[0m [32m"next-auth/providers/credentials"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m5 |[0m [36mimport[0m { prisma } [36mfrom[0m [32m"./prisma"[0m;
+  [90m6 |[0m
+  [90m7 |[0m [36mexport[0m [36mconst[0m authOptions: [33mNextAuthOptions[0m = {
+
+
+
+Import trace:
+  Server Component:
+    ./lib/auth.ts
+    ./lib/adminAuth.ts
+    ./app/admin/test-email/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+  Reload env: .env
+⨯ ./node_modules/next-auth/jwt/index.js:19:14
+Module not found: Can't resolve './types'
+  [90m17 |[0m [36mvar[0m _uuid = require([32m"uuid"[0m);
+  [90m18 |[0m [36mvar[0m _cookie = require([32m"../core/lib/cookie"[0m);
+[31m[1m>[0m [90m19 |[0m [36mvar[0m _types = require([32m"./types"[0m);
+  [90m   |[0m              [31m[1m^^^^^^^^^^^^^^^^^^[0m
+  [90m20 |[0m [33mObject[0m.keys(_types).forEach([36mfunction[0m (key) {
+  [90m21 |[0m   [36mif[0m (key === [32m"default"[0m || key === [32m"__esModule"[0m) [36mreturn[0m;
+  [90m22 |[0m   [36mif[0m ([33mObject[0m.prototype.hasOwnProperty.call(_exportNames, key)) [36mreturn[0m;
+
+
+
+Import trace:
+  Edge Middleware:
+    ./node_modules/next-auth/jwt/index.js
+    ./middleware.ts
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./node_modules/next-auth/jwt/index.js:15:13
+Module not found: Can't resolve 'jose'
+  [90m13 |[0m exports.encode = encode;
+  [90m14 |[0m exports.getToken = getToken;
+[31m[1m>[0m [90m15 |[0m [36mvar[0m _jose = require([32m"jose"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m16 |[0m [36mvar[0m _hkdf = _interopRequireDefault(require([32m"@panva/hkdf"[0m));
+  [90m17 |[0m [36mvar[0m _uuid = require([32m"uuid"[0m);
+  [90m18 |[0m [36mvar[0m _cookie = require([32m"../core/lib/cookie"[0m);
+
+
+
+Import trace:
+  Edge Middleware:
+    ./node_modules/next-auth/jwt/index.js
+    ./middleware.ts
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./node_modules/next-auth/jwt/index.js:15:13
+Module not found: Can't resolve 'jose'
+  [90m13 |[0m exports.encode = encode;
+  [90m14 |[0m exports.getToken = getToken;
+[31m[1m>[0m [90m15 |[0m [36mvar[0m _jose = require([32m"jose"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m16 |[0m [36mvar[0m _hkdf = _interopRequireDefault(require([32m"@panva/hkdf"[0m));
+  [90m17 |[0m [36mvar[0m _uuid = require([32m"uuid"[0m);
+  [90m18 |[0m [36mvar[0m _cookie = require([32m"../core/lib/cookie"[0m);
+
+
+
+Import trace:
+  Edge Middleware:
+    ./node_modules/next-auth/jwt/index.js
+    ./middleware.ts
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./node_modules/next-auth/jwt/index.js:15:13
+Module not found: Can't resolve 'jose'
+  [90m13 |[0m exports.encode = encode;
+  [90m14 |[0m exports.getToken = getToken;
+[31m[1m>[0m [90m15 |[0m [36mvar[0m _jose = require([32m"jose"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m16 |[0m [36mvar[0m _hkdf = _interopRequireDefault(require([32m"@panva/hkdf"[0m));
+  [90m17 |[0m [36mvar[0m _uuid = require([32m"uuid"[0m);
+  [90m18 |[0m [36mvar[0m _cookie = require([32m"../core/lib/cookie"[0m);
+
+
+
+Import trace:
+  Server Component:
+    ./node_modules/next-auth/jwt/index.js
+    ./node_modules/next-auth/core/init.js
+    ./node_modules/next-auth/core/index.js
+    ./node_modules/next-auth/next/index.js
+    ./node_modules/next-auth/index.js
+    ./lib/adminAuth.ts
+    ./app/admin/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./node_modules/openid-client/lib/client.js:9:14
+Module not found: Can't resolve 'jose'
+  [90m 7 |[0m [36mconst[0m { [33mURL[0m, [33mURLSearchParams[0m } = require([32m'url'[0m);
+  [90m 8 |[0m
+[31m[1m>[0m [90m 9 |[0m [36mconst[0m jose = require([32m'jose'[0m);
+  [90m   |[0m              [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m10 |[0m [36mconst[0m tokenHash = require([32m'oidc-token-hash'[0m);
+  [90m11 |[0m
+  [90m12 |[0m [36mconst[0m isKeyObject = require([32m'./helpers/is_key_object'[0m);
+
+
+
+Import trace:
+  Server Component:
+    ./node_modules/openid-client/lib/client.js
+    ./node_modules/openid-client/lib/passport_strategy.js
+    ./node_modules/openid-client/lib/index.js
+    ./node_modules/next-auth/core/lib/oauth/callback.js
+    ./node_modules/next-auth/core/routes/callback.js
+    ./node_modules/next-auth/core/routes/index.js
+    ./node_modules/next-auth/core/index.js
+    ./node_modules/next-auth/next/index.js
+    ./node_modules/next-auth/index.js
+    ./lib/adminAuth.ts
+    ./app/admin/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./node_modules/openid-client/lib/helpers/client.js:1:14
+Module not found: Can't resolve 'jose'
+[31m[1m>[0m [90m1 |[0m [36mconst[0m jose = require([32m'jose'[0m);
+  [90m  |[0m              [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m2 |[0m
+  [90m3 |[0m [36mconst[0m { [33mRPError[0m } = require([32m'../errors'[0m);
+  [90m4 |[0m
+
+
+
+Import trace:
+  Server Component:
+    ./node_modules/openid-client/lib/helpers/client.js
+    ./node_modules/openid-client/lib/passport_strategy.js
+    ./node_modules/openid-client/lib/index.js
+    ./node_modules/next-auth/core/lib/oauth/callback.js
+    ./node_modules/next-auth/core/routes/callback.js
+    ./node_modules/next-auth/core/routes/index.js
+    ./node_modules/next-auth/core/index.js
+    ./node_modules/next-auth/next/index.js
+    ./node_modules/next-auth/index.js
+    ./lib/adminAuth.ts
+    ./app/admin/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./node_modules/openid-client/lib/helpers/keystore.js:1:14
+Module not found: Can't resolve 'jose'
+[31m[1m>[0m [90m1 |[0m [36mconst[0m jose = require([32m'jose'[0m);
+  [90m  |[0m              [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m2 |[0m
+  [90m3 |[0m [36mconst[0m clone = require([32m'./deep_clone'[0m);
+  [90m4 |[0m [36mconst[0m isPlainObject = require([32m'./is_plain_object'[0m);
+
+
+
+Import trace:
+  Server Component:
+    ./node_modules/openid-client/lib/helpers/keystore.js
+    ./node_modules/openid-client/lib/helpers/issuer.js
+    ./node_modules/openid-client/lib/issuer.js
+    ./node_modules/openid-client/lib/index.js
+    ./node_modules/next-auth/core/lib/oauth/callback.js
+    ./node_modules/next-auth/core/routes/callback.js
+    ./node_modules/next-auth/core/routes/index.js
+    ./node_modules/next-auth/core/index.js
+    ./node_modules/next-auth/next/index.js
+    ./node_modules/next-auth/index.js
+    ./lib/adminAuth.ts
+    ./app/admin/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./node_modules/next-auth/jwt/index.js:15:13
+Module not found: Can't resolve 'jose'
+  [90m13 |[0m exports.encode = encode;
+  [90m14 |[0m exports.getToken = getToken;
+[31m[1m>[0m [90m15 |[0m [36mvar[0m _jose = require([32m"jose"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m16 |[0m [36mvar[0m _hkdf = _interopRequireDefault(require([32m"@panva/hkdf"[0m));
+  [90m17 |[0m [36mvar[0m _uuid = require([32m"uuid"[0m);
+  [90m18 |[0m [36mvar[0m _cookie = require([32m"../core/lib/cookie"[0m);
+
+
+
+Import trace:
+  Server Component:
+    ./node_modules/next-auth/jwt/index.js
+    ./node_modules/next-auth/core/init.js
+    ./node_modules/next-auth/core/index.js
+    ./node_modules/next-auth/next/index.js
+    ./node_modules/next-auth/index.js
+    ./lib/adminAuth.ts
+    ./app/admin/test-email/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./node_modules/openid-client/lib/client.js:9:14
+Module not found: Can't resolve 'jose'
+  [90m 7 |[0m [36mconst[0m { [33mURL[0m, [33mURLSearchParams[0m } = require([32m'url'[0m);
+  [90m 8 |[0m
+[31m[1m>[0m [90m 9 |[0m [36mconst[0m jose = require([32m'jose'[0m);
+  [90m   |[0m              [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m10 |[0m [36mconst[0m tokenHash = require([32m'oidc-token-hash'[0m);
+  [90m11 |[0m
+  [90m12 |[0m [36mconst[0m isKeyObject = require([32m'./helpers/is_key_object'[0m);
+
+
+
+Import trace:
+  Server Component:
+    ./node_modules/openid-client/lib/client.js
+    ./node_modules/openid-client/lib/passport_strategy.js
+    ./node_modules/openid-client/lib/index.js
+    ./node_modules/next-auth/core/lib/oauth/callback.js
+    ./node_modules/next-auth/core/routes/callback.js
+    ./node_modules/next-auth/core/routes/index.js
+    ./node_modules/next-auth/core/index.js
+    ./node_modules/next-auth/next/index.js
+    ./node_modules/next-auth/index.js
+    ./lib/adminAuth.ts
+    ./app/admin/test-email/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./node_modules/openid-client/lib/helpers/client.js:1:14
+Module not found: Can't resolve 'jose'
+[31m[1m>[0m [90m1 |[0m [36mconst[0m jose = require([32m'jose'[0m);
+  [90m  |[0m              [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m2 |[0m
+  [90m3 |[0m [36mconst[0m { [33mRPError[0m } = require([32m'../errors'[0m);
+  [90m4 |[0m
+
+
+
+Import trace:
+  Server Component:
+    ./node_modules/openid-client/lib/helpers/client.js
+    ./node_modules/openid-client/lib/passport_strategy.js
+    ./node_modules/openid-client/lib/index.js
+    ./node_modules/next-auth/core/lib/oauth/callback.js
+    ./node_modules/next-auth/core/routes/callback.js
+    ./node_modules/next-auth/core/routes/index.js
+    ./node_modules/next-auth/core/index.js
+    ./node_modules/next-auth/next/index.js
+    ./node_modules/next-auth/index.js
+    ./lib/adminAuth.ts
+    ./app/admin/test-email/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./node_modules/openid-client/lib/helpers/keystore.js:1:14
+Module not found: Can't resolve 'jose'
+[31m[1m>[0m [90m1 |[0m [36mconst[0m jose = require([32m'jose'[0m);
+  [90m  |[0m              [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m2 |[0m
+  [90m3 |[0m [36mconst[0m clone = require([32m'./deep_clone'[0m);
+  [90m4 |[0m [36mconst[0m isPlainObject = require([32m'./is_plain_object'[0m);
+
+
+
+Import trace:
+  Server Component:
+    ./node_modules/openid-client/lib/helpers/keystore.js
+    ./node_modules/openid-client/lib/helpers/issuer.js
+    ./node_modules/openid-client/lib/issuer.js
+    ./node_modules/openid-client/lib/index.js
+    ./node_modules/next-auth/core/lib/oauth/callback.js
+    ./node_modules/next-auth/core/routes/callback.js
+    ./node_modules/next-auth/core/routes/index.js
+    ./node_modules/next-auth/core/index.js
+    ./node_modules/next-auth/next/index.js
+    ./node_modules/next-auth/index.js
+    ./lib/adminAuth.ts
+    ./app/admin/test-email/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+✓ Compiled in 537ms
+○ Compiling middleware ...
+✓ Compiled in 4.7s
