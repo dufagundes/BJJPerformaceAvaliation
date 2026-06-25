@@ -131,6 +131,16 @@ export async function POST(
   }
 
   const answers = (payload as { answers?: unknown })?.answers;
+  const rawAnswers = answers as Record<string, unknown>;
+
+  // Extract open-ended text fields
+  const strengthsText = rawAnswers?.strengths_text;
+  const improvementsText = rawAnswers?.improvements_text;
+
+  // Create clean answers object with only Likert responses (remove text fields)
+  const likertAnswers = { ...rawAnswers };
+  delete likertAnswers.strengths_text;
+  delete likertAnswers.improvements_text;
 
   const reviewer = await prisma.reviewer.findUnique({
     where: { inviteToken: token },
@@ -177,7 +187,7 @@ export async function POST(
     reviewer.cycle.subject.staffProfile?.title ?? "",
   );
 
-  if (!validateAnswers(answers, questions)) {
+  if (!validateAnswers(likertAnswers, questions)) {
     return NextResponse.json({ error: "Invalid answers payload." }, { status: 400 });
   }
 
@@ -185,7 +195,9 @@ export async function POST(
     await tx.evaluationResponse.create({
       data: {
         reviewerId: reviewer.id,
-        answers,
+        answers: likertAnswers,
+        strengths_text: typeof strengthsText === "string" ? strengthsText : null,
+        improvements_text: typeof improvementsText === "string" ? improvementsText : null,
       },
     });
 

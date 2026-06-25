@@ -150,6 +150,8 @@ model EvaluationResponse {
   reviewerId    String        @unique @db.Uuid
   submittedAt   DateTime      @default(now())
   answers       Json
+  strengths_text String?
+  improvements_text String?
 
   reviewer Reviewer @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
 

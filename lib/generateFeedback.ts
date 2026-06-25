@@ -69,7 +69,7 @@ function buildUserPrompt(
       ? categories
           .map(
             (category, index) =>
-              `${index + 1}. Group: ${category.group} | Session: ${category.session} | Factor: ${category.factor} | Score: ${category.normalizedScore.toFixed(1)} | Responses: ${category.responseCount}`,
+              `${index + 1}. Group: ${category.group} | Session: ${category.session} | Selected Question: ${category.factor} | Average Score: ${category.normalizedScore.toFixed(1)} | Responses: ${category.responseCount}`,
           )
           .join("\n")
       : "No category scores were provided.";
@@ -86,9 +86,12 @@ function buildUserPrompt(
 
   return [
     "Write a polished performance review that can be shared directly with the employee.",
-    "Analyze all scorecard categories, strengths comments, and areas for improvement comments.",
-    "Give more weight to consistently low scores for development opportunities and high scores for strengths.",
-    "If ratings and comments conflict, acknowledge that and provide balanced assessment.",
+    "Analyze every selected-question score listed below, plus every open-ended strengths comment and area-for-improvement comment.",
+    "The final score is calculated only from selected-question ratings. Do not recalculate it or claim the open-ended answers directly changed the score.",
+    "Use the open-ended answers as qualitative evidence when interpreting the selected-question results.",
+    "If open-ended answers suggest performance is stronger or weaker than the selected-question score alone implies, explain that as a qualitative signal.",
+    "Give more weight to consistently low selected-question scores for development opportunities and high selected-question scores for strengths.",
+    "If ratings and comments conflict, acknowledge the contrast and provide a balanced assessment.",
     "Use natural manager-to-employee tone.",
     "",
     `Staff Name: ${staffName}`,

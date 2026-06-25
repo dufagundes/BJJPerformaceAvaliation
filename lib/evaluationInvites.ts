@@ -101,7 +101,7 @@ export function buildEvaluationInviteTemplate(input: {
       <p>
         <a href="${evaluationLink}">${evaluationLink}</a>
       </p>
-      <p>This link is personal to you. Please do not share it with others.<br />It can only be used once.</p>
+      <p>This link is personal to you. Please do not share it with others.<br />You can start the evaluation and continue later, but your final response can only be submitted once.</p>
       <p>If you have any questions about this process, please reach out to us directly.</p>
       <p>
         Thank you for being part of our team and for helping us grow together.
@@ -122,6 +122,8 @@ Your responses are completely anonymous. No individual answer will be linked to 
 
 Please click the link below to complete the evaluation (approximately 5 minutes):
 ${evaluationLink}
+
+This link is personal to you. Please do not share it with others. You can start the evaluation and continue later, but your final response can only be submitted once.
 `;
 
   return { subject, html, text };

@@ -31,19 +31,27 @@ export async function POST(
       ),
     );
 
-    const allComments = scorecard.qualitativeFeedback
+    const strengthsComments = scorecard.qualitativeFeedback
+      .filter((entry) => entry.category === "strength")
       .map((entry) => entry.text)
       .filter((entry) => entry.trim().length > 0);
 
-    const strengthsComments = allComments.slice(0, 8);
-    const improvementComments = allComments.slice(8, 16);
+    const improvementComments = scorecard.qualitativeFeedback
+      .filter((entry) => entry.category === "improvement")
+      .map((entry) => entry.text)
+      .filter((entry) => entry.trim().length > 0);
+
+    const generalComments = scorecard.qualitativeFeedback
+      .filter((entry) => entry.category === "general")
+      .map((entry) => entry.text)
+      .filter((entry) => entry.trim().length > 0);
 
     const aiReview = await generateFeedback(
       scorecard.subjectName,
       scorecard.finalScore,
       scorecard.scoreLabel,
       categories,
-      strengthsComments,
+      [...strengthsComments, ...generalComments],
       improvementComments,
     );
 

@@ -81,6 +81,8 @@ CREATE TABLE "EvaluationResponse" (
     "reviewerId" UUID NOT NULL,
     "submittedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "answers" JSONB NOT NULL,
+    "strengths_text" TEXT,
+    "improvements_text" TEXT,
     CONSTRAINT "EvaluationResponse_pkey" PRIMARY KEY ("id")
 );
 

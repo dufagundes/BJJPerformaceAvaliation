@@ -33,7 +33,11 @@ export type CycleScorecardResult = {
   finalScore: number;
   scoreLabel: "Excellent" | "Good" | "Needs Improvement" | "Critical";
   groups: ScorecardGroupOutput[];
-  qualitativeFeedback: Array<{ text: string; audience: "anonymous" }>;
+  qualitativeFeedback: Array<{
+    text: string;
+    audience: "anonymous";
+    category: "strength" | "improvement" | "general";
+  }>;
   notes?: string[];
 };
 
@@ -43,8 +47,13 @@ type ReviewerWithResponse = {
   status: string;
   response: {
     answers: unknown;
+    strengths_text: string | null;
+    improvements_text: string | null;
   } | null;
 };
+
+const STRENGTH_ANSWER_KEYS = new Set(["observedStrength", "strength", "strengths", "strengths_text"]);
+const IMPROVEMENT_ANSWER_KEYS = new Set(["improvementArea", "improvement", "improvements", "improvements_text"]);
 
 const LEGACY_ORDER_TO_KEY: Record<number, string> = {
   1: "communication",
@@ -251,6 +260,8 @@ export async function calculateCycleScorecard(cycleId: string): Promise<CycleSco
           response: {
             select: {
               answers: true,
+              strengths_text: true,
+              improvements_text: true,
             },
           },
         },
@@ -364,21 +375,36 @@ export async function calculateCycleScorecard(cycleId: string): Promise<CycleSco
     notes.push("No responses received from Peers.");
   }
 
-  const qualitativeFeedback: Array<{ text: string; audience: "anonymous" }> = [];
+  const qualitativeFeedback: CycleScorecardResult["qualitativeFeedback"] = [];
   for (const reviewer of completedReviewers) {
     const answers = asRecord(reviewer.response?.answers);
+    const strengthsText = reviewer.response?.strengths_text?.trim();
+    if (strengthsText) {
+      qualitativeFeedback.push({ text: strengthsText, audience: "anonymous", category: "strength" });
+    }
+
+    const improvementsText = reviewer.response?.improvements_text?.trim();
+    if (improvementsText) {
+      qualitativeFeedback.push({ text: improvementsText, audience: "anonymous", category: "improvement" });
+    }
+
     if (!answers) {
       continue;
     }
 
-    for (const value of Object.values(answers)) {
+    for (const [key, value] of Object.entries(answers)) {
       if (typeof value !== "string") {
         continue;
       }
 
       const trimmed = value.trim();
       if (trimmed.length > 0) {
-        qualitativeFeedback.push({ text: trimmed, audience: "anonymous" });
+        const category = STRENGTH_ANSWER_KEYS.has(key)
+          ? "strength"
+          : IMPROVEMENT_ANSWER_KEYS.has(key)
+            ? "improvement"
+            : "general";
+        qualitativeFeedback.push({ text: trimmed, audience: "anonymous", category });
       }
     }
   }
