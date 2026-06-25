@@ -1,6 +1,5 @@
 import { Resend } from "resend";
 
-const EVALUATION_BASE_URL = "https://bjjstaff.com/evaluate";
 const EMAIL_FROM = "evaluations@bjjstaff.com";
 
 type InviteTemplateInput = {
@@ -26,8 +25,22 @@ export type MailDelivery = {
   error?: string;
 };
 
+function getAppUrl(): string {
+  const appUrl =
+    process.env.APP_URL?.trim() ||
+    process.env.NEXT_PUBLIC_APP_URL?.trim() ||
+    process.env.VERCEL_URL?.trim() ||
+    "http://localhost:3000";
+
+  if (appUrl.startsWith("http://") || appUrl.startsWith("https://")) {
+    return appUrl.replace(/\/$/, "");
+  }
+
+  return `https://${appUrl.replace(/\/$/, "")}`;
+}
+
 function getReviewLink(inviteToken: string): string {
-  return `${EVALUATION_BASE_URL}/${inviteToken}`;
+  return `${getAppUrl()}/evaluate/${inviteToken}`;
 }
 
 function formatDate(value: Date): string {
