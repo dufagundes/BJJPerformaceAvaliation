@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
 const navItems = [
@@ -14,6 +17,13 @@ const navItems = [
 ];
 
 export default function AppShell({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const isEvaluationForm = /^\/evaluate\/[^/]+/.test(pathname);
+
+  if (isEvaluationForm) {
+    return <>{children}</>;
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <header className="border-b border-slate-200 bg-white/95 backdrop-blur">
