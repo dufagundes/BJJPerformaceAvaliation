@@ -19,8 +19,9 @@ const navItems = [
 export default function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isEvaluationForm = /^\/evaluate\/[^/]+/.test(pathname);
+  const isStandaloneDashboard = pathname === "/dashboard";
 
-  if (isEvaluationForm) {
+  if (isEvaluationForm || isStandaloneDashboard) {
     return <>{children}</>;
   }
 
