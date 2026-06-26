@@ -77,7 +77,7 @@ export function buildEvaluationInviteTemplate(input: {
         in technique, but in how we show up for each other and for our students every day.
       </p>
       <p>
-        As part of our quarterly review process, we are gathering feedback about ${input.staffFullName}.
+        As part of our quarterly evaluation process, we are gathering feedback about ${input.staffFullName}.
         You have been selected because your perspective matters to us.
       </p>
       <p><strong>YOUR RESPONSES ARE COMPLETELY ANONYMOUS.</strong></p>

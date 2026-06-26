@@ -28,7 +28,7 @@ type QuestionState = {
 };
 
 const audienceLabels: Record<AudienceType, string> = {
-  ALL: "All reviewers",
+  ALL: "All evaluators",
   PEER: "Peers only",
   PARENT_STUDENT: "Parents/Students only",
 };
@@ -234,7 +234,7 @@ export default function ScorecardConfigClient() {
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">Scorecard Builder</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Add, remove, and tune the review questions that appear in the evaluation form.
+            Add, remove, and tune the evaluation questions that appear in the evaluation form.
           </p>
         </div>
 

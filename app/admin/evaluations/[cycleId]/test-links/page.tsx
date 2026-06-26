@@ -123,7 +123,7 @@ export default async function CycleTestLinksPage({
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">Test Evaluation Links</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Development/QA page: View and test all invitation links for this cycle. Clicking a link opens the evaluation form. Submitting marks the reviewer as complete.
+            Development/QA page: View and test all invitation links for this cycle. Clicking a link opens the evaluation form. Submitting marks the evaluator as complete.
           </p>
         </div>
 
@@ -143,7 +143,7 @@ export default async function CycleTestLinksPage({
                 <strong>Description:</strong> {cycle.description}
               </p>
               <p>
-                <strong>Total Reviewers:</strong> {cycle.reviewers.length} ({peerReviewers.length} peers, {contactReviewers.length} contacts)
+                <strong>Total Evaluators:</strong> {cycle.reviewers.length} ({peerReviewers.length} peers, {contactReviewers.length} contacts)
               </p>
               <p>
                 <Link
@@ -159,11 +159,11 @@ export default async function CycleTestLinksPage({
 
         <Card>
           <CardHeader>
-            <CardTitle>Peer Reviewers ({peerReviewers.length})</CardTitle>
+            <CardTitle>Peer Evaluators ({peerReviewers.length})</CardTitle>
           </CardHeader>
           <CardContent>
             {peerReviewers.length === 0 ? (
-              <p className="text-sm text-slate-600">No peer reviewers.</p>
+              <p className="text-sm text-slate-600">No peer evaluators.</p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="min-w-full border-collapse text-left text-sm">
@@ -223,7 +223,7 @@ export default async function CycleTestLinksPage({
           </CardHeader>
           <CardContent>
             {contactReviewers.length === 0 ? (
-              <p className="text-sm text-slate-600">No parent/student reviewers.</p>
+              <p className="text-sm text-slate-600">No parent/student evaluators.</p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="min-w-full border-collapse text-left text-sm">
@@ -287,7 +287,7 @@ export default async function CycleTestLinksPage({
               <li>Fill in all ratings (1-5 scale) and text responses</li>
               <li>Click "Submit Evaluation"</li>
               <li>Return to this page and refresh to see the status change to COMPLETED</li>
-              <li>Once all reviewers (or minimum required) are COMPLETED, you can generate the final score</li>
+              <li>Once all evaluators (or minimum required) are COMPLETED, you can generate the final score</li>
             </ol>
           </CardContent>
         </Card>

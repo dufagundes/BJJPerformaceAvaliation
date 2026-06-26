@@ -13,7 +13,7 @@ const navItems = [
   { href: "/admin/cycles", label: "Cycles" },
   { href: "/admin/settings", label: "Settings" },
   { href: "/admin/scorecard", label: "Scorecard" },
-  { href: "/evaluate", label: "Reviewer Access" },
+  { href: "/evaluate", label: "Evaluation Access" },
 ];
 
 export default function AppShell({ children }: { children: ReactNode }) {
@@ -32,7 +32,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
             <Link href="/" className="text-lg font-semibold tracking-tight text-slate-900">
               GB Staff Performance
             </Link>
-            <p className="text-sm text-slate-500">Quarterly scorecards, evaluator workflows, and coaching summaries</p>
+            <p className="text-sm text-slate-500">Quarterly evaluations, scorecards, and coaching summaries</p>
           </div>
 
           <nav className="flex flex-wrap gap-2">

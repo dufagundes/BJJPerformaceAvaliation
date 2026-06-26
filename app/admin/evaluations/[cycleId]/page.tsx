@@ -149,8 +149,8 @@ export default async function EvaluationCycleDetailPage({
               <p><strong>Subject:</strong> {cycle.subject.name} ({cycle.subject.email})</p>
               <p><strong>Deadline:</strong> {formatDate(cycle.deadline)}</p>
               <p><strong>Description:</strong> {cycle.description}</p>
-              <p><strong>Peer reviewers:</strong> {peerReviewers.length}</p>
-              <p><strong>Contact reviewers:</strong> {contactReviewers.length}</p>
+              <p><strong>Peer evaluators:</strong> {peerReviewers.length}</p>
+              <p><strong>Contact evaluators:</strong> {contactReviewers.length}</p>
             </div>
           </CardContent>
         </Card>
@@ -162,7 +162,7 @@ export default async function EvaluationCycleDetailPage({
             </CardHeader>
             <CardContent>
               {peerReviewers.length === 0 ? (
-                <p className="text-sm text-slate-600">No peer reviewers selected.</p>
+                <p className="text-sm text-slate-600">No peer evaluators selected.</p>
               ) : (
                 <div className="space-y-2">
                   {peerReviewers.map((reviewer) => (
@@ -182,7 +182,7 @@ export default async function EvaluationCycleDetailPage({
             </CardHeader>
             <CardContent>
               {contactReviewers.length === 0 ? (
-                <p className="text-sm text-slate-600">No contact reviewers selected.</p>
+                <p className="text-sm text-slate-600">No contact evaluators selected.</p>
               ) : (
                 <div className="space-y-2">
                   {contactReviewers.map((reviewer) => (

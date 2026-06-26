@@ -147,7 +147,7 @@ export default function PendingEvaluationsPage() {
                             ? "border border-blue-200 bg-blue-50 text-blue-700"
                             : "border border-purple-200 bg-purple-50 text-purple-700"
                         }`}>
-                          {reviewer.type === "PEER" ? "Peer Review" : "Parent/Student"}
+                          {reviewer.type === "PEER" ? "Peer Evaluation" : "Parent/Student Evaluation"}
                         </span>
                         {isOverdue && (
                           <span className="rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-700">
@@ -157,7 +157,7 @@ export default function PendingEvaluationsPage() {
                       </div>
 
                       <p className="text-sm text-slate-600">
-                        <strong>Type:</strong> {reviewer.type === "PEER" ? "Peer Evaluation" : "Contact Review"}
+                        <strong>Type:</strong> {reviewer.type === "PEER" ? "Peer Evaluation" : "Parent/Student Evaluation"}
                       </p>
 
                       <p className="text-sm text-slate-600">

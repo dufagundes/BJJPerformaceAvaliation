@@ -64,7 +64,7 @@ export async function POST(
   } catch (error) {
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "Unable to generate AI review.",
+        error: error instanceof Error ? error.message : "Unable to generate AI evaluation.",
       },
       { status: 500 },
     );

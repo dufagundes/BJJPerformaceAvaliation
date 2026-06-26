@@ -71,7 +71,7 @@ export default async function AdminStaffPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h1 className="text-2xl font-semibold text-slate-900">Staff Members</h1>
-            <p className="mt-1 text-sm text-slate-600">Register team members and review who is already active in the review system.</p>
+            <p className="mt-1 text-sm text-slate-600">Register team members and view who is already active in the evaluation system.</p>
           </div>
           <Link href="/admin/staff/new" className="inline-flex w-fit items-center justify-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800">
             Register Staff Member

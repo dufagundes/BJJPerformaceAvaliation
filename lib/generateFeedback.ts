@@ -17,16 +17,16 @@ type FeedbackPayload = Partial<FeedbackResult>;
 const FALLBACK_RESULT: FeedbackResult = {
   reviewMarkdown: [
     "# Overall Performance Summary",
-    "AI feedback is currently unavailable. The scorecard data is present and should be reviewed with the employee using the category breakdown below.",
+    "AI feedback is currently unavailable. The scorecard data is present and should be evaluated with the employee using the category breakdown below.",
     "",
     "# Key Strengths",
-    "- Review high-scoring categories and reinforced behaviors from evaluator comments.",
+    "- Evaluate high-scoring categories and reinforced behaviors from evaluator comments.",
     "",
     "# Development Opportunities",
     "- Prioritize consistently lower-scoring categories with clear coaching expectations.",
     "",
     "# Manager Feedback",
-    "Your contributions are valued, and we will use this review to build a practical growth plan together.",
+    "Your contributions are valued, and we will use this evaluation to build a practical growth plan together.",
     "",
     "# Development Action Plan",
     "- Goal: Improve targeted competencies identified in scorecard results",
@@ -48,7 +48,7 @@ const FALLBACK_RESULT: FeedbackResult = {
 };
 
 const SYSTEM_PROMPT =
-  "You are an experienced direct manager writing a professional employee performance review. Be supportive, objective, specific, and growth-oriented. Always respond in valid JSON only.";
+  "You are an experienced direct manager writing a professional employee evaluation. Be supportive, objective, specific, and growth-oriented. Always respond in valid JSON only.";
 
 function normalizeQuotes(values: string[]): string[] {
   return values
@@ -85,7 +85,7 @@ function buildUserPrompt(
       : "No weaknesses quotes were submitted.";
 
   return [
-    "Write a polished performance review that can be shared directly with the employee.",
+    "Write a polished employee evaluation that can be shared directly with the employee.",
     "Analyze every selected-question score listed below, plus every open-ended strengths comment and area-for-improvement comment.",
     "The final score is calculated only from selected-question ratings. Do not recalculate it or claim the open-ended answers directly changed the score.",
     "Use the open-ended answers as qualitative evidence when interpreting the selected-question results.",

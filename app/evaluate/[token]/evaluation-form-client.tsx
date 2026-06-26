@@ -216,7 +216,7 @@ export default function EvaluationFormClient({ token }: { token: string }) {
       <div className="mx-auto max-w-3xl">
         <Card className="overflow-hidden border-slate-200 shadow-lg">
           <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-6 py-8 text-white">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-300">Reviewer Access</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-300">Evaluation Access</p>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight">You are evaluating {staffFirstName}</h1>
             <p className="mt-2 max-w-2xl text-sm text-slate-300">
               Please choose the answer that best matches your experience and share feedback where requested.

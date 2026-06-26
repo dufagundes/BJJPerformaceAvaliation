@@ -307,7 +307,7 @@ export default function NewEvaluationClient() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Section 2 - Peer Reviewers</CardTitle>
+                <CardTitle>Section 2 - Peer Evaluators</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">

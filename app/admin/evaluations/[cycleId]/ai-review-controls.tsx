@@ -43,7 +43,7 @@ export default function AiReviewControls({ cycleId }: Props) {
         setSavedAt(saved.savedAt);
       }
     } catch {
-      setError("Saved AI review could not be loaded.");
+      setError("Saved AI evaluation could not be loaded.");
     }
   }, [storageKey]);
 
@@ -58,13 +58,13 @@ export default function AiReviewControls({ cycleId }: Props) {
 
       if (!response.ok) {
         const payload = (await response.json().catch(() => ({}))) as ApiError;
-        throw new Error(payload.error ?? "Unable to generate AI review.");
+        throw new Error(payload.error ?? "Unable to generate AI evaluation.");
       }
 
       const payload = (await response.json()) as ApiSuccess;
       setReviewMarkdown(payload.reviewMarkdown);
     } catch (caught) {
-      const message = caught instanceof Error ? caught.message : "Unable to generate AI review.";
+      const message = caught instanceof Error ? caught.message : "Unable to generate AI evaluation.";
       setError(message);
     } finally {
       setIsGenerating(false);
@@ -78,7 +78,7 @@ export default function AiReviewControls({ cycleId }: Props) {
 
     const win = window.open("", "_blank", "noopener,noreferrer,width=900,height=700");
     if (!win) {
-      setError("Popup blocked. Please allow popups to print the AI review.");
+      setError("Popup blocked. Please allow popups to print the AI evaluation.");
       return;
     }
 
@@ -91,7 +91,7 @@ export default function AiReviewControls({ cycleId }: Props) {
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>AI Performance Review</title>
+  <title>AI Performance Evaluation</title>
   <style>
     body { font-family: Georgia, "Times New Roman", serif; margin: 32px; line-height: 1.5; color: #111827; }
     h1 { font-size: 22px; margin-bottom: 16px; }
@@ -99,7 +99,7 @@ export default function AiReviewControls({ cycleId }: Props) {
   </style>
 </head>
 <body>
-  <h1>AI Performance Review</h1>
+  <h1>AI Performance Evaluation</h1>
   <pre>${escaped}</pre>
 </body>
 </html>`);
@@ -124,7 +124,7 @@ export default function AiReviewControls({ cycleId }: Props) {
       setSavedAt(payload.savedAt);
       setError("");
     } catch {
-      setError("Unable to save AI review on this device.");
+      setError("Unable to save AI evaluation on this device.");
     }
   }
 
@@ -132,13 +132,13 @@ export default function AiReviewControls({ cycleId }: Props) {
     try {
       const raw = window.localStorage.getItem(storageKey);
       if (!raw) {
-        setError("No saved AI review found for this evaluation cycle.");
+        setError("No saved AI evaluation found for this evaluation cycle.");
         return;
       }
 
       const saved = JSON.parse(raw) as Partial<SavedReviewPayload>;
       if (typeof saved.reviewMarkdown !== "string" || saved.reviewMarkdown.trim().length === 0) {
-        setError("Saved AI review is invalid. Please generate a new one.");
+        setError("Saved AI evaluation is invalid. Please generate a new one.");
         return;
       }
 
@@ -146,7 +146,7 @@ export default function AiReviewControls({ cycleId }: Props) {
       setSavedAt(typeof saved.savedAt === "string" ? saved.savedAt : "");
       setError("");
     } catch {
-      setError("Saved AI review could not be loaded.");
+      setError("Saved AI evaluation could not be loaded.");
     }
   }
 
@@ -158,23 +158,23 @@ export default function AiReviewControls({ cycleId }: Props) {
 
   return (
     <div className="space-y-3">
-      <p className="text-sm font-semibold text-slate-900">AI Performance Review</p>
+      <p className="text-sm font-semibold text-slate-900">AI Performance Evaluation</p>
 
       <div className="flex flex-wrap gap-2">
         <Button onClick={handleGenerate} disabled={isGenerating}>
-          {isGenerating ? "Generating..." : "Generate AI Review"}
+          {isGenerating ? "Generating..." : "Generate AI Evaluation"}
         </Button>
 
         <Button variant="outline" onClick={handleSaveReview} disabled={!reviewMarkdown}>
-          Save AI Review
+          Save AI Evaluation
         </Button>
 
         <Button variant="outline" onClick={handleLoadSaved}>
-          Load Saved Review
+          Load Saved Evaluation
         </Button>
 
         <Button variant="outline" onClick={handlePrint} disabled={!reviewMarkdown}>
-          Print AI Review
+          Print AI Evaluation
         </Button>
 
         <Button variant="outline" onClick={handleClearSaved}>
@@ -194,7 +194,7 @@ export default function AiReviewControls({ cycleId }: Props) {
         </div>
       ) : (
         <p className="text-sm text-slate-600">
-          Generate the AI review when you are ready to conduct the performance meeting.
+          Generate the AI evaluation when you are ready to conduct the performance meeting.
         </p>
       )}
     </div>

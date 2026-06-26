@@ -44,7 +44,7 @@ function AdminLoginPageContent() {
         <header className="text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#C8102E]">Gracie Barra Lindale</p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white">Admin Login</h1>
-          <p className="mt-2 text-sm text-slate-300">Sign in to manage staff evaluation cycles and reviewer invites.</p>
+          <p className="mt-2 text-sm text-slate-300">Sign in to manage staff evaluation cycles and evaluator invites.</p>
         </header>
 
         <section className="rounded-2xl border border-white/10 bg-white px-6 py-6 shadow-xl">

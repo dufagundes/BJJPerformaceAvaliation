@@ -42,11 +42,11 @@ export async function POST(request: Request) {
   }
 
   if (peerUserIds.length < 1) {
-    return NextResponse.json({ error: "At least 1 peer reviewer is required." }, { status: 400 });
+    return NextResponse.json({ error: "At least 1 peer evaluator is required." }, { status: 400 });
   }
 
   if (peerUserIds.includes(subjectId)) {
-    return NextResponse.json({ error: "Subject cannot be selected as a peer reviewer." }, { status: 400 });
+    return NextResponse.json({ error: "Subject cannot be selected as a peer evaluator." }, { status: 400 });
   }
 
   const [subject, peersPool, selectedContacts, session] = await Promise.all([

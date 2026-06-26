@@ -158,7 +158,7 @@ export default async function StaffScorecardsPage({
         <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-semibold text-slate-900">{staffMember.name} Scorecards</h1>
-            <p className="mt-1 text-sm text-slate-600">Read-only quarterly performance history for staff review meetings.</p>
+            <p className="mt-1 text-sm text-slate-600">Read-only quarterly performance history for staff evaluation meetings.</p>
           </div>
           <Link href="/admin/staff" className="text-sm font-medium text-sky-700 underline">
             Back to Staff
@@ -172,7 +172,7 @@ export default async function StaffScorecardsPage({
           <CardContent>
             {cycleScorecards.length === 0 ? (
               <p className="text-sm text-slate-700">
-                No cycle history is available yet. Scorecards will appear once at least one review is submitted.
+                No cycle history is available yet. Scorecards will appear once at least one evaluation is submitted.
               </p>
             ) : (
               <div className="space-y-4">

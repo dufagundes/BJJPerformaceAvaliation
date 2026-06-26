@@ -33,11 +33,11 @@ const quickLinks = [
   {
     href: "/admin/staff",
     label: "Manage Staff",
-    description: "Register team members and review the current roster.",
+    description: "Register team members and view the current roster.",
   },
   {
     href: "/admin/cycles",
-    label: "Review Cycles",
+    label: "Evaluation Cycles",
     description: "Track cycle progress and generate scorecards.",
   },
   {
@@ -158,7 +158,7 @@ export default async function AdminPage() {
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">Admin Dashboard</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Review system activity, jump into setup tasks, and confirm the evaluation workflow is moving.
+            View evaluation system activity, jump into setup tasks, and confirm the evaluation workflow is moving.
           </p>
         </div>
 
@@ -193,7 +193,7 @@ export default async function AdminPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-3xl font-semibold text-slate-900">{stats.openCycleCount}</p>
-                <p className="text-sm text-slate-600">Quarterly review cycles still collecting feedback.</p>
+                <p className="text-sm text-slate-600">Quarterly evaluation cycles still collecting feedback.</p>
               </CardContent>
             </Card>
 
@@ -209,11 +209,11 @@ export default async function AdminPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Submitted Reviews</CardTitle>
+                <CardTitle>Submitted Evaluations</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-3xl font-semibold text-slate-900">{stats.scorecardCount}</p>
-                <p className="text-sm text-slate-600">Completed reviewer responses in the system.</p>
+                <p className="text-sm text-slate-600">Completed evaluation responses in the system.</p>
               </CardContent>
             </Card>
           </section>
@@ -254,7 +254,7 @@ export default async function AdminPage() {
               </>
             ) : (
               <div className="space-y-3">
-                <p className="text-sm text-slate-600">No open cycle found yet. Start a cycle to track reviewer progress here.</p>
+                <p className="text-sm text-slate-600">No open cycle found yet. Start a cycle to track evaluation progress here.</p>
                 <Link
                   href="/admin/cycles"
                   className="inline-flex w-fit items-center rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
