@@ -27,10 +27,32 @@ type QuestionState = {
   options: OptionState[];
 };
 
+type AccordionSectionKey = "staff" | "parentStudent";
+
+const questionSections: Array<{
+  key: AccordionSectionKey;
+  title: string;
+  description: string;
+  audiences: AudienceType[];
+}> = [
+  {
+    key: "staff",
+    title: "Staff Questions",
+    description: "Questions used for staff peer evaluations, including any shared questions for all evaluators.",
+    audiences: ["ALL", "PEER"],
+  },
+  {
+    key: "parentStudent",
+    title: "Parent / Student Questions",
+    description: "Questions used for parent and student evaluations.",
+    audiences: ["PARENT_STUDENT"],
+  },
+];
+
 const audienceLabels: Record<AudienceType, string> = {
-  ALL: "All evaluators",
-  PEER: "Peers only",
-  PARENT_STUDENT: "Parents/Students only",
+  ALL: "Shared Questions",
+  PEER: "Staff Evaluators",
+  PARENT_STUDENT: "Parent / Student Evaluators",
 };
 
 function toQuestionState(question: {
@@ -91,6 +113,10 @@ export default function ScorecardConfigClient() {
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
   const [questions, setQuestions] = useState<QuestionState[]>([]);
+  const [openSections, setOpenSections] = useState<Record<AccordionSectionKey, boolean>>({
+    staff: true,
+    parentStudent: false,
+  });
 
   useEffect(() => {
     async function loadQuestions() {
@@ -152,6 +178,10 @@ export default function ScorecardConfigClient() {
 
   function removeQuestion(clientId: string) {
     setQuestions((previous) => previous.filter((question) => question.clientId !== clientId));
+  }
+
+  function toggleSection(sectionKey: AccordionSectionKey) {
+    setOpenSections((previous) => ({ ...previous, [sectionKey]: !previous[sectionKey] }));
   }
 
   function addOption(questionId: string) {
@@ -263,23 +293,59 @@ export default function ScorecardConfigClient() {
               </CardContent>
             </Card>
           ) : (
-            (Object.keys(groupedQuestions) as AudienceType[]).map((audienceType) => (
-              <Card key={audienceType}>
-                <CardHeader>
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <CardTitle>{audienceLabels[audienceType]}</CardTitle>
-                    <Button type="button" variant="outline" onClick={() => addQuestion(audienceType)}>
-                      Add Question
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {groupedQuestions[audienceType].length === 0 ? (
-                    <p className="text-sm text-slate-600">No questions configured for this audience yet.</p>
-                  ) : null}
+            questionSections.map((section) => {
+              const sectionQuestionCount = section.audiences.reduce(
+                (total, audienceType) => total + groupedQuestions[audienceType].length,
+                0,
+              );
+              const isOpen = openSections[section.key];
 
-                  {groupedQuestions[audienceType].map((question) => (
-                    <div key={question.clientId} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              return (
+              <Card key={section.key}>
+                <CardHeader>
+                  <button
+                    type="button"
+                    className="flex w-full flex-col gap-3 text-left sm:flex-row sm:items-center sm:justify-between"
+                    onClick={() => toggleSection(section.key)}
+                    aria-expanded={isOpen}
+                  >
+                    <span>
+                      <CardTitle>{section.title}</CardTitle>
+                      <span className="mt-1 block text-sm font-normal text-slate-600">{section.description}</span>
+                    </span>
+                    <span className="flex items-center gap-3 text-sm font-semibold text-slate-700">
+                      <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1">
+                        {sectionQuestionCount} question{sectionQuestionCount === 1 ? "" : "s"}
+                      </span>
+                      <span className="text-lg leading-none">{isOpen ? "-" : "+"}</span>
+                    </span>
+                  </button>
+                </CardHeader>
+
+                {isOpen ? (
+                  <CardContent className="space-y-6">
+                    {section.audiences.map((audienceType) => (
+                      <section key={audienceType} className="space-y-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                          <div>
+                            <h3 className="text-sm font-semibold text-slate-900">{audienceLabels[audienceType]}</h3>
+                            <p className="mt-1 text-xs text-slate-500">
+                              {audienceType === "ALL"
+                                ? "Shared questions appear for staff, parents, and students."
+                                : "Questions in this group appear only for this audience."}
+                            </p>
+                          </div>
+                          <Button type="button" variant="outline" onClick={() => addQuestion(audienceType)}>
+                            Add Question
+                          </Button>
+                        </div>
+
+                        {groupedQuestions[audienceType].length === 0 ? (
+                          <p className="text-sm text-slate-600">No questions configured for this audience yet.</p>
+                        ) : null}
+
+                        {groupedQuestions[audienceType].map((question) => (
+                    <div key={question.clientId} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                       <div className="grid gap-3 lg:grid-cols-[1.2fr_220px_140px_120px] lg:items-start">
                         <div className="space-y-2">
                           <Label htmlFor={`text-${question.clientId}`}>Question text</Label>
@@ -382,10 +448,14 @@ export default function ScorecardConfigClient() {
                         </div>
                       ) : null}
                     </div>
-                  ))}
-                </CardContent>
+                        ))}
+                      </section>
+                    ))}
+                  </CardContent>
+                ) : null}
               </Card>
-            ))
+              );
+            })
           )}
 
           {!isLoading ? (
