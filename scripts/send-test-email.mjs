@@ -1,7 +1,12 @@
 import { sendTestEmail } from "../lib/testEmail.ts";
 
 async function main() {
-  const result = await sendTestEmail();
+  const recipient = process.env.TEST_EMAIL_RECIPIENT?.trim();
+  if (!recipient) {
+    throw new Error("Set TEST_EMAIL_RECIPIENT to send a test email from this script.");
+  }
+
+  const result = await sendTestEmail(recipient);
 
   if (!result.ok) {
     throw new Error(result.error || "Resend failed to send the test email.");

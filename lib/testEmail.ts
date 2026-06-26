@@ -1,7 +1,5 @@
 import { Resend } from "resend";
 
-export const TEST_EMAIL_RECIPIENT = "dufagundes@gmail.com";
-
 type TestEmailResult = {
   ok: boolean;
   id?: string;
@@ -25,8 +23,13 @@ function getAppUrl(): string {
   return appUrl;
 }
 
-export async function sendTestEmail(to = TEST_EMAIL_RECIPIENT): Promise<TestEmailResult> {
+export async function sendTestEmail(to: string | string[]): Promise<TestEmailResult> {
   try {
+    const recipients = Array.isArray(to) ? to : [to];
+    if (recipients.length === 0 || recipients.some((recipient) => recipient.trim().length === 0)) {
+      throw new Error("At least one recipient email is required.");
+    }
+
     const resend = new Resend(getRequiredEnv("RESEND_API_KEY"));
     const from = getRequiredEnv("EMAIL_FROM");
     const schoolName = process.env.SCHOOL_NAME?.trim() || "Your School";
@@ -34,7 +37,7 @@ export async function sendTestEmail(to = TEST_EMAIL_RECIPIENT): Promise<TestEmai
 
     const response = await resend.emails.send({
       from,
-      to,
+      to: recipients,
       subject: `[${schoolName}] Test email`,
       html: `
         <div style="font-family: Arial, sans-serif; color: #0f172a; line-height: 1.6;">
