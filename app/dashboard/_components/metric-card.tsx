@@ -1,6 +1,6 @@
+import Link from "next/link";
 import type { Metric, MetricColor } from "../mock-data";
 import { cn } from "../../../lib/utils";
-import { DashboardCard } from "./dashboard-card";
 import { Icon } from "./icons";
 
 const colorStyles: Record<MetricColor, { icon: string; accent: string; chart: string; background: string }> = {
@@ -53,7 +53,14 @@ export function MetricCard({ metric }: { metric: Metric }) {
   const styles = colorStyles[metric.color];
 
   return (
-    <DashboardCard className={cn("relative overflow-hidden p-5", styles.background)}>
+    <Link
+      href={metric.href}
+      className={cn(
+        "block rounded-lg border border-slate-200 bg-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-indigo-100",
+        "relative overflow-hidden p-5",
+        styles.background,
+      )}
+    >
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-slate-600">{metric.title}</p>
@@ -71,6 +78,6 @@ export function MetricCard({ metric }: { metric: Metric }) {
         </div>
         <MiniLineChart data={metric.chartData} color={styles.chart} />
       </div>
-    </DashboardCard>
+    </Link>
   );
 }

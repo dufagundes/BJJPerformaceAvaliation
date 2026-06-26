@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Icon } from "./icons";
 import { cn } from "../../../lib/utils";
 
@@ -9,15 +10,15 @@ type SidebarProps = {
 };
 
 const navigationItems = [
-  { label: "Dashboard", icon: "dashboard" as const, active: true },
-  { label: "Employees", icon: "employees" as const, active: false },
-  { label: "Reviews", icon: "reviews" as const, active: false },
-  { label: "Goals", icon: "goals" as const, active: false },
-  { label: "Feedback", icon: "feedback" as const, active: false },
-  { label: "360° Feedback", icon: "progress" as const, active: false },
-  { label: "Reports", icon: "reports" as const, active: false },
-  { label: "Analytics", icon: "analytics" as const, active: false },
-  { label: "Settings", icon: "settings" as const, active: false },
+  { label: "Dashboard", icon: "dashboard" as const, href: "/dashboard", active: true },
+  { label: "Employees", icon: "employees" as const, href: "/admin/staff", active: false },
+  { label: "Reviews", icon: "reviews" as const, href: "/admin/cycles", active: false },
+  { label: "Goals", icon: "goals" as const, href: "/admin/scorecard", active: false },
+  { label: "Feedback", icon: "feedback" as const, href: "/pending-evaluations", active: false },
+  { label: "360° Feedback", icon: "progress" as const, href: "/admin/cycles", active: false },
+  { label: "Reports", icon: "reports" as const, href: "/admin/staff", active: false },
+  { label: "Analytics", icon: "analytics" as const, href: "/admin", active: false },
+  { label: "Settings", icon: "settings" as const, href: "/admin/settings", active: false },
 ];
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
@@ -57,9 +58,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
         <nav aria-label="Main navigation" className="flex-1 space-y-1">
           {navigationItems.map((item) => (
-            <button
+            <Link
               key={item.label}
-              type="button"
+              href={item.href}
+              onClick={onClose}
               className={cn(
                 "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition",
                 item.active
@@ -70,7 +72,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             >
               <Icon name={item.icon} className="h-5 w-5" />
               {item.label}
-            </button>
+            </Link>
           ))}
         </nav>
 

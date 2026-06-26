@@ -2,12 +2,14 @@
 
 import { Avatar } from "./avatar";
 import { Icon } from "./icons";
+import type { DashboardUser } from "../mock-data";
 
 type HeaderProps = {
   onMenuClick: () => void;
+  user: DashboardUser;
 };
 
-export function Header({ onMenuClick }: HeaderProps) {
+export function Header({ onMenuClick, user }: HeaderProps) {
   return (
     <header className="border-b border-slate-200 bg-white/95 px-4 py-4 backdrop-blur sm:px-6 lg:px-8">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
@@ -21,7 +23,7 @@ export function Header({ onMenuClick }: HeaderProps) {
             <Icon name="menu" className="h-5 w-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-slate-950">Good morning, Sarah!</h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-950">Good morning, {user.name.split(" ")[0] ?? user.name}!</h1>
             <p className="mt-1 text-sm text-slate-600">Here&apos;s what&apos;s happening with your team today.</p>
           </div>
         </div>
@@ -52,10 +54,10 @@ export function Header({ onMenuClick }: HeaderProps) {
               className="flex min-w-0 items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-left transition hover:border-indigo-200 hover:bg-indigo-50 active:scale-[0.99]"
               aria-label="Open user profile menu"
             >
-              <Avatar initials="SJ" className="h-9 w-9 bg-indigo-600" />
+              <Avatar initials={user.initials} className="h-9 w-9 bg-indigo-600" />
               <span className="hidden min-w-0 sm:block">
-                <span className="block truncate text-sm font-semibold text-slate-950">Sarah Johnson</span>
-                <span className="block truncate text-xs text-slate-500">HR Manager</span>
+                <span className="block truncate text-sm font-semibold text-slate-950">{user.name}</span>
+                <span className="block truncate text-xs text-slate-500">{user.role}</span>
               </span>
             </button>
           </div>

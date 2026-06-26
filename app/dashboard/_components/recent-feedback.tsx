@@ -1,23 +1,16 @@
+import type { RecentFeedbackData } from "../mock-data";
 import { Avatar } from "./avatar";
 import { CardHeader, DashboardCard } from "./dashboard-card";
 import { Icon } from "./icons";
 
-type FeedbackProps = {
-  quote: string;
-  reviewerName: string;
-  reviewerRole: string;
-  reviewerInitials: string;
-  rating: number;
-};
-
-export function RecentFeedback({ feedback }: { feedback: FeedbackProps }) {
+export function RecentFeedback({ feedback }: { feedback: RecentFeedbackData }) {
   return (
     <DashboardCard>
       <CardHeader title="Recent Feedback" />
       <div className="p-5">
         <div className="mb-4 flex gap-1 text-amber-400" aria-label={`${feedback.rating} out of 5 stars`}>
           {Array.from({ length: 5 }, (_, index) => (
-            <Icon key={index} name="star" className="h-4 w-4 fill-current" />
+            <Icon key={index} name="star" className={index < feedback.rating ? "h-4 w-4 fill-current" : "h-4 w-4 text-slate-300"} />
           ))}
         </div>
         <blockquote className="text-sm leading-6 text-slate-700">&ldquo;{feedback.quote}&rdquo;</blockquote>

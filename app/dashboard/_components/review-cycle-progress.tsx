@@ -1,13 +1,8 @@
+import Link from "next/link";
+import type { ReviewCycleProgressData } from "../mock-data";
 import { CardHeader, DashboardCard } from "./dashboard-card";
 
-type ProgressProps = {
-  completedPercent: number;
-  completed: number;
-  inProgress: number;
-  notStarted: number;
-};
-
-export function ReviewCycleProgress({ progress }: { progress: ProgressProps }) {
+export function ReviewCycleProgress({ progress }: { progress: ReviewCycleProgressData }) {
   return (
     <DashboardCard>
       <CardHeader title="Review Cycle Progress" />
@@ -42,12 +37,12 @@ export function ReviewCycleProgress({ progress }: { progress: ProgressProps }) {
           </div>
         </dl>
 
-        <button
-          type="button"
-          className="mt-5 w-full rounded-md bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 active:scale-[0.99]"
+        <Link
+          href={progress.href}
+          className="mt-5 flex w-full justify-center rounded-md bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 active:scale-[0.99]"
         >
           View full report
-        </button>
+        </Link>
       </div>
     </DashboardCard>
   );

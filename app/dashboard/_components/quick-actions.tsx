@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { QuickAction } from "../mock-data";
 import { DashboardCard } from "./dashboard-card";
 import { Icon } from "./icons";
@@ -13,7 +14,7 @@ export function QuickActions({ actions }: { actions: QuickAction[] }) {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {actions.map((action) => (
           <DashboardCard key={action.title} className="p-5">
-            <button type="button" className="group flex w-full items-start gap-4 text-left">
+            <Link href={action.href} className="group flex w-full items-start gap-4 text-left focus:outline-none focus:ring-4 focus:ring-indigo-100">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-700 transition group-hover:bg-indigo-600 group-hover:text-white">
                 <Icon name={action.icon} className="h-5 w-5" />
               </span>
@@ -21,7 +22,7 @@ export function QuickActions({ actions }: { actions: QuickAction[] }) {
                 <span className="block text-sm font-semibold text-slate-950">{action.title}</span>
                 <span className="mt-1 block text-sm leading-5 text-slate-500">{action.description}</span>
               </span>
-            </button>
+            </Link>
           </DashboardCard>
         ))}
       </div>
