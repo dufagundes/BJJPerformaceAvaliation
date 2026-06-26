@@ -26,7 +26,7 @@ export default async function TestEmailPage() {
       <div className="mx-auto max-w-3xl space-y-6">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">Test Email</h1>
-          <p className="mt-1 text-sm text-slate-600">Send a one-off test email to any recipient you enter below.</p>
+          <p className="mt-1 text-sm text-slate-600">Send a one-off test email to any recipient you enter below. Requires RESEND_API_KEY and EMAIL_FROM to be configured.</p>
         </div>
 
         <Card>

@@ -9,6 +9,14 @@ type TestEmailResult = {
 function getRequiredEnv(name: string): string {
   const value = process.env[name]?.trim();
   if (!value) {
+    if (name === "RESEND_API_KEY") {
+      throw new Error("Email is not configured. Add RESEND_API_KEY in your environment variables, then redeploy or restart the server.");
+    }
+
+    if (name === "EMAIL_FROM") {
+      throw new Error("Email sender is not configured. Add EMAIL_FROM in your environment variables, then redeploy or restart the server.");
+    }
+
     throw new Error(`Missing required environment variable: ${name}`);
   }
   return value;
