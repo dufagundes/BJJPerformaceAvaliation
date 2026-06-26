@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import Link from "next/link";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { Input } from "../../../components/ui/input";
@@ -41,6 +42,29 @@ type ScorecardWeights = {
 
 const WEIGHT_DECIMAL_SCALE = 6;
 const WEIGHT_SUM_EPSILON = 0.00001;
+
+const adminTools = [
+  {
+    title: "Contacts",
+    description: "Manage parent and student contacts used for evaluation invitations.",
+    href: "/admin/contacts",
+  },
+  {
+    title: "Scorecard Builder",
+    description: "Edit evaluation questions, audiences, options, and scorecard setup.",
+    href: "/admin/scorecard",
+  },
+  {
+    title: "App Settings",
+    description: "Configure evaluation defaults, reminders, and score weights.",
+    href: "/admin/settings",
+  },
+  {
+    title: "Test Email",
+    description: "Send a test message to confirm outbound email delivery.",
+    href: "/admin/test-email",
+  },
+];
 
 function normalizeWeight(value: number): number {
   return Number.parseFloat(Number(value).toFixed(WEIGHT_DECIMAL_SCALE));
@@ -299,6 +323,20 @@ export default function SettingsClient() {
           <h1 className="text-2xl font-semibold text-slate-900">Admin Settings</h1>
           <p className="mt-1 text-sm text-slate-600">Configure default values for future evaluation cycles.</p>
         </div>
+
+        <section className="grid gap-3 sm:grid-cols-2">
+          {adminTools.map((tool) => (
+            <Link
+              key={tool.href}
+              href={tool.href}
+              className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-indigo-100"
+              aria-current={tool.href === "/admin/settings" ? "page" : undefined}
+            >
+              <span className="text-sm font-semibold text-slate-950">{tool.title}</span>
+              <span className="mt-1 block text-sm leading-5 text-slate-600">{tool.description}</span>
+            </Link>
+          ))}
+        </section>
 
         {message ? (
           <div className={`rounded-md px-3 py-2 text-sm ${isError ? "border border-rose-300 bg-rose-50 text-rose-800" : "border border-emerald-300 bg-emerald-50 text-emerald-800"}`}>

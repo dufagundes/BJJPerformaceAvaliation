@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Icon } from "./icons";
 import { cn } from "../../../lib/utils";
 
@@ -10,18 +11,38 @@ type SidebarProps = {
 };
 
 const navigationItems = [
-  { label: "Dashboard", icon: "dashboard" as const, href: "/dashboard", active: true },
-  { label: "Employees", icon: "employees" as const, href: "/admin/staff", active: false },
-  { label: "Reviews", icon: "reviews" as const, href: "/admin/cycles", active: false },
-  { label: "Goals", icon: "goals" as const, href: "/admin/scorecard", active: false },
-  { label: "Feedback", icon: "feedback" as const, href: "/pending-evaluations", active: false },
-  { label: "360° Feedback", icon: "progress" as const, href: "/admin/cycles", active: false },
-  { label: "Reports", icon: "reports" as const, href: "/admin/staff", active: false },
-  { label: "Analytics", icon: "analytics" as const, href: "/admin", active: false },
-  { label: "Settings", icon: "settings" as const, href: "/admin/settings", active: false },
+  { label: "Dashboard", icon: "dashboard" as const, href: "/dashboard" },
+  { label: "Employees", icon: "employees" as const, href: "/admin/staff" },
+  { label: "Evaluations", icon: "reviews" as const, href: "/admin/cycles" },
+  { label: "Feedback", icon: "feedback" as const, href: "/pending-evaluations" },
+  { label: "360° Feedback", icon: "progress" as const, href: "/admin/cycles" },
+  { label: "Reports", icon: "reports" as const, href: "/admin/staff" },
+  { label: "Analytics", icon: "analytics" as const, href: "/admin" },
 ];
 
+const settingsItems = [
+  { label: "Contacts", href: "/admin/contacts" },
+  { label: "Scorecard Builder", href: "/admin/scorecard" },
+  { label: "Settings", href: "/admin/settings" },
+  { label: "Test Email", href: "/admin/test-email" },
+];
+
+function isActivePath(pathname: string, href: string): boolean {
+  if (href === "/dashboard") {
+    return pathname === "/" || pathname === "/dashboard";
+  }
+
+  if (href === "/admin") {
+    return pathname === "/admin" || pathname === "/admin/dashboard";
+  }
+
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
+  const pathname = usePathname();
+  const settingsActive = settingsItems.some((item) => isActivePath(pathname, item.href));
+
   return (
     <>
       <button
@@ -58,22 +79,62 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
         <nav aria-label="Main navigation" className="flex-1 space-y-1">
           {navigationItems.map((item) => (
+            (() => {
+              const active = isActivePath(pathname, item.href);
+
+              return (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  onClick={onClose}
+                  className={cn(
+                    "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition",
+                    active
+                      ? "bg-white text-slate-950 shadow-sm"
+                      : "text-slate-300 hover:bg-white/10 hover:text-white",
+                  )}
+                  aria-current={active ? "page" : undefined}
+                >
+                  <Icon name={item.icon} className="h-5 w-5" />
+                  {item.label}
+                </Link>
+              );
+            })()
+          ))}
+
+          <div className="pt-2">
             <Link
-              key={item.label}
-              href={item.href}
+              href="/admin/settings"
               onClick={onClose}
               className={cn(
                 "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition",
-                item.active
-                  ? "bg-white text-slate-950 shadow-sm"
-                  : "text-slate-300 hover:bg-white/10 hover:text-white",
+                settingsActive ? "bg-white text-slate-950 shadow-sm" : "text-slate-300 hover:bg-white/10 hover:text-white",
               )}
-              aria-current={item.active ? "page" : undefined}
+              aria-current={settingsActive ? "page" : undefined}
             >
-              <Icon name={item.icon} className="h-5 w-5" />
-              {item.label}
+              <Icon name="settings" className="h-5 w-5" />
+              Settings
             </Link>
-          ))}
+            <div className={cn("mt-1 space-y-1 border-l border-white/10 pl-4", settingsActive ? "block" : "hidden lg:block")}>
+              {settingsItems.map((item) => {
+                const active = isActivePath(pathname, item.href);
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={onClose}
+                    className={cn(
+                      "block rounded-md px-3 py-2 text-sm transition",
+                      active ? "bg-white/15 font-semibold text-white" : "text-slate-400 hover:bg-white/10 hover:text-white",
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
         </nav>
 
         <div className="rounded-lg border border-white/10 bg-white/10 p-4 shadow-sm backdrop-blur">

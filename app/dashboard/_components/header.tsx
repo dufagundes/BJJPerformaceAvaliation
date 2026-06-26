@@ -7,9 +7,13 @@ import type { DashboardUser } from "../mock-data";
 type HeaderProps = {
   onMenuClick: () => void;
   user: DashboardUser;
+  title?: string;
+  subtitle?: string;
 };
 
-export function Header({ onMenuClick, user }: HeaderProps) {
+export function Header({ onMenuClick, user, title, subtitle }: HeaderProps) {
+  const firstName = user.name.split(" ")[0] ?? user.name;
+
   return (
     <header className="border-b border-slate-200 bg-white/95 px-4 py-4 backdrop-blur sm:px-6 lg:px-8">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
@@ -23,8 +27,8 @@ export function Header({ onMenuClick, user }: HeaderProps) {
             <Icon name="menu" className="h-5 w-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-slate-950">Good morning, {user.name.split(" ")[0] ?? user.name}!</h1>
-            <p className="mt-1 text-sm text-slate-600">Here&apos;s what&apos;s happening with your team today.</p>
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-950">{title ?? `Good morning, ${firstName}!`}</h1>
+            <p className="mt-1 text-sm text-slate-600">{subtitle ?? "Here's what's happening with your team today."}</p>
           </div>
         </div>
 

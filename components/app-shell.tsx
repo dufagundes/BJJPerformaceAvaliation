@@ -1,56 +1,80 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { EvalProAppShell } from "../app/dashboard/_components/app-shell";
 
-const navItems = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin", label: "Admin" },
-  { href: "/admin/staff", label: "Staff" },
-  { href: "/admin/contacts", label: "Contacts" },
-  { href: "/admin/evaluations/new", label: "New Cycle" },
-  { href: "/admin/cycles", label: "Cycles" },
-  { href: "/admin/settings", label: "Settings" },
-  { href: "/admin/scorecard", label: "Scorecard" },
-  { href: "/evaluate", label: "Evaluation Access" },
-];
+type SessionPayload = {
+  user?: {
+    name?: string | null;
+    role?: string | null;
+  };
+};
+
+const fallbackShellUser = {
+  name: "Admin User",
+  role: "Administrator",
+  initials: "AU",
+};
+
+function initialsFor(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  const first = parts[0]?.[0] ?? "A";
+  const second = parts.length > 1 ? parts[parts.length - 1]?.[0] : parts[0]?.[1];
+  return `${first}${second ?? ""}`.toUpperCase();
+}
 
 export default function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const [shellUser, setShellUser] = useState(fallbackShellUser);
   const isEvaluationForm = /^\/evaluate\/[^/]+/.test(pathname);
   const isStandaloneDashboard = pathname === "/dashboard";
+  const isAuthPage = /^\/admin\/(login|forgot-password|reset-password)/.test(pathname);
 
-  if (isEvaluationForm || isStandaloneDashboard) {
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadSession() {
+      try {
+        const response = await fetch("/api/auth/session", { cache: "no-store" });
+        if (!response.ok) {
+          return;
+        }
+
+        const session = (await response.json()) as SessionPayload;
+        const name = session.user?.name?.trim();
+        if (!name || !isMounted) {
+          return;
+        }
+
+        setShellUser({
+          name,
+          role: session.user?.role === "ADMIN" ? "Administrator" : session.user?.role ?? "Team Member",
+          initials: initialsFor(name),
+        });
+      } catch {
+        // Keep the fallback shell user if session loading fails.
+      }
+    }
+
+    void loadSession();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  if (isEvaluationForm || isStandaloneDashboard || isAuthPage) {
     return <>{children}</>;
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="border-b border-slate-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <Link href="/" className="text-lg font-semibold tracking-tight text-slate-900">
-              GB Staff Performance
-            </Link>
-            <p className="text-sm text-slate-500">Quarterly evaluations, scorecards, and coaching summaries</p>
-          </div>
-
-          <nav className="flex flex-wrap gap-2">
-            {navItems.map((item) => (
-              <Link
-                key={`${item.label}-${item.href}`}
-                href={item.href}
-                className="rounded-full border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-100"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-      </header>
-
+    <EvalProAppShell
+      user={shellUser}
+      title="EvalPro Workspace"
+      subtitle="Manage employees, evaluations, feedback, reports, and administration settings."
+    >
       {children}
-    </div>
+    </EvalProAppShell>
   );
 }
