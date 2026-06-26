@@ -3,6 +3,10 @@ import { isAdminApiRequestAuthorized, unauthorizedAdminResponse } from "../../..
 import { generateFeedback, ReviewCategoryInput } from "../../../../../../lib/generateFeedback";
 import { calculateCycleScorecard } from "../../../../../../lib/weightedScorecard";
 
+function hasScoredResponses(groupName: "Peers" | "Parents/Students", categories: ReviewCategoryInput[]): boolean {
+  return categories.some((category) => category.group === groupName && category.responseCount > 0);
+}
+
 export async function POST(
   request: Request,
   context: { params: Promise<{ cycleId: string }> },
@@ -30,6 +34,17 @@ export async function POST(
         })),
       ),
     );
+
+    const hasPeerResponses = hasScoredResponses("Peers", categories);
+    const hasParentStudentResponses = hasScoredResponses("Parents/Students", categories);
+    if (!hasPeerResponses || !hasParentStudentResponses) {
+      return NextResponse.json(
+        {
+          error: "AI evaluation requires at least one submitted scored response from staff evaluators and one from parent/student evaluators.",
+        },
+        { status: 409 },
+      );
+    }
 
     const strengthsComments = scorecard.qualitativeFeedback
       .filter((entry) => entry.category === "strength")

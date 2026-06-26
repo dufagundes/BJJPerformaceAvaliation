@@ -14,39 +14,6 @@ export type FeedbackResult = {
 
 type FeedbackPayload = Partial<FeedbackResult>;
 
-const FALLBACK_RESULT: FeedbackResult = {
-  reviewMarkdown: [
-    "# Overall Performance Summary",
-    "AI feedback is currently unavailable. The scorecard data is present and should be evaluated with the employee using the category breakdown below.",
-    "",
-    "# Key Strengths",
-    "- Evaluate high-scoring categories and reinforced behaviors from evaluator comments.",
-    "",
-    "# Development Opportunities",
-    "- Prioritize consistently lower-scoring categories with clear coaching expectations.",
-    "",
-    "# Manager Feedback",
-    "Your contributions are valued, and we will use this evaluation to build a practical growth plan together.",
-    "",
-    "# Development Action Plan",
-    "- Goal: Improve targeted competencies identified in scorecard results",
-    "- Expected Behavior: Demonstrate consistent improvement across weekly observations",
-    "- Specific Action Steps: Practice, coaching check-ins, and measurable milestones",
-    "- Manager Support: Ongoing coaching and observation feedback",
-    "- Timeline: 30 Days, 60-90 Days, 3-6 Months",
-    "",
-    "# Future Growth and Potential",
-    "Leadership readiness should be based on sustained performance and consistency in key categories.",
-    "",
-    "# Meeting Talking Points",
-    "- Recognition points",
-    "- Coaching points",
-    "- Priority development areas",
-    "- Employee commitments",
-    "- Manager commitments",
-  ].join("\n"),
-};
-
 const SYSTEM_PROMPT =
   "You are an experienced direct manager writing a professional employee evaluation. Be supportive, objective, specific, and growth-oriented. Always respond in valid JSON only.";
 
@@ -170,16 +137,17 @@ function tryParseJson(text: string): FeedbackPayload | null {
 
 function toFeedbackResult(parsed: FeedbackPayload | null): FeedbackResult {
   if (!parsed) {
-    return FALLBACK_RESULT;
+    throw new Error(
+      "AI returned a response that could not be parsed. Please try generating the evaluation again.",
+    );
   }
 
-  const reviewMarkdown =
-    typeof parsed.reviewMarkdown === "string" && parsed.reviewMarkdown.trim().length > 0
-      ? parsed.reviewMarkdown.trim()
-      : FALLBACK_RESULT.reviewMarkdown;
+  if (typeof parsed.reviewMarkdown !== "string" || parsed.reviewMarkdown.trim().length === 0) {
+    throw new Error("AI returned an empty evaluation. Please try generating the evaluation again.");
+  }
 
   return {
-    reviewMarkdown,
+    reviewMarkdown: parsed.reviewMarkdown.trim(),
   };
 }
 
@@ -193,7 +161,9 @@ export async function generateFeedback(
 ): Promise<FeedbackResult> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    return FALLBACK_RESULT;
+    throw new Error(
+      "AI feedback is not configured. Add ANTHROPIC_API_KEY in your environment variables, then redeploy or restart the server.",
+    );
   }
 
   const client = new Anthropic({ apiKey });
@@ -224,7 +194,13 @@ export async function generateFeedback(
     const text = extractTextFromClaudeResponse(response.content);
     const parsed = tryParseJson(text);
     return toFeedbackResult(parsed);
-  } catch {
-    return FALLBACK_RESULT;
+  } catch (error) {
+    if (error instanceof Error && error.message.startsWith("AI ")) {
+      throw error;
+    }
+
+    throw new Error(
+      "Unable to generate AI feedback from Anthropic. Check ANTHROPIC_API_KEY, model access, and try again.",
+    );
   }
 }

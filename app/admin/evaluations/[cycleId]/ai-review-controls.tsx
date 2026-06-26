@@ -20,6 +20,10 @@ type SavedReviewPayload = {
   savedAt: string;
 };
 
+function isUnavailableFallback(value: string): boolean {
+  return value.includes("AI feedback is currently unavailable");
+}
+
 export default function AiReviewControls({ cycleId }: Props) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [reviewMarkdown, setReviewMarkdown] = useState("");
@@ -36,7 +40,11 @@ export default function AiReviewControls({ cycleId }: Props) {
       }
 
       const saved = JSON.parse(raw) as Partial<SavedReviewPayload>;
-      if (typeof saved.reviewMarkdown === "string" && saved.reviewMarkdown.trim().length > 0) {
+      if (
+        typeof saved.reviewMarkdown === "string" &&
+        saved.reviewMarkdown.trim().length > 0 &&
+        !isUnavailableFallback(saved.reviewMarkdown)
+      ) {
         setReviewMarkdown(saved.reviewMarkdown);
       }
       if (typeof saved.savedAt === "string") {
@@ -50,6 +58,7 @@ export default function AiReviewControls({ cycleId }: Props) {
   async function handleGenerate() {
     setIsGenerating(true);
     setError("");
+    setReviewMarkdown("");
 
     try {
       const response = await fetch(`/api/admin/evaluations/${cycleId}/ai-feedback`, {
@@ -137,7 +146,11 @@ export default function AiReviewControls({ cycleId }: Props) {
       }
 
       const saved = JSON.parse(raw) as Partial<SavedReviewPayload>;
-      if (typeof saved.reviewMarkdown !== "string" || saved.reviewMarkdown.trim().length === 0) {
+      if (
+        typeof saved.reviewMarkdown !== "string" ||
+        saved.reviewMarkdown.trim().length === 0 ||
+        isUnavailableFallback(saved.reviewMarkdown)
+      ) {
         setError("Saved AI evaluation is invalid. Please generate a new one.");
         return;
       }
