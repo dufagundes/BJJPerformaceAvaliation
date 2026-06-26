@@ -13,11 +13,10 @@ type SidebarProps = {
 const navigationItems = [
   { label: "Dashboard", icon: "dashboard" as const, href: "/dashboard" },
   { label: "Employees", icon: "employees" as const, href: "/admin/staff" },
-  { label: "Evaluations", icon: "reviews" as const, href: "/admin/cycles" },
+  { label: "Evaluation Cycle", icon: "reviews" as const, href: "/admin/cycles" },
   { label: "Feedback", icon: "feedback" as const, href: "/pending-evaluations" },
   { label: "360° Feedback", icon: "progress" as const, href: "/admin/cycles" },
   { label: "Reports", icon: "reports" as const, href: "/admin/staff" },
-  { label: "Analytics", icon: "analytics" as const, href: "/admin" },
 ];
 
 const settingsItems = [
