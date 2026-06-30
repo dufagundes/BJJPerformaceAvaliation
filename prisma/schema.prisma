@@ -51,6 +51,7 @@ enum ContactType {
 
 model User {
   id        String      @id @default(uuid()) @db.Uuid
+  schoolId  String      @db.Uuid
   name      String
   email     String      @unique
   passwordHash String
@@ -62,6 +63,23 @@ model User {
   createdCycles   EvaluationCycle[] @relation("CycleCreatedBy")
   staffProfile    StaffMember?
   reviewAssignments Reviewer[]
+  school          School @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+
+  @@index([schoolId])
+  @@index([isActive])
+}
+
+model School {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users             User[]
+  contacts          Contact[]
+  evaluationCycles  EvaluationCycle[]
+  adminConfigs      AdminConfig[]
 
   @@index([isActive])
 }
@@ -80,29 +98,37 @@ model StaffMember {
 
 model Contact {
   id        String   @id @default(uuid()) @db.Uuid
+  schoolId  String   @db.Uuid
   type      ContactType
   name      String
-  email     String   @unique
+  email     String
   studentName String?
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
 
+  school School @relation(fields: [schoolId], references: [id], onDelete: Restrict)
   reviewAssignments Reviewer[]
 
+  @@index([schoolId])
   @@index([isActive])
   @@index([email])
+  @@unique([schoolId, email])
 }
 
 model AdminConfig {
-  id                          String @id @default("default")
+  id                          String @id @default(uuid()) @db.Uuid
+  schoolId                    String @unique @db.Uuid
   defaultCycleDurationDays    Int    @default(15)
   defaultContactsToInvite     Int    @default(5)
   reminderScheduleDaysBefore  Int[]  @default([3, 1])
   updatedAt                   DateTime @updatedAt
+
+  school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
 }
 
 model EvaluationCycle {
   id        String               @id @default(uuid()) @db.Uuid
+  schoolId  String               @db.Uuid
   subjectId String               @db.Uuid
   description String
   status    EvaluationCycleStatus @default(IN_PROGRESS)
@@ -112,8 +138,10 @@ model EvaluationCycle {
 
   subject    User       @relation("CycleSubject", fields: [subjectId], references: [id], onDelete: Restrict)
   creator    User       @relation("CycleCreatedBy", fields: [createdBy], references: [id], onDelete: Restrict)
+  school     School     @relation(fields: [schoolId], references: [id], onDelete: Restrict)
   reviewers  Reviewer[]
 
+  @@index([schoolId])
   @@index([subjectId])
   @@index([createdBy])
   @@index([status])

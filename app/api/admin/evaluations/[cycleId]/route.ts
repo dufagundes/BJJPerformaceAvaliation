@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { isAdminApiRequestAuthorized, unauthorizedAdminResponse } from "../../../../../lib/adminAuth";
+import { getAdminSession, unauthorizedAdminResponse } from "../../../../../lib/adminAuth";
 import { prisma } from "../../../../../lib/prisma";
 
 function getDaysRemaining(deadline: Date): number {
@@ -7,10 +7,11 @@ function getDaysRemaining(deadline: Date): number {
 }
 
 export async function GET(
-  request: Request,
+  _request: Request,
   context: { params: Promise<{ cycleId: string }> },
 ) {
-  if (!(await isAdminApiRequestAuthorized(request))) {
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
     return unauthorizedAdminResponse();
   }
 
@@ -19,8 +20,8 @@ export async function GET(
     return NextResponse.json({ error: "cycleId is required." }, { status: 400 });
   }
 
-  const cycle = await prisma.evaluationCycle.findUnique({
-    where: { id: cycleId },
+  const cycle = await prisma.evaluationCycle.findFirst({
+    where: { id: cycleId, schoolId: adminSession.schoolId },
     select: {
       id: true,
       status: true,

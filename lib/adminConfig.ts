@@ -1,10 +1,8 @@
 import { prisma } from "./prisma";
 
-export const ADMIN_CONFIG_ID = "default";
-
-export async function getOrCreateAdminConfig() {
+export async function getOrCreateAdminConfig(schoolId: string) {
   const existing = await prisma.adminConfig.findUnique({
-    where: { id: ADMIN_CONFIG_ID },
+    where: { schoolId },
   });
 
   if (existing) {
@@ -13,7 +11,7 @@ export async function getOrCreateAdminConfig() {
 
   return prisma.adminConfig.create({
     data: {
-      id: ADMIN_CONFIG_ID,
+      schoolId,
       defaultCycleDurationDays: 15,
       defaultContactsToInvite: 5,
       reminderScheduleDaysBefore: [3, 1],

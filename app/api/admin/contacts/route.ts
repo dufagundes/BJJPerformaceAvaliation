@@ -1,6 +1,6 @@
 import { ContactType, Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { isAdminApiRequestAuthorized, unauthorizedAdminResponse } from "../../../../lib/adminAuth";
+import { getAdminSession, unauthorizedAdminResponse } from "../../../../lib/adminAuth";
 import { prisma } from "../../../../lib/prisma";
 
 type CreateContactPayload = {
@@ -22,13 +22,15 @@ function normalizeType(input: string): ContactType | null {
   return null;
 }
 
-export async function GET(request: Request) {
-  if (!(await isAdminApiRequestAuthorized(request))) {
+export async function GET(_request: Request) {
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
     return unauthorizedAdminResponse();
   }
 
   try {
     const contacts = await prisma.contact.findMany({
+      where: { schoolId: adminSession.schoolId },
       orderBy: [{ name: "asc" }],
       select: {
         id: true,
@@ -48,7 +50,8 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  if (!(await isAdminApiRequestAuthorized(request))) {
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
     return unauthorizedAdminResponse();
   }
 
@@ -76,6 +79,7 @@ export async function POST(request: Request) {
   try {
     const contact = await prisma.contact.create({
       data: {
+        schoolId: adminSession.schoolId,
         type,
         name,
         email,

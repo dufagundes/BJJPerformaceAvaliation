@@ -8,6 +8,7 @@ type SessionPayload = {
   user?: {
     name?: string | null;
     role?: string | null;
+    schoolName?: string | null;
   };
 };
 
@@ -27,6 +28,7 @@ function initialsFor(name: string): string {
 export default function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [shellUser, setShellUser] = useState(fallbackShellUser);
+  const [schoolName, setSchoolName] = useState<string | null>(null);
   const isEvaluationForm = /^\/evaluate\/[^/]+/.test(pathname);
   const isStandaloneDashboard = pathname === "/dashboard";
   const isAuthPage = /^\/admin\/(login|forgot-password|reset-password)/.test(pathname);
@@ -46,6 +48,8 @@ export default function AppShell({ children }: { children: ReactNode }) {
         if (!name || !isMounted) {
           return;
         }
+
+        setSchoolName(session.user?.schoolName?.trim() || null);
 
         setShellUser({
           name,
@@ -72,7 +76,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
     <EvalProAppShell
       user={shellUser}
       title="EvalPro Workspace"
-      subtitle="Manage employees, evaluations, feedback, reports, and administration settings."
+      subtitle={schoolName ? `Manage evaluations for ${schoolName}.` : "Manage employees, evaluations, feedback, reports, and administration settings."}
     >
       {children}
     </EvalProAppShell>

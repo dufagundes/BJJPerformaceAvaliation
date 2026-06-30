@@ -1,6 +1,6 @@
 import { ContactType, Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { isAdminApiRequestAuthorized, unauthorizedAdminResponse } from "../../../../../lib/adminAuth";
+import { getAdminSession, unauthorizedAdminResponse } from "../../../../../lib/adminAuth";
 import { prisma } from "../../../../../lib/prisma";
 
 type UpdateContactPayload = {
@@ -30,7 +30,8 @@ export async function PATCH(
   request: Request,
   context: { params: Promise<{ contactId: string }> },
 ) {
-  if (!(await isAdminApiRequestAuthorized(request))) {
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
     return unauthorizedAdminResponse();
   }
 
@@ -56,8 +57,8 @@ export async function PATCH(
     return NextResponse.json({ error: "Invalid contact type." }, { status: 400 });
   }
 
-  const existing = await prisma.contact.findUnique({
-    where: { id: contactId },
+  const existing = await prisma.contact.findFirst({
+    where: { id: contactId, schoolId: adminSession.schoolId },
     select: { id: true, type: true },
   });
 

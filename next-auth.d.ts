@@ -7,6 +7,8 @@ declare module "next-auth" {
     user: {
       id: string;
       role: UserRole;
+      schoolId: string;
+      schoolName?: string | null;
       name?: string | null;
       email?: string | null;
     };
@@ -14,11 +16,15 @@ declare module "next-auth" {
 
   interface User {
     role: UserRole;
+    schoolId: string;
+    schoolName?: string | null;
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
     role?: UserRole;
+    schoolId?: string;
+    schoolName?: string | null;
   }
 }

@@ -1,17 +1,19 @@
 import { NextResponse } from "next/server";
-import { isAdminApiRequestAuthorized, unauthorizedAdminResponse } from "../../../../../lib/adminAuth";
+import { getAdminSession, unauthorizedAdminResponse } from "../../../../../lib/adminAuth";
 import { getOrCreateAdminConfig } from "../../../../../lib/adminConfig";
 import { prisma } from "../../../../../lib/prisma";
 
-export async function GET(request: Request) {
-  if (!(await isAdminApiRequestAuthorized(request))) {
+export async function GET(_request: Request) {
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
     return unauthorizedAdminResponse();
   }
 
   const [config, staffMembers, contactsCount] = await Promise.all([
-    getOrCreateAdminConfig(),
+    getOrCreateAdminConfig(adminSession.schoolId),
     prisma.user.findMany({
       where: {
+        schoolId: adminSession.schoolId,
         role: "STAFF",
         isActive: true,
         staffProfile: {
@@ -32,7 +34,7 @@ export async function GET(request: Request) {
         },
       },
     }),
-    prisma.contact.count({ where: { isActive: true } }),
+    prisma.contact.count({ where: { schoolId: adminSession.schoolId, isActive: true } }),
   ]);
 
   return NextResponse.json(

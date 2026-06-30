@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 
-type LoadState = "loading" | "ready" | "error";
+type LoadState = "loading" | "ready" | "invalid" | "used" | "expired" | "error";
 
 export default function EvaluationIntroPage({
   token,
@@ -31,6 +31,21 @@ export default function EvaluationIntroPage({
         console.log(`[intro.tsx] API response status: ${response.status}`);
 
         if (!isMounted) return;
+
+        if (response.status === 404) {
+          setLoadState("invalid");
+          return;
+        }
+
+        if (response.status === 409) {
+          setLoadState("used");
+          return;
+        }
+
+        if (response.status === 410) {
+          setLoadState("expired");
+          return;
+        }
 
         if (!response.ok) {
           const errorBody = await response.text();
@@ -73,6 +88,21 @@ export default function EvaluationIntroPage({
     window.location.hash = "#start-evaluation";
   }, []);
 
+  function renderMessage(title: string, message: string) {
+    return (
+      <div className="mx-auto max-w-2xl">
+        <Card>
+          <CardHeader>
+            <CardTitle>{title}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-slate-600">{message}</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (loadState === "loading") {
     return (
       <div className="mx-auto max-w-2xl">
@@ -85,20 +115,25 @@ export default function EvaluationIntroPage({
     );
   }
 
+  if (loadState === "invalid") {
+    return renderMessage("Invalid Link", "This evaluation link is invalid.");
+  }
+
+  if (loadState === "used") {
+    return renderMessage(
+      "Already Submitted",
+      "This evaluation has already been submitted. Thank you for your participation.",
+    );
+  }
+
+  if (loadState === "expired") {
+    return renderMessage("Evaluation Expired", "This evaluation link has expired.");
+  }
+
   if (loadState === "error") {
-    return (
-      <div className="mx-auto max-w-2xl">
-        <Card>
-          <CardHeader>
-            <CardTitle>Unable to Load Evaluation</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-slate-600">
-              There was an error loading your evaluation. Please check your link and try again.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+    return renderMessage(
+      "Unable to Load Evaluation",
+      "There was an error loading your evaluation. Please check your link and try again.",
     );
   }
 

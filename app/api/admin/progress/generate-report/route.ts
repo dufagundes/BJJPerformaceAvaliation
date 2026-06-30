@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { isAdminApiRequestAuthorized, unauthorizedAdminResponse } from "../../../../../lib/adminAuth";
+import { getAdminSession, unauthorizedAdminResponse } from "../../../../../lib/adminAuth";
 import { calculateCycleScorecard } from "../../../../../lib/weightedScorecard";
 import { prisma } from "../../../../../lib/prisma";
 
@@ -9,7 +9,8 @@ type GenerateReportPayload = {
 };
 
 export async function POST(request: Request) {
-  if (!(await isAdminApiRequestAuthorized(request))) {
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
     return unauthorizedAdminResponse();
   }
 
@@ -27,8 +28,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "cycleId and staffMemberId are required." }, { status: 400 });
   }
 
-  const cycle = await prisma.evaluationCycle.findUnique({
-    where: { id: cycleId },
+  const cycle = await prisma.evaluationCycle.findFirst({
+    where: { id: cycleId, schoolId: adminSession.schoolId },
     select: {
       id: true,
       subjectId: true,

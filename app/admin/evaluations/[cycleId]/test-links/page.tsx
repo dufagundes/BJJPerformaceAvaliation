@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../../components/ui/card";
-import { hasAdminSession } from "../../../../../lib/adminAuth";
+import { getAdminSession } from "../../../../../lib/adminAuth";
 import { prisma } from "../../../../../lib/prisma";
 import { RefreshPageButton, ResendEmailButton } from "./link-action-buttons";
 
@@ -26,8 +26,8 @@ export default async function CycleTestLinksPage({
 }: {
   params: Promise<{ cycleId: string }>;
 }) {
-  const authorized = await hasAdminSession();
-  if (!authorized) {
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
     return (
       <main className="px-4 py-8">
         <div className="mx-auto max-w-4xl">
@@ -64,8 +64,8 @@ export default async function CycleTestLinksPage({
     | null = null;
 
   try {
-    cycle = await prisma.evaluationCycle.findUnique({
-      where: { id: cycleId },
+    cycle = await prisma.evaluationCycle.findFirst({
+      where: { id: cycleId, schoolId: adminSession.schoolId },
       select: {
         id: true,
         description: true,

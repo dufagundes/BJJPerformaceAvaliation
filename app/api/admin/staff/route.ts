@@ -1,14 +1,20 @@
 import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { createHash, randomUUID } from "crypto";
-import { isAdminApiRequestAuthorized, unauthorizedAdminResponse } from "../../../../lib/adminAuth";
+import { getAdminSession, unauthorizedAdminResponse } from "../../../../lib/adminAuth";
 import { prisma } from "../../../../lib/prisma";
 import { STAFF_ROLES } from "../../../../lib/staffRoles";
 
 export async function GET() {
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
+    return unauthorizedAdminResponse();
+  }
+
   try {
     const staffMembers = await prisma.user.findMany({
       where: {
+        schoolId: adminSession.schoolId,
         role: "STAFF",
         isActive: true,
       },
@@ -40,7 +46,8 @@ type CreateStaffPayload = {
 };
 
 export async function POST(request: Request) {
-  if (!(await isAdminApiRequestAuthorized(request))) {
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
     return unauthorizedAdminResponse();
   }
 
@@ -68,6 +75,7 @@ export async function POST(request: Request) {
 
     const staffMember = await prisma.user.create({
       data: {
+        schoolId: adminSession.schoolId,
         name,
         email,
         passwordHash,

@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
-import { isAdminApiRequestAuthorized, unauthorizedAdminResponse } from "../../../../lib/adminAuth";
+import { getAdminSession, unauthorizedAdminResponse } from "../../../../lib/adminAuth";
 import { prisma } from "../../../../lib/prisma";
 import { calculateCycleScorecard } from "../../../../lib/weightedScorecard";
 
 export async function GET(request: Request) {
-  if (!(await isAdminApiRequestAuthorized(request))) {
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
     return unauthorizedAdminResponse();
   }
 
@@ -16,8 +17,8 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "cycleId and staffMemberId are required." }, { status: 400 });
   }
 
-  const cycle = await prisma.evaluationCycle.findUnique({
-    where: { id: cycleId },
+  const cycle = await prisma.evaluationCycle.findFirst({
+    where: { id: cycleId, schoolId: adminSession.schoolId },
     select: {
       id: true,
       subjectId: true,

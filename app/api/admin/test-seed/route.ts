@@ -10,6 +10,13 @@ export async function POST() {
       return Response.json({ error: "Test endpoint not available in production" }, { status: 403 });
     }
 
+    const school = await prisma.school.upsert({
+      where: { name: "Default School" },
+      update: { isActive: true },
+      create: { name: "Default School", isActive: true },
+      select: { id: true },
+    });
+
     // 1. Create or get test admin
     let testAdmin = await prisma.user.findUnique({
       where: { email: "admin@example.com" },
@@ -18,6 +25,7 @@ export async function POST() {
     if (!testAdmin) {
       testAdmin = await prisma.user.create({
         data: {
+          schoolId: school.id,
           name: "Test Admin",
           email: "admin@example.com",
           role: "ADMIN",
@@ -35,6 +43,7 @@ export async function POST() {
     if (!staffMember) {
       staffMember = await prisma.user.create({
         data: {
+          schoolId: school.id,
           name: "Test Staff Member",
           email: "test-staff@example.com",
           role: "STAFF",
@@ -65,11 +74,12 @@ export async function POST() {
 
     // 2. Create test contacts (parent/student reviewers)
     let testContact1 = await prisma.contact.findUnique({
-      where: { email: "parent1@example.com" },
+      where: { schoolId_email: { schoolId: school.id, email: "parent1@example.com" } },
     });
     if (!testContact1) {
       testContact1 = await prisma.contact.create({
         data: {
+          schoolId: school.id,
           type: "PARENT",
           name: "Test Parent 1",
           email: "parent1@example.com",
@@ -80,11 +90,12 @@ export async function POST() {
     }
 
     let testContact2 = await prisma.contact.findUnique({
-      where: { email: "student1@example.com" },
+      where: { schoolId_email: { schoolId: school.id, email: "student1@example.com" } },
     });
     if (!testContact2) {
       testContact2 = await prisma.contact.create({
         data: {
+          schoolId: school.id,
           type: "STUDENT",
           name: "Test Student",
           email: "student1@example.com",
@@ -100,6 +111,7 @@ export async function POST() {
     if (!testPeer1) {
       testPeer1 = await prisma.user.create({
         data: {
+          schoolId: school.id,
           name: "Test Peer 1",
           email: "peer1@example.com",
           role: "STAFF",
@@ -115,6 +127,7 @@ export async function POST() {
     if (!testPeer2) {
       testPeer2 = await prisma.user.create({
         data: {
+          schoolId: school.id,
           name: "Test Peer 2",
           email: "peer2@example.com",
           role: "STAFF",
@@ -130,6 +143,7 @@ export async function POST() {
 
     const cycle = await prisma.evaluationCycle.create({
       data: {
+        schoolId: school.id,
         description: "Test Evaluation Cycle - Ready for Testing",
         subjectId: staffMember.id,
         createdBy: testAdmin.id,

@@ -1,6 +1,6 @@
 import { ContactType } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { isAdminApiRequestAuthorized, unauthorizedAdminResponse } from "../../../../../lib/adminAuth";
+import { getAdminSession, unauthorizedAdminResponse } from "../../../../../lib/adminAuth";
 import { prisma } from "../../../../../lib/prisma";
 
 type ImportContactRow = {
@@ -15,7 +15,8 @@ type ImportPayload = {
 };
 
 export async function POST(request: Request) {
-  if (!(await isAdminApiRequestAuthorized(request))) {
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
     return unauthorizedAdminResponse();
   }
 
@@ -40,7 +41,7 @@ export async function POST(request: Request) {
 
   const emails = Array.from(new Set(normalizedRows.map((row) => row.email).filter((email) => email.length > 0)));
   const existing = await prisma.contact.findMany({
-    where: { email: { in: emails } },
+    where: { schoolId: adminSession.schoolId, email: { in: emails } },
     select: { email: true },
   });
 
@@ -53,6 +54,7 @@ export async function POST(request: Request) {
     email: string;
     studentName: string | null;
     isActive: boolean;
+    schoolId: string;
   }>;
 
   for (const row of normalizedRows) {
@@ -83,6 +85,7 @@ export async function POST(request: Request) {
       email: row.email,
       studentName: row.type === "PARENT" ? row.studentName ?? null : null,
       isActive: true,
+      schoolId: adminSession.schoolId,
     });
   }
 

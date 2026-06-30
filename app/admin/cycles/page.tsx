@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
-import { hasAdminSession } from "../../../lib/adminAuth";
+import { getAdminSession } from "../../../lib/adminAuth";
 import { prisma } from "../../../lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -45,8 +45,8 @@ function getStatusClasses(status: CycleRow["status"]) {
 }
 
 export default async function AdminCyclesPage() {
-  const authorized = await hasAdminSession();
-  if (!authorized) {
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
     return (
       <main className="min-h-screen bg-slate-50 px-4 py-8">
         <div className="mx-auto max-w-3xl">
@@ -72,6 +72,7 @@ export default async function AdminCyclesPage() {
   try {
     await prisma.evaluationCycle.updateMany({
       where: {
+        schoolId: adminSession.schoolId,
         status: {
           in: ["IN_PROGRESS", "OVERDUE"],
         },
@@ -88,6 +89,7 @@ export default async function AdminCyclesPage() {
     });
 
     cycles = (await prisma.evaluationCycle.findMany({
+      where: { schoolId: adminSession.schoolId },
       orderBy: [{ createdAt: "desc" }],
       select: {
         id: true,

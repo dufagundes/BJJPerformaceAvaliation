@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../../components/ui/card";
-import { hasAdminSession } from "../../../../../lib/adminAuth";
+import { getAdminSession } from "../../../../../lib/adminAuth";
 import { prisma } from "../../../../../lib/prisma";
 import ProgressDashboardClient from "./progress-dashboard-client";
 
@@ -16,8 +16,8 @@ function getQuarter(date: Date): number {
 }
 
 export default async function ProgressPage({ params }: { params: Promise<Params> }) {
-  const authorized = await hasAdminSession();
-  if (!authorized) {
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
     return (
       <main className="min-h-screen bg-slate-50 px-4 py-8">
         <div className="mx-auto max-w-3xl">
@@ -40,12 +40,12 @@ export default async function ProgressPage({ params }: { params: Promise<Params>
   const { cycleId, staffMemberId } = await params;
 
   const [cycle, staffMember] = await Promise.all([
-    prisma.evaluationCycle.findUnique({
-      where: { id: cycleId },
+    prisma.evaluationCycle.findFirst({
+      where: { id: cycleId, schoolId: adminSession.schoolId },
       select: { id: true, deadline: true },
     }),
-    prisma.user.findUnique({
-      where: { id: staffMemberId },
+    prisma.user.findFirst({
+      where: { id: staffMemberId, schoolId: adminSession.schoolId },
       select: { id: true, name: true, role: true },
     }),
   ]);

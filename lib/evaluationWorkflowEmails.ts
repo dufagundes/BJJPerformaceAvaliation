@@ -54,24 +54,32 @@ export function buildInvitationEmailTemplate(input: InviteTemplateInput): MailTe
   const deadlineDate = formatDate(input.deadline);
 
   return {
-    subject: `You're invited to evaluate ${input.subjectName}`,
+    subject: `Share feedback for ${input.subjectName}`,
     html: `
-      <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6; max-width: 640px; margin: 0 auto;">
-        <p>Hi ${input.reviewerName},</p>
-        <p>You've been selected to provide feedback for <strong>${input.subjectName}</strong>.</p>
-        <p>Deadline: <strong>${deadlineDate}</strong></p>
-        <p>
-          <a href="${reviewLink}" style="display:inline-block;background:#C8102E;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:8px;font-weight:700;">
-            Fill Out Evaluation
-          </a>
-        </p>
-        <p style="font-size: 14px; color: #4b5563;">
-          This link is personal and expires on ${deadlineDate}. No account needed.
-        </p>
-        <p style="font-size: 13px; color: #6b7280;">${reviewLink}</p>
+      <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6; max-width: 640px; margin: 0 auto; background: #ffffff;">
+        <div style="border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;">
+          <div style="background: #111827; padding: 28px 32px; color: #ffffff;">
+            <p style="margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #bfdbfe;">Performance Evaluation</p>
+            <h1 style="margin: 0; font-size: 24px; line-height: 1.25;">Your perspective can help ${input.subjectName} grow</h1>
+          </div>
+          <div style="padding: 28px 32px;">
+            <p style="margin: 0 0 16px;">Hi ${input.reviewerName},</p>
+            <p style="margin: 0 0 16px;">You have been invited to share feedback for <strong>${input.subjectName}</strong>. Families, students, and colleagues each see different parts of a school community, and your observations help create a fairer, more useful picture.</p>
+            <p style="margin: 0 0 20px;">The evaluation is short, confidential, and focused on practical feedback that can support professional growth.</p>
+            <div style="margin: 0 0 24px; padding: 14px 16px; border-left: 4px solid #C8102E; background: #f9fafb; color: #374151;">
+              <strong>Deadline:</strong> ${deadlineDate}<br />
+              No account is required. This invitation is personal to you.
+            </div>
+            <p style="margin: 0;">
+              <a href="${reviewLink}" style="display:inline-block;background:#C8102E;color:#ffffff;text-decoration:none;padding:13px 20px;border-radius:8px;font-weight:700;">
+                Fill Out Evaluation
+              </a>
+            </p>
+          </div>
+        </div>
       </div>
     `,
-    text: `Hi ${input.reviewerName},\n\nYou've been selected to provide feedback for ${input.subjectName}.\nDeadline: ${deadlineDate}\n\nFill Out Evaluation: ${reviewLink}\n\nThis link is personal and expires on ${deadlineDate}. No account needed.`,
+    text: `Hi ${input.reviewerName},\n\nYou have been invited to share feedback for ${input.subjectName}. Families, students, and colleagues each see different parts of a school community, and your observations help create a fairer, more useful picture.\n\nDeadline: ${deadlineDate}\n\nFill Out Evaluation: ${reviewLink}\n\nThis invitation is personal to you. No account is required.`,
   };
 }
 
@@ -83,22 +91,29 @@ export function buildReminderEmailTemplate(input: ReminderTemplateInput): MailTe
   return {
     subject: `Reminder: Your evaluation closes in ${label}`,
     html: `
-      <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6; max-width: 640px; margin: 0 auto;">
-        <p>Hi ${input.reviewerName},</p>
-        <p>This is a reminder that your evaluation for <strong>${input.subjectName}</strong> closes in <strong>${label}</strong>.</p>
-        <p>Deadline: <strong>${deadlineDate}</strong></p>
-        <p>
-          <a href="${reviewLink}" style="display:inline-block;background:#C8102E;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:8px;font-weight:700;">
-            Fill Out Evaluation
-          </a>
-        </p>
-        <p style="font-size: 14px; color: #4b5563;">
-          This link is personal and expires on ${deadlineDate}. No account needed.
-        </p>
-        <p style="font-size: 13px; color: #6b7280;">${reviewLink}</p>
+      <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6; max-width: 640px; margin: 0 auto; background: #ffffff;">
+        <div style="border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;">
+          <div style="background: #111827; padding: 28px 32px; color: #ffffff;">
+            <p style="margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #bfdbfe;">Evaluation Reminder</p>
+            <h1 style="margin: 0; font-size: 24px; line-height: 1.25;">Feedback for ${input.subjectName} closes in ${label}</h1>
+          </div>
+          <div style="padding: 28px 32px;">
+            <p style="margin: 0 0 16px;">Hi ${input.reviewerName},</p>
+            <p style="margin: 0 0 16px;">This is a reminder to complete your confidential evaluation for <strong>${input.subjectName}</strong>. Your experience can help the school recognize strengths and identify where support would make the biggest difference.</p>
+            <div style="margin: 0 0 24px; padding: 14px 16px; border-left: 4px solid #C8102E; background: #f9fafb; color: #374151;">
+              <strong>Deadline:</strong> ${deadlineDate}<br />
+              No account is required. This invitation is personal to you.
+            </div>
+            <p style="margin: 0;">
+              <a href="${reviewLink}" style="display:inline-block;background:#C8102E;color:#ffffff;text-decoration:none;padding:13px 20px;border-radius:8px;font-weight:700;">
+                Fill Out Evaluation
+              </a>
+            </p>
+          </div>
+        </div>
       </div>
     `,
-    text: `Hi ${input.reviewerName},\n\nReminder: your evaluation for ${input.subjectName} closes in ${label}.\nDeadline: ${deadlineDate}\n\nFill Out Evaluation: ${reviewLink}\n\nThis link is personal and expires on ${deadlineDate}. No account needed.`,
+    text: `Hi ${input.reviewerName},\n\nReminder: your confidential evaluation for ${input.subjectName} closes in ${label}. Your experience can help the school recognize strengths and identify where support would make the biggest difference.\n\nDeadline: ${deadlineDate}\n\nFill Out Evaluation: ${reviewLink}\n\nThis invitation is personal to you. No account is required.`,
   };
 }
 

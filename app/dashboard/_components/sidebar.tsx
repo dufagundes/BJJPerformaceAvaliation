@@ -21,6 +21,7 @@ const navigationItems = [
 
 const settingsItems = [
   { label: "Contacts", href: "/admin/contacts" },
+  { label: "Schools & Admins", href: "/admin/schools" },
   { label: "Scorecard Builder", href: "/admin/scorecard" },
   { label: "Settings", href: "/admin/settings" },
   { label: "Test Email", href: "/admin/test-email" },

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { isAdminApiRequestAuthorized, unauthorizedAdminResponse } from "../../../../../../lib/adminAuth";
+import { getAdminSession, unauthorizedAdminResponse } from "../../../../../../lib/adminAuth";
 import { sendEvaluationInvitationEmail, sendEvaluationReminderEmail } from "../../../../../../lib/evaluationWorkflowEmails";
 import { prisma } from "../../../../../../lib/prisma";
 
@@ -11,7 +11,8 @@ export async function POST(
   request: Request,
   context: { params: Promise<{ cycleId: string }> },
 ) {
-  if (!(await isAdminApiRequestAuthorized(request))) {
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
     return unauthorizedAdminResponse();
   }
 
@@ -30,8 +31,8 @@ export async function POST(
     template = "reminder";
   }
 
-  const cycle = await prisma.evaluationCycle.findUnique({
-    where: { id: cycleId },
+  const cycle = await prisma.evaluationCycle.findFirst({
+    where: { id: cycleId, schoolId: adminSession.schoolId },
     select: {
       id: true,
       deadline: true,

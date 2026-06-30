@@ -32,9 +32,16 @@ function appUrl() {
 async function main() {
   const resend = new Resend(requiredEnv("RESEND_API_KEY"));
   const from = requiredEnv("EMAIL_FROM");
+  const school = await prisma.school.upsert({
+    where: { name: "Default School" },
+    update: { isActive: true },
+    create: { name: "Default School", isActive: true },
+    select: { id: true },
+  });
 
   const subject = await prisma.user.findFirst({
     where: {
+      schoolId: school.id,
       role: "STAFF",
       isActive: true,
       staffProfile: {
@@ -56,23 +63,24 @@ async function main() {
 
   const creator =
     (await prisma.user.findFirst({
-      where: { role: "ADMIN", isActive: true },
+      where: { schoolId: school.id, role: "ADMIN", isActive: true },
       select: { id: true },
     })) ||
-    (await prisma.user.findFirst({ where: { isActive: true }, select: { id: true } }));
+    (await prisma.user.findFirst({ where: { schoolId: school.id, isActive: true }, select: { id: true } }));
 
   if (!creator) {
     throw new Error("No active user found to set as cycle creator.");
   }
 
   const contact = await prisma.contact.upsert({
-    where: { email: "dufagundes@gmail.com" },
+    where: { schoolId_email: { schoolId: school.id, email: "dufagundes@gmail.com" } },
     update: {
       type: "PARENT",
       name: "Dufa Gundes",
       isActive: true,
     },
     create: {
+      schoolId: school.id,
       type: "PARENT",
       name: "Dufa Gundes",
       email: "dufagundes@gmail.com",
@@ -89,6 +97,7 @@ async function main() {
 
   const cycle = await prisma.evaluationCycle.create({
     data: {
+      schoolId: school.id,
       subjectId: subject.id,
       description: `Magic Link Delivery Verification - ${new Date().toISOString()}`,
       status: "IN_PROGRESS",

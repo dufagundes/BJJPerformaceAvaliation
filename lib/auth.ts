@@ -37,10 +37,18 @@ export const authOptions: NextAuthOptions = {
             email: true,
             passwordHash: true,
             role: true,
+            schoolId: true,
+            isActive: true,
+            school: {
+              select: {
+                name: true,
+                isActive: true,
+              },
+            },
           },
         });
 
-        if (!user || user.role !== UserRole.ADMIN) {
+          if (!user || user.role !== UserRole.ADMIN || !user.isActive || !user.school.isActive) {
           return null;
         }
 
@@ -54,6 +62,8 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           email: user.email,
           role: user.role,
+          schoolId: user.schoolId,
+          schoolName: user.school.name,
         };
       },
     }),
@@ -62,6 +72,8 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.role = user.role;
+        token.schoolId = user.schoolId;
+        token.schoolName = user.schoolName;
         token.sub = user.id;
       }
 
@@ -71,6 +83,8 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.sub || "";
         session.user.role = (token.role as UserRole) || UserRole.STAFF;
+        session.user.schoolId = token.schoolId || "";
+        session.user.schoolName = token.schoolName;
       }
 
       return session;

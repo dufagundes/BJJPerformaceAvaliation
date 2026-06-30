@@ -1,17 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { POST } from "./route";
 
-const { isAdminApiRequestAuthorizedMock, findUniqueMock, calculateCycleScorecardMock } = vi.hoisted(() => {
+const { getAdminSessionMock, findFirstMock, calculateCycleScorecardMock } = vi.hoisted(() => {
   return {
-    isAdminApiRequestAuthorizedMock: vi.fn(),
-    findUniqueMock: vi.fn(),
+    getAdminSessionMock: vi.fn(),
+    findFirstMock: vi.fn(),
     calculateCycleScorecardMock: vi.fn(),
   };
 });
 
 vi.mock("../../../../../lib/adminAuth", () => {
   return {
-    isAdminApiRequestAuthorized: isAdminApiRequestAuthorizedMock,
+    getAdminSession: getAdminSessionMock,
     unauthorizedAdminResponse: () => new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 }),
   };
 });
@@ -20,7 +20,7 @@ vi.mock("../../../../../lib/prisma", () => {
   return {
     prisma: {
       evaluationCycle: {
-        findUnique: findUniqueMock,
+        findFirst: findFirstMock,
       },
     },
   };
@@ -34,15 +34,19 @@ vi.mock("../../../../../lib/weightedScorecard", () => {
 
 describe("POST /api/admin/progress/generate-report", () => {
   beforeEach(() => {
-    isAdminApiRequestAuthorizedMock.mockReset();
-    findUniqueMock.mockReset();
+    getAdminSessionMock.mockReset();
+    findFirstMock.mockReset();
     calculateCycleScorecardMock.mockReset();
 
-    isAdminApiRequestAuthorizedMock.mockResolvedValue(true);
+    getAdminSessionMock.mockResolvedValue({
+      userId: "admin-1",
+      schoolId: "school-1",
+      schoolName: "Test School",
+    });
   });
 
   it("blocks report generation when only one evaluator group has submitted", async () => {
-    findUniqueMock.mockResolvedValue({
+    findFirstMock.mockResolvedValue({
       id: "cycle-1",
       subjectId: "staff-1",
       reviewers: [

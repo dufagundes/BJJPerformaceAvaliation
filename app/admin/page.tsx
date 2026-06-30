@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
-import { hasAdminSession } from "../../lib/adminAuth";
+import { getAdminSession } from "../../lib/adminAuth";
 import { prisma } from "../../lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -41,6 +41,11 @@ const quickLinks = [
     description: "Track cycle progress and generate scorecards.",
   },
   {
+    href: "/admin/schools",
+    label: "Schools & Admins",
+    description: "Register schools and create administrator accounts for pilots.",
+  },
+  {
     href: "/admin/test-email",
     label: "Test Email",
     description: "Confirm outbound email delivery from the admin tools.",
@@ -53,8 +58,8 @@ const quickLinks = [
 ];
 
 export default async function AdminPage() {
-  const authorized = await hasAdminSession();
-  if (!authorized) {
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
     return (
       <main className="px-4 py-8">
         <div className="mx-auto max-w-4xl">
@@ -81,19 +86,21 @@ export default async function AdminPage() {
     const [staffCount, openCycleCount, pendingEvaluationCount, scorecardCount, recentStaff, latestOpenCycle] = await Promise.all([
       prisma.user.count({
         where: {
+          schoolId: adminSession.schoolId,
           role: "STAFF",
           isActive: true,
         },
       }),
       prisma.evaluationCycle.count({
-        where: { status: "IN_PROGRESS" },
+        where: { schoolId: adminSession.schoolId, status: "IN_PROGRESS" },
       }),
       prisma.reviewer.count({
-        where: { status: "PENDING" },
+        where: { cycle: { schoolId: adminSession.schoolId }, status: "PENDING" },
       }),
-      prisma.evaluationResponse.count(),
+      prisma.evaluationResponse.count({ where: { reviewer: { cycle: { schoolId: adminSession.schoolId } } } }),
       prisma.user.findMany({
         where: {
+          schoolId: adminSession.schoolId,
           role: "STAFF",
           isActive: true,
         },
@@ -106,7 +113,7 @@ export default async function AdminPage() {
         },
       }),
       prisma.evaluationCycle.findFirst({
-        where: { status: "IN_PROGRESS" },
+        where: { schoolId: adminSession.schoolId, status: "IN_PROGRESS" },
         orderBy: [{ deadline: "desc" }],
         select: {
           id: true,

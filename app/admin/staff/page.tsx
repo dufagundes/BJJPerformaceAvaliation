@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
-import { hasAdminSession } from "../../../lib/adminAuth";
+import { getAdminSession } from "../../../lib/adminAuth";
 import { prisma } from "../../../lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -17,8 +17,8 @@ type StaffRow = {
 };
 
 export default async function AdminStaffPage() {
-  const authorized = await hasAdminSession();
-  if (!authorized) {
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
     return (
       <main className="px-4 py-8">
         <div className="mx-auto max-w-4xl">
@@ -44,6 +44,7 @@ export default async function AdminStaffPage() {
   try {
     staffMembers = (await prisma.user.findMany({
       where: {
+        schoolId: adminSession.schoolId,
         role: "STAFF",
         isActive: true,
       },

@@ -2,7 +2,7 @@ import Link from "next/link";
 import AiReviewControls from "./ai-review-controls";
 import ResendInvitesButton from "./resend-invites-button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../components/ui/card";
-import { hasAdminSession } from "../../../../lib/adminAuth";
+import { getAdminSession } from "../../../../lib/adminAuth";
 import { prisma } from "../../../../lib/prisma";
 import { calculateCycleScorecard } from "../../../../lib/weightedScorecard";
 
@@ -23,8 +23,8 @@ export default async function EvaluationCycleDetailPage({
   params: Promise<{ cycleId: string }>;
   searchParams?: Promise<{ sent?: string; failed?: string; total?: string }>;
 }) {
-  const authorized = await hasAdminSession();
-  if (!authorized) {
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
     return (
       <main className="px-4 py-8">
         <div className="mx-auto max-w-4xl">
@@ -64,8 +64,8 @@ export default async function EvaluationCycleDetailPage({
     | null = null;
 
   try {
-    cycle = await prisma.evaluationCycle.findUnique({
-      where: { id: cycleId },
+    cycle = await prisma.evaluationCycle.findFirst({
+      where: { id: cycleId, schoolId: adminSession.schoolId },
       select: {
         id: true,
         description: true,

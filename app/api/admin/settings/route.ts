@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { isAdminApiRequestAuthorized, unauthorizedAdminResponse } from "../../../../lib/adminAuth";
+import { getAdminSession, unauthorizedAdminResponse } from "../../../../lib/adminAuth";
 import { getOrCreateAdminConfig } from "../../../../lib/adminConfig";
 import { prisma } from "../../../../lib/prisma";
 import {
@@ -26,12 +26,13 @@ function normalizeReminderDays(input: number[]): number[] {
   ).sort((a, b) => b - a);
 }
 
-export async function GET(request: Request) {
-  if (!(await isAdminApiRequestAuthorized(request))) {
+export async function GET(_request: Request) {
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
     return unauthorizedAdminResponse();
   }
 
-  const config = await getOrCreateAdminConfig();
+  const config = await getOrCreateAdminConfig(adminSession.schoolId);
   try {
     const scorecardWeights = await getScorecardWeights();
     return NextResponse.json({ config, scorecardWeights }, { status: 200 });
@@ -49,7 +50,8 @@ export async function GET(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  if (!(await isAdminApiRequestAuthorized(request))) {
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
     return unauthorizedAdminResponse();
   }
 
@@ -83,7 +85,7 @@ export async function PUT(request: Request) {
     }
   }
 
-  const existing = await getOrCreateAdminConfig();
+  const existing = await getOrCreateAdminConfig(adminSession.schoolId);
 
   const config = await prisma.adminConfig.update({
     where: { id: existing.id },

@@ -11,15 +11,23 @@ async function main() {
   try {
     console.log("🔄 Creating fresh evaluation cycle for testing...\n");
 
+    const school = await prisma.school.upsert({
+      where: { name: "Default School" },
+      update: { isActive: true },
+      create: { name: "Default School", isActive: true },
+      select: { id: true },
+    });
+
     // Find or create a test staff member
     let staffUser = await prisma.user.findFirst({
-      where: { role: "STAFF" },
+      where: { schoolId: school.id, role: "STAFF" },
     });
 
     if (!staffUser) {
       console.log("Creating test staff user...");
       staffUser = await prisma.user.create({
         data: {
+          schoolId: school.id,
           name: "Test Staff Member",
           email: `staff-${Date.now()}@test.local`,
           passwordHash: "test",
@@ -37,7 +45,7 @@ async function main() {
 
     // Find admin user
     let adminUser = await prisma.user.findFirst({
-      where: { role: "ADMIN" },
+      where: { schoolId: school.id, role: "ADMIN" },
     });
 
     if (!adminUser) {
@@ -50,6 +58,7 @@ async function main() {
 
     const cycle = await prisma.evaluationCycle.create({
       data: {
+        schoolId: school.id,
         subjectId: staffUser.id,
         createdBy: adminUser.id,
         description: "Test Evaluation Cycle",
@@ -71,6 +80,7 @@ async function main() {
     for (let i = 1; i <= 3; i++) {
       const contact = await prisma.contact.create({
         data: {
+          schoolId: school.id,
           name: `Test Reviewer ${i}`,
           email: `reviewer${i}-${Date.now()}@test.local`,
           type: "STUDENT",

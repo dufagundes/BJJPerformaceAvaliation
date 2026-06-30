@@ -7,11 +7,18 @@ async function main() {
   const email = "admin@test.local";
   const password = "Admin123!";
   const passwordHash = await hash(password, 10);
+  const school = await prisma.school.upsert({
+    where: { name: "Default School" },
+    update: { isActive: true },
+    create: { name: "Default School", isActive: true },
+    select: { id: true },
+  });
 
   const existing = await prisma.user.findUnique({ where: { email } });
   const user = await prisma.user.upsert({
     where: { email },
     create: {
+      schoolId: school.id,
       name: "Test Admin",
       email,
       passwordHash,
@@ -19,6 +26,7 @@ async function main() {
       isActive: true,
     },
     update: {
+      schoolId: school.id,
       name: "Test Admin",
       passwordHash,
       role: UserRole.ADMIN,

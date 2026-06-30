@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { isAdminApiRequestAuthorized, unauthorizedAdminResponse } from "../../../../../lib/adminAuth";
+import { getAdminSession, unauthorizedAdminResponse } from "../../../../../lib/adminAuth";
 import { prisma } from "../../../../../lib/prisma";
 
 type RandomContactsPayload = {
@@ -20,7 +20,8 @@ function pickRandom<T>(items: T[], count: number): T[] {
 }
 
 export async function POST(request: Request) {
-  if (!(await isAdminApiRequestAuthorized(request))) {
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
     return unauthorizedAdminResponse();
   }
 
@@ -38,6 +39,7 @@ export async function POST(request: Request) {
 
   const contacts = await prisma.contact.findMany({
     where: {
+      schoolId: adminSession.schoolId,
       isActive: true,
       ...(payload.excludeIds && payload.excludeIds.length > 0 ? { id: { notIn: payload.excludeIds } } : {}),
     },

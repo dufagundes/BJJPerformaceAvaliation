@@ -1,9 +1,7 @@
 import { randomUUID } from "crypto";
 import { ReviewerStatus, ReviewerType } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { isAdminApiRequestAuthorized, unauthorizedAdminResponse } from "../../../../../lib/adminAuth";
-import { authOptions } from "../../../../../lib/auth";
+import { getAdminSession, unauthorizedAdminResponse } from "../../../../../lib/adminAuth";
 import { sendEvaluationInvitationEmail } from "../../../../../lib/evaluationWorkflowEmails";
 import { prisma } from "../../../../../lib/prisma";
 
@@ -16,7 +14,8 @@ type StartEvaluationPayload = {
 };
 
 export async function POST(request: Request) {
-  if (!(await isAdminApiRequestAuthorized(request))) {
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
     return unauthorizedAdminResponse();
   }
 
@@ -49,13 +48,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Subject cannot be selected as a peer evaluator." }, { status: 400 });
   }
 
-  const [subject, peersPool, selectedContacts, session] = await Promise.all([
-    prisma.user.findUnique({
-      where: { id: subjectId },
+  const [subject, peersPool, selectedContacts] = await Promise.all([
+    prisma.user.findFirst({
+      where: { id: subjectId, schoolId: adminSession.schoolId },
       select: { id: true, name: true, role: true },
     }),
     prisma.user.findMany({
       where: {
+        schoolId: adminSession.schoolId,
         id: { in: peerUserIds },
         role: "STAFF",
         isActive: true,
@@ -73,6 +73,7 @@ export async function POST(request: Request) {
     }),
     prisma.contact.findMany({
       where: {
+        schoolId: adminSession.schoolId,
         id: { in: contactIds },
         isActive: true,
       },
@@ -83,7 +84,6 @@ export async function POST(request: Request) {
         type: true,
       },
     }),
-    getServerSession(authOptions),
   ]);
 
   if (!subject) {
@@ -102,20 +102,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "One or more selected contacts are invalid or inactive." }, { status: 400 });
   }
 
-  const creatorId = session?.user?.id;
-  if (!creatorId) {
-    return unauthorizedAdminResponse();
-  }
-
   const deadline = new Date(Date.now() + cycleDurationDays * 24 * 60 * 60 * 1000);
 
   const cycle = await prisma.evaluationCycle.create({
     data: {
+      schoolId: adminSession.schoolId,
       subjectId,
       description,
       status: "IN_PROGRESS",
       deadline,
-      createdBy: creatorId,
+      createdBy: adminSession.userId,
     },
     select: {
       id: true,
