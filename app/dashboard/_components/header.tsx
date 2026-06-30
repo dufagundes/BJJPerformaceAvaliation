@@ -1,5 +1,6 @@
 "use client";
 
+import { signOut } from "next-auth/react";
 import { Avatar } from "./avatar";
 import { Icon } from "./icons";
 import type { DashboardUser } from "../mock-data";
@@ -63,6 +64,13 @@ export function Header({ onMenuClick, user, title, subtitle }: HeaderProps) {
                 <span className="block truncate text-sm font-semibold text-slate-950">{user.name}</span>
                 <span className="block truncate text-xs text-slate-500">{user.role}</span>
               </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => void signOut({ callbackUrl: "/admin/login" })}
+              className="h-11 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700 active:scale-[0.98]"
+            >
+              Sign Out
             </button>
           </div>
         </div>
