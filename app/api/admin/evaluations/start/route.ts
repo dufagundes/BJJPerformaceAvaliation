@@ -210,6 +210,9 @@ export async function POST(request: Request) {
     });
   }
 
+  const sent = reviewerResults.filter((reviewer) => reviewer.delivery.ok).length;
+  const failed = reviewerResults.length - sent;
+
   return NextResponse.json(
     {
       ok: true,
@@ -217,6 +220,11 @@ export async function POST(request: Request) {
       subject: {
         id: subject.id,
         name: subject.name,
+      },
+      deliverySummary: {
+        sent,
+        failed,
+        total: reviewerResults.length,
       },
       reviewers: reviewerResults,
     },

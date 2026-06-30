@@ -1,5 +1,6 @@
 import Link from "next/link";
 import AiReviewControls from "./ai-review-controls";
+import ResendInvitesButton from "./resend-invites-button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../components/ui/card";
 import { hasAdminSession } from "../../../../lib/adminAuth";
 import { prisma } from "../../../../lib/prisma";
@@ -17,8 +18,10 @@ function formatDate(value: Date): string {
 
 export default async function EvaluationCycleDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ cycleId: string }>;
+  searchParams?: Promise<{ sent?: string; failed?: string; total?: string }>;
 }) {
   const authorized = await hasAdminSession();
   if (!authorized) {
@@ -113,6 +116,11 @@ export default async function EvaluationCycleDetailPage({
 
   const peerReviewers = cycle.reviewers.filter((reviewer) => reviewer.type === "PEER");
   const contactReviewers = cycle.reviewers.filter((reviewer) => reviewer.type === "PARENT_STUDENT");
+  const deliveryParams = await searchParams;
+  const sentCount = Number(deliveryParams?.sent ?? NaN);
+  const failedCount = Number(deliveryParams?.failed ?? NaN);
+  const totalCount = Number(deliveryParams?.total ?? NaN);
+  const hasDeliverySummary = [sentCount, failedCount, totalCount].every(Number.isFinite);
 
   let scorecard: Awaited<ReturnType<typeof calculateCycleScorecard>> | null = null;
   let scorecardError = "";
@@ -128,19 +136,30 @@ export default async function EvaluationCycleDetailPage({
       <div className="mx-auto max-w-5xl space-y-6">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">Evaluation Cycle Created</h1>
-          <p className="mt-1 text-sm text-slate-600">Invitations have been generated and queued for delivery.</p>
+          <p className="mt-1 text-sm text-slate-600">Invitations have been generated and sent through the configured email provider.</p>
         </div>
+
+        {hasDeliverySummary ? (
+          <div className={`rounded-md border px-3 py-2 text-sm ${failedCount > 0 ? "border-rose-300 bg-rose-50 text-rose-800" : "border-emerald-300 bg-emerald-50 text-emerald-800"}`}>
+            {failedCount > 0
+              ? `${sentCount} of ${totalCount} invitations were sent. ${failedCount} failed. Check EMAIL_FROM, RESEND_API_KEY, and your verified Resend domain.`
+              : `All ${sentCount} invitations were sent.`}
+          </div>
+        ) : null}
 
         <Card>
           <CardHeader>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <CardTitle>Cycle Summary</CardTitle>
-              <Link
-                href={`/admin/evaluations/${cycle.id}/test-links`}
-                className="inline-flex w-fit items-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
-              >
-                View Test Links
-              </Link>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
+                <ResendInvitesButton cycleId={cycle.id} />
+                <Link
+                  href={`/admin/evaluations/${cycle.id}/test-links`}
+                  className="inline-flex w-fit items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900 transition hover:bg-slate-50"
+                >
+                  View Test Links
+                </Link>
+              </div>
             </div>
           </CardHeader>
           <CardContent>

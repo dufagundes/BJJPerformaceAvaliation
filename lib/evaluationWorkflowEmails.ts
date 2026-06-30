@@ -1,7 +1,5 @@
 import { Resend } from "resend";
 
-const EMAIL_FROM = "evaluations@bjjstaff.com";
-
 type InviteTemplateInput = {
   reviewerName: string;
   subjectName: string;
@@ -111,9 +109,14 @@ async function sendMail(to: string, template: MailTemplate): Promise<MailDeliver
       return { ok: false, error: "RESEND_API_KEY is missing." };
     }
 
+    const from = process.env.EMAIL_FROM?.trim();
+    if (!from) {
+      return { ok: false, error: "EMAIL_FROM is missing." };
+    }
+
     const resend = new Resend(apiKey);
     const response = await resend.emails.send({
-      from: EMAIL_FROM,
+      from,
       to,
       subject: template.subject,
       html: template.html,

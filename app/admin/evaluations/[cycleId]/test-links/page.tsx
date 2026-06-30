@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../../components/ui/card";
 import { hasAdminSession } from "../../../../../lib/adminAuth";
 import { prisma } from "../../../../../lib/prisma";
-import { CopyLinkButton, RefreshPageButton } from "./link-action-buttons";
+import { RefreshPageButton, ResendEmailButton } from "./link-action-buttons";
 
 export const dynamic = "force-dynamic";
 
@@ -172,7 +172,7 @@ export default async function CycleTestLinksPage({
                       <th className="py-2 pr-4">Name</th>
                       <th className="py-2 pr-4">Email</th>
                       <th className="py-2 pr-4">Status</th>
-                      <th className="py-2">Test Link</th>
+                      <th className="py-2">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -202,8 +202,9 @@ export default async function CycleTestLinksPage({
                             >
                               Open Form
                             </a>
-                            <CopyLinkButton
-                              link={link}
+                            <ResendEmailButton
+                              cycleId={cycle.id}
+                              reviewerId={reviewer.id}
                               className="inline-flex items-center rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
                             />
                           </td>
@@ -232,7 +233,7 @@ export default async function CycleTestLinksPage({
                       <th className="py-2 pr-4">Name</th>
                       <th className="py-2 pr-4">Email</th>
                       <th className="py-2 pr-4">Status</th>
-                      <th className="py-2">Test Link</th>
+                      <th className="py-2">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -262,8 +263,9 @@ export default async function CycleTestLinksPage({
                             >
                               Open Form
                             </a>
-                            <CopyLinkButton
-                              link={link}
+                            <ResendEmailButton
+                              cycleId={cycle.id}
+                              reviewerId={reviewer.id}
                               className="inline-flex items-center rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
                             />
                           </td>
@@ -283,6 +285,7 @@ export default async function CycleTestLinksPage({
           </CardHeader>
           <CardContent>
             <ol className="list-inside list-decimal space-y-2 text-sm text-slate-700">
+              <li>Click "Resend Email" to send that evaluator a fresh invitation</li>
               <li>Click "Open Form" to view the evaluation form in a new tab</li>
               <li>Fill in all ratings (1-5 scale) and text responses</li>
               <li>Click "Submit Evaluation"</li>

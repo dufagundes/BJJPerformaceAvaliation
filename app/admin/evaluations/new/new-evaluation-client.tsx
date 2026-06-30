@@ -201,12 +201,25 @@ export default function NewEvaluationClient() {
         }),
       });
 
-      const data = (await response.json()) as { error?: string; cycle?: { id: string } };
+      const data = (await response.json()) as {
+        error?: string;
+        cycle?: { id: string };
+        deliverySummary?: {
+          sent: number;
+          failed: number;
+          total: number;
+        };
+      };
       if (!response.ok || !data.cycle?.id) {
         throw new Error(data.error ?? "Could not launch evaluation.");
       }
 
-      router.push(`/admin/evaluations/${data.cycle.id}`);
+      const deliverySummary = data.deliverySummary;
+      const query = deliverySummary
+        ? `?sent=${deliverySummary.sent}&failed=${deliverySummary.failed}&total=${deliverySummary.total}`
+        : "";
+
+      router.push(`/admin/evaluations/${data.cycle.id}${query}`);
       router.refresh();
     } catch (error) {
       setIsError(true);

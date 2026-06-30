@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAdminApiRequestAuthorized, unauthorizedAdminResponse } from "../../../../../../lib/adminAuth";
-import { sendEvaluationReminderEmail } from "../../../../../../lib/evaluationWorkflowEmails";
+import { sendEvaluationInvitationEmail, sendEvaluationReminderEmail } from "../../../../../../lib/evaluationWorkflowEmails";
 import { prisma } from "../../../../../../lib/prisma";
 
 function daysUntil(deadline: Date): number {
@@ -18,6 +18,16 @@ export async function POST(
   const { cycleId } = await context.params;
   if (!cycleId) {
     return NextResponse.json({ error: "cycleId is required." }, { status: 400 });
+  }
+
+  let template: "invitation" | "reminder" = "reminder";
+  try {
+    const payload = (await request.json()) as { template?: string };
+    if (payload.template === "invitation") {
+      template = "invitation";
+    }
+  } catch {
+    template = "reminder";
   }
 
   const cycle = await prisma.evaluationCycle.findUnique({
@@ -82,13 +92,19 @@ export async function POST(
       continue;
     }
 
-    const delivery = await sendEvaluationReminderEmail(target.email, {
+    const emailInput = {
       reviewerName: target.name,
       subjectName: cycle.subject.name,
       deadline: cycle.deadline,
       inviteToken: reviewer.inviteToken,
-      daysRemaining: daysUntil(cycle.deadline),
-    });
+    };
+
+    const delivery = template === "invitation"
+      ? await sendEvaluationInvitationEmail(target.email, emailInput)
+      : await sendEvaluationReminderEmail(target.email, {
+          ...emailInput,
+          daysRemaining: daysUntil(cycle.deadline),
+        });
 
     results.push({
       reviewerId: reviewer.id,
@@ -106,6 +122,7 @@ export async function POST(
     {
       ok: true,
       cycleId: cycle.id,
+      template,
       sent,
       failed,
       results,
