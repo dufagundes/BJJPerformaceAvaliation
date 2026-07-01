@@ -336,9 +336,10 @@ export default async function EvaluationCycleDetailPage({
           </article>
         </section>
 
-        <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-          <div className="space-y-6">
-            <Card className="rounded-2xl border-slate-200 bg-white shadow-sm">
+        <section className="container-fluid px-0" aria-label="Cycle workspace">
+          <div className="row g-4">
+            <div className="col-12 col-lg-8 space-y-6">
+              <Card className="rounded-2xl border-slate-200 bg-white shadow-sm">
               <CardHeader>
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <div>
@@ -548,9 +549,18 @@ export default async function EvaluationCycleDetailPage({
                 )}
               </CardContent>
             </Card>
-          </div>
+            </div>
 
-          <aside className="space-y-6">
+            <aside className="col-12 col-lg-4 space-y-6 lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto">
+              <Card className="rounded-2xl border-slate-200 bg-white shadow-sm">
+                <CardHeader>
+                  <CardTitle className="text-[#0B1F3A]">AI Review Assistant</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <AiReviewControls cycleId={cycle.id} />
+                </CardContent>
+              </Card>
+
             <Card className="rounded-2xl border-slate-200 bg-white shadow-sm">
               <CardHeader>
                 <CardTitle className="text-[#0B1F3A]">Reports</CardTitle>
@@ -631,15 +641,8 @@ export default async function EvaluationCycleDetailPage({
               </CardContent>
             </Card>
 
-            <Card className="rounded-2xl border-slate-200 bg-white shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-[#0B1F3A]">AI Review Assistant</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <AiReviewControls cycleId={cycle.id} />
-              </CardContent>
-            </Card>
-          </aside>
+            </aside>
+          </div>
         </section>
       </div>
     </main>
