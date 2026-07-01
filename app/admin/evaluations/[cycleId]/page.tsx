@@ -1,5 +1,6 @@
 import Link from "next/link";
 import AiReviewControls from "./ai-review-controls";
+import CycleReportActions from "./cycle-report-actions";
 import ResendInvitesButton from "./resend-invites-button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../components/ui/card";
 import { getAdminSession } from "../../../../lib/adminAuth";
@@ -88,6 +89,31 @@ function AudienceProgressCard({
         <span className="text-slate-500">{invited} invited</span>
       </div>
     </article>
+  );
+}
+
+function getReviewerName(reviewer: {
+  user: { name: string; email: string } | null;
+  contact: { name: string; email: string } | null;
+}): string {
+  return reviewer.user?.name ?? reviewer.contact?.name ?? "Unknown reviewer";
+}
+
+function getReviewerEmail(reviewer: {
+  user: { name: string; email: string } | null;
+  contact: { name: string; email: string } | null;
+}): string {
+  return reviewer.user?.email ?? reviewer.contact?.email ?? "-";
+}
+
+function WorkspaceStep({ label, complete }: { label: string; complete: boolean }) {
+  return (
+    <li className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm">
+      <span className="font-medium text-slate-700">{label}</span>
+      <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${complete ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600"}`}>
+        {complete ? "Ready" : "Pending"}
+      </span>
+    </li>
   );
 }
 
@@ -197,6 +223,16 @@ export default async function EvaluationCycleDetailPage({
   const completionPercent = invitedReviewers > 0 ? Math.round((completedReviewers / invitedReviewers) * 100) : 0;
   const peerCompleted = peerReviewers.filter((reviewer) => reviewer.status === "COMPLETED").length;
   const contactCompleted = contactReviewers.filter((reviewer) => reviewer.status === "COMPLETED").length;
+  const pendingReviewers = invitedReviewers - completedReviewers;
+  const hasPeerResponse = peerCompleted > 0;
+  const hasContactResponse = contactCompleted > 0;
+  const canPrepareMeeting = completionPercent >= 50 && hasPeerResponse && hasContactResponse;
+  const reviewerExportRows = cycle.reviewers.map((reviewer) => ({
+    name: getReviewerName(reviewer),
+    email: getReviewerEmail(reviewer),
+    audience: reviewer.type === "PEER" ? "Peers" : "Parents & Students",
+    status: getStatusLabel(reviewer.status),
+  }));
   const daysRemaining = getDaysRemaining(cycle.deadline);
   const deliveryParams = await searchParams;
   const sentCount = Number(deliveryParams?.sent ?? NaN);
@@ -246,12 +282,6 @@ export default async function EvaluationCycleDetailPage({
 
             <div className="flex flex-col gap-2 sm:flex-row lg:flex-col xl:flex-row">
               <ResendInvitesButton cycleId={cycle.id} />
-              <Link
-                href={`/admin/progress/${cycle.id}/${cycle.subject.id}`}
-                className="inline-flex h-10 items-center justify-center rounded-lg bg-[#0B1F3A] px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-[#102b50]"
-              >
-                View Progress
-              </Link>
             </div>
           </div>
         </header>
@@ -308,6 +338,48 @@ export default async function EvaluationCycleDetailPage({
 
         <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
           <div className="space-y-6">
+            <Card className="rounded-2xl border-slate-200 bg-white shadow-sm">
+              <CardHeader>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <CardTitle className="text-[#0B1F3A]">Invitation Monitor</CardTitle>
+                    <p className="mt-1 text-sm text-slate-500">Track every invitation and follow up without leaving this cycle.</p>
+                  </div>
+                  <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+                    {pendingReviewers} pending
+                  </span>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full border-collapse text-left text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500">
+                        <th className="py-3 pr-4 font-semibold">Reviewer</th>
+                        <th className="py-3 pr-4 font-semibold">Audience</th>
+                        <th className="py-3 pr-4 font-semibold">Email</th>
+                        <th className="py-3 font-semibold">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {cycle.reviewers.map((reviewer) => (
+                        <tr key={reviewer.id} className="border-b border-slate-100 last:border-0">
+                          <td className="py-3 pr-4 font-medium text-slate-900">{getReviewerName(reviewer)}</td>
+                          <td className="py-3 pr-4 text-slate-600">{reviewer.type === "PEER" ? "Peers" : "Parents & Students"}</td>
+                          <td className="py-3 pr-4 text-slate-500">{getReviewerEmail(reviewer)}</td>
+                          <td className="py-3">
+                            <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${reviewer.status === "COMPLETED" ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600"}`}>
+                              {getStatusLabel(reviewer.status)}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+
             <section className="grid gap-4 lg:grid-cols-2" aria-label="Audience progress">
               <AudienceProgressCard
                 title="Peers"
@@ -481,23 +553,36 @@ export default async function EvaluationCycleDetailPage({
           <aside className="space-y-6">
             <Card className="rounded-2xl border-slate-200 bg-white shadow-sm">
               <CardHeader>
-                <CardTitle className="text-[#0B1F3A]">Cycle Controls</CardTitle>
+                <CardTitle className="text-[#0B1F3A]">Reports</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <Link
-                  href={`/admin/evaluations/${cycle.id}/test-links`}
-                  className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
-                >
-                  View test links
-                  <span aria-hidden="true">&rarr;</span>
-                </Link>
-                <Link
-                  href={`/admin/progress/${cycle.id}/${cycle.subject.id}`}
-                  className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
-                >
-                  Open progress dashboard
-                  <span aria-hidden="true">&rarr;</span>
-                </Link>
+              <CardContent className="space-y-4">
+                <p className="text-sm leading-6 text-slate-600">
+                  Export reviewer status or print this workspace as the cycle report for the manager meeting.
+                </p>
+                <CycleReportActions subjectName={cycle.subject.name} reviewers={reviewerExportRows} />
+              </CardContent>
+            </Card>
+
+            <Card className="rounded-2xl border-slate-200 bg-white shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-[#0B1F3A]">Manager Meeting Prep</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className={`rounded-xl border px-4 py-3 ${canPrepareMeeting ? "border-emerald-200 bg-emerald-50" : "border-amber-200 bg-amber-50"}`}>
+                  <p className={`text-sm font-semibold ${canPrepareMeeting ? "text-emerald-800" : "text-amber-800"}`}>
+                    {canPrepareMeeting ? "Meeting package is ready" : "Meeting package is still building"}
+                  </p>
+                  <p className={`mt-1 text-xs ${canPrepareMeeting ? "text-emerald-700" : "text-amber-700"}`}>
+                    Use this checklist before reviewing performance with the staff member.
+                  </p>
+                </div>
+                <ul className="space-y-2">
+                  <WorkspaceStep label="Peer feedback received" complete={hasPeerResponse} />
+                  <WorkspaceStep label="Parent/student feedback received" complete={hasContactResponse} />
+                  <WorkspaceStep label="At least 50% response rate" complete={completionPercent >= 50} />
+                  <WorkspaceStep label="Score summary available" complete={!!scorecard} />
+                  <WorkspaceStep label="AI recommendations reviewed" complete={false} />
+                </ul>
               </CardContent>
             </Card>
 
