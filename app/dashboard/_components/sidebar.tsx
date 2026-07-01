@@ -12,18 +12,19 @@ type SidebarProps = {
 
 const navigationItems = [
   { label: "Dashboard", icon: "dashboard" as const, href: "/dashboard" },
-  { label: "Employees", icon: "employees" as const, href: "/admin/staff" },
-  { label: "Evaluation Cycle", icon: "reviews" as const, href: "/admin/cycles" },
-  { label: "Feedback", icon: "feedback" as const, href: "/pending-evaluations" },
-  { label: "360° Feedback", icon: "progress" as const, href: "/admin/cycles" },
+  { label: "Students", icon: "employees" as const, href: "/admin/contacts" },
+  { label: "Evaluations", icon: "reviews" as const, href: "/admin/cycles" },
   { label: "Reports", icon: "reports" as const, href: "/admin/staff" },
+  { label: "Calendar", icon: "progress" as const, href: "/admin/cycles" },
+  { label: "Messages", icon: "feedback" as const, href: "/pending-evaluations" },
+  { label: "Admin Settings", icon: "settings" as const, href: "/admin/settings" },
 ];
 
 const settingsItems = [
   { label: "Contacts", href: "/admin/contacts" },
-  { label: "Schools & Admins", href: "/admin/schools" },
-  { label: "Scorecard Builder", href: "/admin/scorecard" },
-  { label: "Settings", href: "/admin/settings" },
+  { label: "Schools & Admins", href: "/admin/schools-admins" },
+  { label: "Scorecard Builder", href: "/admin/scorecard-builder" },
+  { label: "Evaluation Defaults", href: "/admin/evaluation-defaults" },
   { label: "Test Email", href: "/admin/test-email" },
 ];
 
@@ -113,7 +114,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               aria-current={settingsActive ? "page" : undefined}
             >
               <Icon name="settings" className="h-5 w-5" />
-              Settings
+              Admin Settings
             </Link>
             <div className={cn("mt-1 space-y-1 border-l border-white/10 pl-4", settingsActive ? "block" : "hidden lg:block")}>
               {settingsItems.map((item) => {

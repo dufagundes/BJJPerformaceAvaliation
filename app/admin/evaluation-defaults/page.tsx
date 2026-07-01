@@ -1,8 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { hasAdminSession } from "../../../lib/adminAuth";
-import SettingsDashboard from "./settings-dashboard";
+import SettingsClient from "../settings/settings-client";
 
-export default async function AdminSettingsPage() {
+export default async function EvaluationDefaultsPage() {
   const authorized = await hasAdminSession();
   if (!authorized) {
     return (
@@ -13,10 +13,7 @@ export default async function AdminSettingsPage() {
               <CardTitle>Admin Access Required</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-slate-700">
-                Placeholder session check is enabled. Set cookie <strong>admin_session=1</strong> or set
-                <strong> ADMIN_SESSION_BYPASS=true</strong> while wiring your real auth.
-              </p>
+              <p className="text-sm text-slate-700">Sign in as an administrator to manage evaluation defaults.</p>
             </CardContent>
           </Card>
         </div>
@@ -24,5 +21,5 @@ export default async function AdminSettingsPage() {
     );
   }
 
-  return <SettingsDashboard />;
+  return <SettingsClient />;
 }
