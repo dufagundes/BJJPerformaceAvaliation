@@ -1,6 +1,5 @@
 import Link from "next/link";
 import AiReviewControls from "./ai-review-controls";
-import CycleReportActions from "./cycle-report-actions";
 import ResendInvitesButton from "./resend-invites-button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../components/ui/card";
 import { getAdminSession } from "../../../../lib/adminAuth";
@@ -22,9 +21,29 @@ type AudienceBreakdown = {
   configured: boolean;
 };
 
+type TimelineStage = {
+  title: string;
+  icon: string;
+  date: string;
+  status: string;
+  complete: boolean;
+};
+
 function formatDate(value: Date): string {
   return value.toLocaleDateString("en-US", {
     month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function formatTimelineDate(value: Date | null): string {
+  if (!value) {
+    return "No date yet";
+  }
+
+  return value.toLocaleDateString("en-US", {
+    month: "short",
     day: "numeric",
     year: "numeric",
   });
@@ -211,6 +230,44 @@ function EvaluationBreakdownCard({ breakdown }: { breakdown: AudienceBreakdown }
   );
 }
 
+function EvaluationTimeline({ stages }: { stages: TimelineStage[] }) {
+  return (
+    <section aria-labelledby="evaluation-timeline-heading" className="card border-0 shadow-sm">
+      <div className="card-header bg-white">
+        <h2 id="evaluation-timeline-heading" className="h4 mb-1 text-primary-emphasis">Evaluation Timeline</h2>
+        <p className="mb-0 text-secondary">Project-style lifecycle view from invitation through manager meeting.</p>
+      </div>
+      <div className="card-body">
+        <ol className="list-unstyled mb-0">
+          {stages.map((stage, index) => (
+            <li key={stage.title} className="d-flex gap-3">
+              <div className="d-flex flex-column align-items-center">
+                <span className={`d-inline-flex align-items-center justify-content-center rounded-circle border ${stage.complete ? "bg-success text-white border-success" : "bg-light text-secondary border-secondary-subtle"}`}>
+                  <i className={`bi ${stage.icon} p-2`} aria-hidden="true" />
+                </span>
+                {index < stages.length - 1 ? <span className="vr flex-grow-1 my-2" aria-hidden="true" /> : null}
+              </div>
+              <article className="card flex-grow-1 mb-3">
+                <div className="card-body p-3">
+                  <div className="d-flex flex-column gap-2 flex-md-row justify-content-md-between align-items-md-start">
+                    <div>
+                      <h3 className="h6 mb-1">{stage.title}</h3>
+                      <p className="mb-0 small text-secondary">{stage.date}</p>
+                    </div>
+                    <span className={`badge rounded-pill ${stage.complete ? "text-bg-success" : "text-bg-light border text-secondary"}`}>
+                      {stage.status}
+                    </span>
+                  </div>
+                </div>
+              </article>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
+
 function AudienceProgressCard({
   title,
   description,
@@ -307,6 +364,7 @@ export default async function EvaluationCycleDetailPage({
         description: string;
         status: string;
         deadline: Date;
+        createdAt: Date;
         subject: { id: string; name: string; email: string; staffProfile: { title: string } | null };
         reviewers: Array<{
           id: string;
@@ -314,6 +372,7 @@ export default async function EvaluationCycleDetailPage({
           status: string;
           user: { name: string; email: string } | null;
           contact: { name: string; email: string } | null;
+          response: { submittedAt: Date } | null;
         }>;
       }
     | null = null;
@@ -326,6 +385,7 @@ export default async function EvaluationCycleDetailPage({
         description: true,
         status: true,
         deadline: true,
+        createdAt: true,
         subject: {
           select: {
             id: true,
@@ -347,6 +407,9 @@ export default async function EvaluationCycleDetailPage({
             },
             contact: {
               select: { name: true, email: true },
+            },
+            response: {
+              select: { submittedAt: true },
             },
           },
         },
@@ -384,12 +447,6 @@ export default async function EvaluationCycleDetailPage({
   const hasPeerResponse = peerCompleted > 0;
   const hasContactResponse = contactCompleted > 0;
   const canPrepareMeeting = completionPercent >= 50 && hasPeerResponse && hasContactResponse;
-  const reviewerExportRows = cycle.reviewers.map((reviewer) => ({
-    name: getReviewerName(reviewer),
-    email: getReviewerEmail(reviewer),
-    audience: reviewer.type === "PEER" ? "Peers" : "Parents & Students",
-    status: getStatusLabel(reviewer.status),
-  }));
   const daysRemaining = getDaysRemaining(cycle.deadline);
   const deliveryParams = await searchParams;
   const sentCount = Number(deliveryParams?.sent ?? NaN);
@@ -417,6 +474,49 @@ export default async function EvaluationCycleDetailPage({
     buildAudienceBreakdown("Parents & Students", parentStudentScoreGroup),
     buildAudienceBreakdown("Self Evaluation", null),
     buildAudienceBreakdown("Manager Evaluation", null),
+  ];
+  const responseDates = cycle.reviewers
+    .map((reviewer) => reviewer.response?.submittedAt ?? null)
+    .filter((value): value is Date => value !== null);
+  const latestResponseDate = responseDates.length > 0
+    ? new Date(Math.max(...responseDates.map((value) => value.getTime())))
+    : null;
+  const timelineStages: TimelineStage[] = [
+    {
+      title: "Invitations Sent",
+      icon: "bi-send-check",
+      date: formatTimelineDate(cycle.createdAt),
+      status: "Completed",
+      complete: true,
+    },
+    {
+      title: "Responses Received",
+      icon: "bi-inbox",
+      date: formatTimelineDate(latestResponseDate),
+      status: completedReviewers > 0 ? `${completedReviewers}/${invitedReviewers} received` : "Pending",
+      complete: completedReviewers > 0,
+    },
+    {
+      title: "AI Generated",
+      icon: "bi-stars",
+      date: "Generated from the right AI panel",
+      status: canPrepareMeeting ? "Ready" : "Pending responses",
+      complete: false,
+    },
+    {
+      title: "Manager Review",
+      icon: "bi-person-check",
+      date: "No review date yet",
+      status: canPrepareMeeting ? "Ready" : "Pending",
+      complete: false,
+    },
+    {
+      title: "Meeting Completed",
+      icon: "bi-calendar-check",
+      date: "No meeting date yet",
+      status: "Pending",
+      complete: false,
+    },
   ];
 
   return (
@@ -805,26 +905,7 @@ export default async function EvaluationCycleDetailPage({
             </div>
 
             <aside className="col-12 col-lg-4 space-y-6 lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto">
-              <Card id="ai-review-assistant" className="rounded-2xl border-slate-200 bg-white shadow-sm">
-                <CardHeader>
-                  <CardTitle className="text-[#0B1F3A]">AI Review Assistant</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <AiReviewControls cycleId={cycle.id} />
-                </CardContent>
-              </Card>
-
-            <Card className="rounded-2xl border-slate-200 bg-white shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-[#0B1F3A]">Reports</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-sm leading-6 text-slate-600">
-                  Export reviewer status or print this workspace as the cycle report for the manager meeting.
-                </p>
-                <CycleReportActions subjectName={cycle.subject.name} reviewers={reviewerExportRows} />
-              </CardContent>
-            </Card>
+              <AiReviewControls cycleId={cycle.id} subjectName={cycle.subject.name} />
 
             <Card className="rounded-2xl border-slate-200 bg-white shadow-sm">
               <CardHeader>
@@ -897,6 +978,8 @@ export default async function EvaluationCycleDetailPage({
             </aside>
           </div>
         </section>
+
+        <EvaluationTimeline stages={timelineStages} />
       </div>
     </main>
   );

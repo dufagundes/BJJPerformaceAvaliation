@@ -1,4 +1,5 @@
-import "bootstrap/dist/css/bootstrap-grid.min.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import "./globals.css";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
