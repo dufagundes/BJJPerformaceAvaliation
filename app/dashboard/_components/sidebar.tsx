@@ -104,18 +104,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           ))}
 
           <div className="pt-2">
-            <Link
-              href="/admin/settings"
-              onClick={onClose}
-              className={cn(
-                "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition",
-                settingsActive ? "bg-white text-slate-950 shadow-sm" : "text-slate-300 hover:bg-white/10 hover:text-white",
-              )}
-              aria-current={settingsActive ? "page" : undefined}
-            >
-              <Icon name="settings" className="h-5 w-5" />
-              Admin Settings
-            </Link>
             <div className={cn("mt-1 space-y-1 border-l border-white/10 pl-4", settingsActive ? "block" : "hidden lg:block")}>
               {settingsItems.map((item) => {
                 const active = isActivePath(pathname, item.href);
