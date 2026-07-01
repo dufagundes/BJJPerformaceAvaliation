@@ -32,6 +32,11 @@ enum ReviewerStatus {
   COMPLETED
 }
 
+enum SelfEvaluationStatus {
+  PENDING
+  COMPLETED
+}
+
 enum EvaluationQuestionType {
   RATING
   MULTIPLE_CHOICE
@@ -140,12 +145,30 @@ model EvaluationCycle {
   creator    User       @relation("CycleCreatedBy", fields: [createdBy], references: [id], onDelete: Restrict)
   school     School     @relation(fields: [schoolId], references: [id], onDelete: Restrict)
   reviewers  Reviewer[]
+  selfEvaluation SelfEvaluation?
 
   @@index([schoolId])
   @@index([subjectId])
   @@index([createdBy])
   @@index([status])
   @@index([deadline])
+}
+
+model SelfEvaluation {
+  id             String               @id @default(uuid()) @db.Uuid
+  cycleId        String               @unique @db.Uuid
+  inviteToken    String               @unique
+  tokenExpiresAt DateTime
+  status         SelfEvaluationStatus @default(PENDING)
+  answers        Json?
+  submittedAt    DateTime?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  cycle EvaluationCycle @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([tokenExpiresAt])
 }
 
 model Reviewer {

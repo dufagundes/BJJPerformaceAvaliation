@@ -2,7 +2,7 @@ import { randomUUID } from "crypto";
 import { ReviewerStatus, ReviewerType } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getAdminSession, unauthorizedAdminResponse } from "../../../../../lib/adminAuth";
-import { sendEvaluationInvitationEmail } from "../../../../../lib/evaluationWorkflowEmails";
+import { sendEvaluationInvitationEmail, sendSelfEvaluationEmail } from "../../../../../lib/evaluationWorkflowEmails";
 import { prisma } from "../../../../../lib/prisma";
 
 type StartEvaluationPayload = {
@@ -51,7 +51,7 @@ export async function POST(request: Request) {
   const [subject, peersPool, selectedContacts] = await Promise.all([
     prisma.user.findFirst({
       where: { id: subjectId, schoolId: adminSession.schoolId },
-      select: { id: true, name: true, role: true },
+      select: { id: true, name: true, email: true, role: true },
     }),
     prisma.user.findMany({
       where: {
@@ -133,6 +133,27 @@ export async function POST(request: Request) {
     inviteToken: string;
     delivery: { ok: boolean; id?: string; error?: string };
   }> = [];
+
+  const selfEvaluationToken = randomUUID();
+  const selfEvaluation = await prisma.selfEvaluation.create({
+    data: {
+      cycleId: cycle.id,
+      inviteToken: selfEvaluationToken,
+      tokenExpiresAt: deadline,
+    },
+    select: {
+      id: true,
+      status: true,
+      inviteToken: true,
+    },
+  });
+
+  const selfEvaluationDelivery = await sendSelfEvaluationEmail(subject.email, {
+    staffName: subject.name,
+    cycleName: description,
+    deadline,
+    inviteToken: selfEvaluation.inviteToken,
+  });
 
   for (const peer of peersPool) {
     const inviteToken = randomUUID();
@@ -223,6 +244,12 @@ export async function POST(request: Request) {
         total: reviewerResults.length,
       },
       reviewers: reviewerResults,
+      selfEvaluation: {
+        id: selfEvaluation.id,
+        status: selfEvaluation.status,
+        inviteToken: selfEvaluation.inviteToken,
+        delivery: selfEvaluationDelivery,
+      },
     },
     { status: 201 },
   );

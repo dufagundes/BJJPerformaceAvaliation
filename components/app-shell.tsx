@@ -29,7 +29,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [shellUser, setShellUser] = useState(fallbackShellUser);
   const [schoolName, setSchoolName] = useState<string | null>(null);
-  const isEvaluationForm = /^\/evaluate\/[^/]+/.test(pathname);
+  const isEvaluationForm = /^\/(evaluate|self-evaluate)\/[^/]+/.test(pathname);
   const isStandaloneDashboard = pathname === "/dashboard";
   const isAuthPage = /^\/admin\/(login|forgot-password|reset-password)/.test(pathname);
 

@@ -7,6 +7,13 @@ type InviteTemplateInput = {
   inviteToken: string;
 };
 
+type SelfEvaluationTemplateInput = {
+  staffName: string;
+  cycleName: string;
+  deadline: Date;
+  inviteToken: string;
+};
+
 type ReminderTemplateInput = InviteTemplateInput & {
   daysRemaining: number;
 };
@@ -39,6 +46,10 @@ function getAppUrl(): string {
 
 function getReviewLink(inviteToken: string): string {
   return `${getAppUrl()}/evaluate/${inviteToken}`;
+}
+
+function getSelfEvaluationLink(inviteToken: string): string {
+  return `${getAppUrl()}/self-evaluate/${inviteToken}`;
 }
 
 function formatDate(value: Date): string {
@@ -117,6 +128,39 @@ export function buildReminderEmailTemplate(input: ReminderTemplateInput): MailTe
   };
 }
 
+export function buildSelfEvaluationEmailTemplate(input: SelfEvaluationTemplateInput): MailTemplate {
+  const selfEvaluationLink = getSelfEvaluationLink(input.inviteToken);
+  const deadlineDate = formatDate(input.deadline);
+
+  return {
+    subject: `Complete your self evaluation for ${input.cycleName}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6; max-width: 640px; margin: 0 auto; background: #ffffff;">
+        <div style="border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;">
+          <div style="background: #111827; padding: 28px 32px; color: #ffffff;">
+            <p style="margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #bfdbfe;">Self Evaluation</p>
+            <h1 style="margin: 0; font-size: 24px; line-height: 1.25;">Reflect on your progress before your review meeting</h1>
+          </div>
+          <div style="padding: 28px 32px;">
+            <p style="margin: 0 0 16px;">Hi ${input.staffName},</p>
+            <p style="margin: 0 0 16px;">You have been invited to complete a self evaluation for <strong>${input.cycleName}</strong>. This is not part of your scorecard. It is your opportunity to describe your accomplishments, strengths, challenges, improvement areas, and goals in your own words.</p>
+            <div style="margin: 0 0 24px; padding: 14px 16px; border-left: 4px solid #C8102E; background: #f9fafb; color: #374151;">
+              <strong>Deadline:</strong> ${deadlineDate}<br />
+              No account is required. This private link is personal to you.
+            </div>
+            <p style="margin: 0;">
+              <a href="${selfEvaluationLink}" style="display:inline-block;background:#C8102E;color:#ffffff;text-decoration:none;padding:13px 20px;border-radius:8px;font-weight:700;">
+                Complete Self Evaluation
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+    `,
+    text: `Hi ${input.staffName},\n\nYou have been invited to complete a self evaluation for ${input.cycleName}. This is not part of your scorecard. It is your opportunity to describe your accomplishments, strengths, challenges, improvement areas, and goals in your own words.\n\nDeadline: ${deadlineDate}\n\nComplete Self Evaluation: ${selfEvaluationLink}\n\nThis private link is personal to you. No account is required.`,
+  };
+}
+
 async function sendMail(to: string, template: MailTemplate): Promise<MailDelivery> {
   try {
     const apiKey = process.env.RESEND_API_KEY?.trim();
@@ -160,4 +204,8 @@ export async function sendEvaluationInvitationEmail(to: string, input: InviteTem
 
 export async function sendEvaluationReminderEmail(to: string, input: ReminderTemplateInput): Promise<MailDelivery> {
   return sendMail(to, buildReminderEmailTemplate(input));
+}
+
+export async function sendSelfEvaluationEmail(to: string, input: SelfEvaluationTemplateInput): Promise<MailDelivery> {
+  return sendMail(to, buildSelfEvaluationEmailTemplate(input));
 }

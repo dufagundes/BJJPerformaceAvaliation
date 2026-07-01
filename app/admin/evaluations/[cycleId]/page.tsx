@@ -1,6 +1,7 @@
 import Link from "next/link";
 import AiReviewControls from "./ai-review-controls";
 import ResendInvitesButton from "./resend-invites-button";
+import SendSelfEvaluationButton from "./send-self-evaluation-button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../components/ui/card";
 import { getAdminSession } from "../../../../lib/adminAuth";
 import { prisma } from "../../../../lib/prisma";
@@ -366,6 +367,7 @@ export default async function EvaluationCycleDetailPage({
         deadline: Date;
         createdAt: Date;
         subject: { id: string; name: string; email: string; staffProfile: { title: string } | null };
+        selfEvaluation: { status: string; submittedAt: Date | null } | null;
         reviewers: Array<{
           id: string;
           type: string;
@@ -394,6 +396,12 @@ export default async function EvaluationCycleDetailPage({
             staffProfile: {
               select: { title: true },
             },
+          },
+        },
+        selfEvaluation: {
+          select: {
+            status: true,
+            submittedAt: true,
           },
         },
         reviewers: {
@@ -467,6 +475,7 @@ export default async function EvaluationCycleDetailPage({
   const performanceBadge = scorecard?.scoreLabel ?? "Not Scored";
   const roleLabel = cycle.subject.staffProfile?.title ?? "Staff Member";
   const responseStatus = `${completedReviewers}/${invitedReviewers} completed (${completionPercent}%)`;
+  const selfEvaluationStatus = cycle.selfEvaluation?.status === "COMPLETED" ? "Completed" : "Pending";
   const peerScoreGroup = scorecard?.groups.find((group) => group.name === "Peers") ?? null;
   const parentStudentScoreGroup = scorecard?.groups.find((group) => group.name === "Parents/Students") ?? null;
   const audienceBreakdowns = [
@@ -495,6 +504,13 @@ export default async function EvaluationCycleDetailPage({
       date: formatTimelineDate(latestResponseDate),
       status: completedReviewers > 0 ? `${completedReviewers}/${invitedReviewers} received` : "Pending",
       complete: completedReviewers > 0,
+    },
+    {
+      title: "Self Evaluation",
+      icon: "bi-person-lines-fill",
+      date: formatTimelineDate(cycle.selfEvaluation?.submittedAt ?? null),
+      status: selfEvaluationStatus,
+      complete: cycle.selfEvaluation?.status === "COMPLETED",
     },
     {
       title: "AI Generated",
@@ -598,6 +614,7 @@ export default async function EvaluationCycleDetailPage({
 
                 <div className="flex flex-col gap-2 sm:flex-row xl:justify-end">
                   <ResendInvitesButton cycleId={cycle.id} />
+                  <SendSelfEvaluationButton cycleId={cycle.id} />
                   <Link
                     href={`/admin/evaluations/${cycle.id}/test-links`}
                     className="inline-flex items-center justify-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900 transition-colors hover:bg-slate-50"
