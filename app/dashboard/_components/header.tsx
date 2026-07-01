@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { signOut } from "next-auth/react";
 import { Avatar } from "./avatar";
 import { Icon } from "./icons";
@@ -14,6 +15,19 @@ type HeaderProps = {
 
 export function Header({ onMenuClick, user, title, subtitle }: HeaderProps) {
   const firstName = user.name.split(" ")[0] ?? user.name;
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handlePointerDown(event: MouseEvent) {
+      if (!userMenuRef.current?.contains(event.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => document.removeEventListener("mousedown", handlePointerDown);
+  }, []);
 
   return (
     <header className="border-b border-slate-200 bg-white/95 px-4 py-4 backdrop-blur sm:px-6 lg:px-8">
@@ -54,24 +68,38 @@ export function Header({ onMenuClick, user, title, subtitle }: HeaderProps) {
               <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-red-500" />
             </button>
 
-            <button
-              type="button"
-              className="flex min-w-0 items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-left transition hover:border-indigo-200 hover:bg-indigo-50 active:scale-[0.99]"
-              aria-label="Open user profile menu"
-            >
-              <Avatar initials={user.initials} className="h-9 w-9 bg-indigo-600" />
-              <span className="hidden min-w-0 sm:block">
-                <span className="block truncate text-sm font-semibold text-slate-950">{user.name}</span>
-                <span className="block truncate text-xs text-slate-500">{user.role}</span>
-              </span>
-            </button>
-            <button
-              type="button"
-              onClick={() => void signOut({ callbackUrl: "/admin/login" })}
-              className="h-11 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700 active:scale-[0.98]"
-            >
-              Sign Out
-            </button>
+            <div className="relative" ref={userMenuRef}>
+              <button
+                type="button"
+                className="flex min-w-0 items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-left transition hover:border-indigo-200 hover:bg-indigo-50 active:scale-[0.99]"
+                aria-label="Open user profile menu"
+                aria-haspopup="menu"
+                aria-expanded={userMenuOpen}
+                onClick={() => setUserMenuOpen((open) => !open)}
+              >
+                <Avatar initials={user.initials} className="h-9 w-9 bg-indigo-600" />
+                <span className="hidden min-w-0 sm:block">
+                  <span className="block truncate text-sm font-semibold text-slate-950">{user.name}</span>
+                  <span className="block truncate text-xs text-slate-500">{user.role}</span>
+                </span>
+              </button>
+
+              {userMenuOpen ? (
+                <div
+                  role="menu"
+                  className="absolute right-0 z-20 mt-2 w-48 overflow-hidden rounded-lg border border-slate-200 bg-white py-1 shadow-lg"
+                >
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => void signOut({ callbackUrl: "/admin/login" })}
+                    className="block w-full px-4 py-2 text-left text-sm font-medium text-slate-700 transition hover:bg-rose-50 hover:text-rose-700"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
       </div>
