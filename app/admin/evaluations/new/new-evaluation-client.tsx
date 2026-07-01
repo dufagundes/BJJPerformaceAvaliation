@@ -40,6 +40,19 @@ function formatDate(value: Date): string {
   });
 }
 
+async function readJsonResponse<T>(response: Response): Promise<T & { error?: string }> {
+  const text = await response.text();
+  if (!text.trim()) {
+    return { error: response.ok ? undefined : `Request failed with status ${response.status}.` } as T & { error?: string };
+  }
+
+  try {
+    return JSON.parse(text) as T & { error?: string };
+  } catch {
+    return { error: response.ok ? "The server returned an unreadable response." : `Request failed with status ${response.status}.` } as T & { error?: string };
+  }
+}
+
 export default function NewEvaluationClient() {
   const router = useRouter();
 
@@ -69,12 +82,11 @@ export default function NewEvaluationClient() {
       setIsLoading(true);
       try {
         const response = await fetch("/api/admin/evaluations/options", { cache: "no-store" });
-        const data = (await response.json()) as {
+        const data = await readJsonResponse<{
           config?: AdminConfig;
           staffMembers?: StaffOption[];
           activeContactsCount?: number;
-          error?: string;
-        };
+        }>(response);
 
         if (!response.ok) {
           throw new Error(data.error ?? "Could not load evaluation options.");
@@ -161,11 +173,10 @@ export default function NewEvaluationClient() {
         }),
       });
 
-      const data = (await response.json()) as {
+      const data = await readJsonResponse<{
         selected?: ContactOption[];
         warning?: string | null;
-        error?: string;
-      };
+      }>(response);
 
       if (!response.ok) {
         throw new Error(data.error ?? "Could not select contacts.");
@@ -201,15 +212,14 @@ export default function NewEvaluationClient() {
         }),
       });
 
-      const data = (await response.json()) as {
-        error?: string;
+      const data = await readJsonResponse<{
         cycle?: { id: string };
         deliverySummary?: {
           sent: number;
           failed: number;
           total: number;
         };
-      };
+      }>(response);
       if (!response.ok || !data.cycle?.id) {
         throw new Error(data.error ?? "Could not launch evaluation.");
       }

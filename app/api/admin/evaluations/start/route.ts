@@ -134,26 +134,41 @@ export async function POST(request: Request) {
     delivery: { ok: boolean; id?: string; error?: string };
   }> = [];
 
-  const selfEvaluationToken = randomUUID();
-  const selfEvaluation = await prisma.selfEvaluation.create({
-    data: {
-      cycleId: cycle.id,
-      inviteToken: selfEvaluationToken,
-      tokenExpiresAt: deadline,
-    },
-    select: {
-      id: true,
-      status: true,
-      inviteToken: true,
-    },
-  });
+  let selfEvaluation: { id: string; status: ReviewerStatus | string; inviteToken: string };
+  let selfEvaluationDelivery: { ok: boolean; id?: string; error?: string };
 
-  const selfEvaluationDelivery = await sendSelfEvaluationEmail(subject.email, {
-    staffName: subject.name,
-    cycleName: description,
-    deadline,
-    inviteToken: selfEvaluation.inviteToken,
-  });
+  try {
+    const selfEvaluationToken = randomUUID();
+    selfEvaluation = await prisma.selfEvaluation.create({
+      data: {
+        cycleId: cycle.id,
+        inviteToken: selfEvaluationToken,
+        tokenExpiresAt: deadline,
+      },
+      select: {
+        id: true,
+        status: true,
+        inviteToken: true,
+      },
+    });
+
+    selfEvaluationDelivery = await sendSelfEvaluationEmail(subject.email, {
+      staffName: subject.name,
+      cycleName: description,
+      deadline,
+      inviteToken: selfEvaluation.inviteToken,
+    });
+  } catch (error) {
+    await prisma.evaluationCycle.delete({ where: { id: cycle.id } }).catch(() => null);
+    return NextResponse.json(
+      {
+        error: error instanceof Error && error.message.includes("SelfEvaluation")
+          ? "Could not create the self evaluation magic link. Apply the 20260701_self_evaluations database migration, then try again."
+          : "Could not create the self evaluation magic link. Please try again.",
+      },
+      { status: 500 },
+    );
+  }
 
   for (const peer of peersPool) {
     const inviteToken = randomUUID();
