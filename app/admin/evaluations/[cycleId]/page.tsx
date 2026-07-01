@@ -57,6 +57,33 @@ function getScoreTone(score: number): { text: string; bg: string; bar: string; r
   return { text: "text-rose-700", bg: "bg-rose-50", bar: "bg-rose-500", ring: "ring-rose-200" };
 }
 
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  const first = parts[0]?.[0] ?? "E";
+  const second = parts.length > 1 ? parts[parts.length - 1]?.[0] : parts[0]?.[1];
+  return `${first}${second ?? ""}`.toUpperCase();
+}
+
+function getBadgeClasses(label: string): string {
+  if (label === "Excellent") {
+    return "border-emerald-200 bg-emerald-50 text-emerald-700";
+  }
+
+  if (label === "Good") {
+    return "border-blue-200 bg-blue-50 text-blue-700";
+  }
+
+  if (label === "Needs Improvement") {
+    return "border-amber-200 bg-amber-50 text-amber-700";
+  }
+
+  if (label === "Critical") {
+    return "border-rose-200 bg-rose-50 text-rose-700";
+  }
+
+  return "border-slate-200 bg-slate-50 text-slate-600";
+}
+
 function AudienceProgressCard({
   title,
   description,
@@ -153,7 +180,7 @@ export default async function EvaluationCycleDetailPage({
         description: string;
         status: string;
         deadline: Date;
-        subject: { id: string; name: string; email: string };
+        subject: { id: string; name: string; email: string; staffProfile: { title: string } | null };
         reviewers: Array<{
           id: string;
           type: string;
@@ -177,6 +204,9 @@ export default async function EvaluationCycleDetailPage({
             id: true,
             name: true,
             email: true,
+            staffProfile: {
+              select: { title: true },
+            },
           },
         },
         reviewers: {
@@ -249,12 +279,17 @@ export default async function EvaluationCycleDetailPage({
     scorecardError = error instanceof Error ? error.message : "Unable to load scorecard details.";
   }
 
+  const currentScore = scorecard ? scorecard.finalScore.toFixed(1) : "--";
+  const performanceBadge = scorecard?.scoreLabel ?? "Not Scored";
+  const roleLabel = cycle.subject.staffProfile?.title ?? "Staff Member";
+  const responseStatus = `${completedReviewers}/${invitedReviewers} completed (${completionPercent}%)`;
+
   return (
     <main className="bg-slate-50 px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-6">
-        <header className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <header className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
           <nav aria-label="Breadcrumb" className="text-sm text-slate-500">
-            <ol className="flex flex-wrap items-center gap-2">
+            <ol className="flex flex-wrap items-center gap-2 px-6 pt-5">
               <li>
                 <Link href="/admin/cycles" className="hover:text-blue-700">Evaluation Cycles</Link>
               </li>
@@ -263,25 +298,89 @@ export default async function EvaluationCycleDetailPage({
             </ol>
           </nav>
 
-          <div className="mt-5 flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-            <div className="max-w-3xl">
-              <div className="flex flex-wrap items-center gap-3">
-                <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${getStatusClasses(cycle.status)}`}>
-                  {getStatusLabel(cycle.status)}
-                </span>
-                <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
-                  360-Degree Evaluation
-                </span>
-              </div>
-              <h1 className="mt-4 text-3xl font-semibold tracking-tight text-[#0B1F3A] sm:text-4xl">
-                {cycle.subject.name}
-              </h1>
-              <p className="mt-2 text-sm text-slate-600">{cycle.subject.email}</p>
-              <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600">{cycle.description}</p>
-            </div>
+          <div className="mt-5 border-t border-slate-100 bg-gradient-to-r from-white via-white to-slate-50 p-6">
+            <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
+              <div className="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-center">
+                <div className="flex h-28 w-28 shrink-0 items-center justify-center rounded-full border-4 border-white bg-[#0B1F3A] text-3xl font-semibold text-white shadow-md ring-1 ring-slate-200">
+                  {getInitials(cycle.subject.name)}
+                </div>
 
-            <div className="flex flex-col gap-2 sm:flex-row lg:flex-col xl:flex-row">
-              <ResendInvitesButton cycleId={cycle.id} />
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${getStatusClasses(cycle.status)}`}>
+                      {getStatusLabel(cycle.status)}
+                    </span>
+                    <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600">
+                      360-Degree Evaluation
+                    </span>
+                  </div>
+                  <h1 className="mt-3 truncate text-3xl font-semibold tracking-tight text-[#0B1F3A] sm:text-4xl">
+                    {cycle.subject.name}
+                  </h1>
+                  <p className="mt-1 text-sm text-slate-600">{cycle.subject.email}</p>
+                  <dl className="mt-5 grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2 lg:grid-cols-3">
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Cycle</dt>
+                      <dd className="mt-1 font-medium text-slate-900">{cycle.description}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Role</dt>
+                      <dd className="mt-1 font-medium text-slate-900">{roleLabel}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Evaluation Type</dt>
+                      <dd className="mt-1 font-medium text-slate-900">360-Degree Evaluation</dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Deadline</dt>
+                      <dd className="mt-1 font-medium text-slate-900">{formatDate(cycle.deadline)}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Total Evaluators</dt>
+                      <dd className="mt-1 font-medium text-slate-900">{invitedReviewers}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Response Status</dt>
+                      <dd className="mt-1 font-medium text-slate-900">{responseStatus}</dd>
+                    </div>
+                  </dl>
+                </div>
+              </div>
+
+              <div className="flex shrink-0 flex-col gap-4 xl:items-end">
+                <div className="grid gap-3 sm:grid-cols-2 xl:min-w-80">
+                  <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Current Score</p>
+                    <p className="mt-2 text-4xl font-semibold text-[#0B1F3A]">{currentScore}</p>
+                  </div>
+                  <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Performance Badge</p>
+                    <span className={`mt-3 inline-flex rounded-full border px-3 py-1.5 text-sm font-semibold ${getBadgeClasses(performanceBadge)}`}>
+                      {performanceBadge}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2 sm:flex-row xl:justify-end">
+                  <ResendInvitesButton cycleId={cycle.id} />
+                  <Link
+                    href={`/admin/evaluations/${cycle.id}/test-links`}
+                    className="inline-flex items-center justify-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900 transition-colors hover:bg-slate-50"
+                  >
+                    View Test Links
+                  </Link>
+                  <details className="relative">
+                    <summary className="inline-flex cursor-pointer list-none items-center justify-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900 transition-colors hover:bg-slate-50">
+                      More Actions
+                    </summary>
+                    <div className="absolute right-0 z-20 mt-2 w-56 rounded-xl border border-slate-200 bg-white p-2 text-sm shadow-lg">
+                      <a href="#invitation-monitor" className="block rounded-lg px-3 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-950">Invitation monitor</a>
+                      <a href="#performance-summary" className="block rounded-lg px-3 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-950">Performance summary</a>
+                      <a href="#ai-review-assistant" className="block rounded-lg px-3 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-950">AI review assistant</a>
+                    </div>
+                  </details>
+                </div>
+              </div>
             </div>
           </div>
         </header>
@@ -339,7 +438,7 @@ export default async function EvaluationCycleDetailPage({
         <section className="container-fluid px-0" aria-label="Cycle workspace">
           <div className="row g-4">
             <div className="col-12 col-lg-8 space-y-6">
-              <Card className="rounded-2xl border-slate-200 bg-white shadow-sm">
+              <Card id="invitation-monitor" className="rounded-2xl border-slate-200 bg-white shadow-sm">
               <CardHeader>
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <div>
@@ -396,7 +495,7 @@ export default async function EvaluationCycleDetailPage({
               />
             </section>
 
-            <Card className="rounded-2xl border-slate-200 bg-white shadow-sm">
+            <Card id="performance-summary" className="rounded-2xl border-slate-200 bg-white shadow-sm">
               <CardHeader>
                 <CardTitle className="text-[#0B1F3A]">Performance Summary</CardTitle>
               </CardHeader>
@@ -552,7 +651,7 @@ export default async function EvaluationCycleDetailPage({
             </div>
 
             <aside className="col-12 col-lg-4 space-y-6 lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto">
-              <Card className="rounded-2xl border-slate-200 bg-white shadow-sm">
+              <Card id="ai-review-assistant" className="rounded-2xl border-slate-200 bg-white shadow-sm">
                 <CardHeader>
                   <CardTitle className="text-[#0B1F3A]">AI Review Assistant</CardTitle>
                 </CardHeader>
