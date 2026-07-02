@@ -113,6 +113,36 @@ function parseNumber(value: unknown): number {
   return Number.parseFloat(String(value));
 }
 
+function isMissingSchoolIdColumn(error: unknown): boolean {
+  const candidate = error as { code?: string; message?: string };
+  return candidate.code === "42703" && (candidate.message ?? "").includes("schoolId");
+}
+
+function buildDefaultScorecardWeights(): ScorecardWeights {
+  return {
+    groups: DEFAULT_GROUPS.map((group) => ({
+      id: `default-group-${group.name}`,
+      name: group.name,
+      weight: normalizeWeight(group.weight),
+    })),
+    sessions: DEFAULT_SESSIONS.map((session, sessionIndex) => {
+      const sessionId = `default-session-${session.audienceType}-${sessionIndex + 1}`;
+      return {
+        id: sessionId,
+        name: session.name,
+        audienceType: session.audienceType,
+        weight: normalizeWeight(session.weight),
+        factors: session.factors.map((factor) => ({
+          id: `${sessionId}-factor-${factor.order}`,
+          questionText: factor.text,
+          order: factor.order,
+          weight: normalizeWeight(factor.weight),
+        })),
+      };
+    }),
+  };
+}
+
 function isCloseToOne(value: number): boolean {
   return Math.abs(normalizeWeight(value) - 1) <= WEIGHT_SUM_EPSILON;
 }
@@ -231,13 +261,7 @@ async function ensureDefaultsSeeded(schoolId: string) {
   });
 }
 
-export async function getScorecardWeights(schoolId: string): Promise<ScorecardWeights> {
-  try {
-    await ensureDefaultsSeeded(schoolId);
-  } catch {
-    // Migration may not be applied yet. Fall through and let SELECT fail with a clear API error.
-  }
-
+async function getSchoolScorecardWeights(schoolId: string): Promise<ScorecardWeights> {
   const groupRows = (await prisma.$queryRawUnsafe(
     `
     SELECT "id", "name", "weight"
@@ -295,6 +319,77 @@ export async function getScorecardWeights(schoolId: string): Promise<ScorecardWe
       factors: factorsBySession.get(session.id) ?? [],
     })),
   };
+}
+
+async function getLegacyScorecardWeights(): Promise<ScorecardWeights> {
+  const groupRows = (await prisma.$queryRawUnsafe(
+    `
+    SELECT "id", "name", "weight"
+    FROM "EvaluationGroup"
+    ORDER BY "name" ASC
+    `,
+  )) as Array<{ id: string; name: GroupName; weight: unknown }>;
+
+  const sessionRows = (await prisma.$queryRawUnsafe(
+    `
+    SELECT s."id", s."name", s."audienceType", s."weight"
+    FROM "EvaluationSession" s
+    ORDER BY s."audienceType" ASC, s."name" ASC
+    `,
+  )) as Array<{ id: string; name: string; audienceType: GroupName; weight: unknown }>;
+
+  const factorRows = (await prisma.$queryRawUnsafe(
+    `
+    SELECT q."id", q."sessionId", q."text", q."order", q."weight"
+    FROM "EvaluationQuestion" q
+    INNER JOIN "EvaluationSession" s ON s."id" = q."sessionId"
+    ORDER BY q."sessionId" ASC, q."order" ASC
+    `,
+  )) as Array<{ id: string; sessionId: string; text: string; order: number; weight: unknown }>;
+
+  if (groupRows.length === 0 || sessionRows.length === 0) {
+    return buildDefaultScorecardWeights();
+  }
+
+  const factorsBySession = new Map<string, ScorecardFactorWeight[]>();
+  for (const factor of factorRows) {
+    const list = factorsBySession.get(factor.sessionId) ?? [];
+    list.push({
+      id: factor.id,
+      questionText: factor.text,
+      order: Number(factor.order),
+      weight: normalizeWeight(parseNumber(factor.weight)),
+    });
+    factorsBySession.set(factor.sessionId, list);
+  }
+
+  return {
+    groups: groupRows.map((group) => ({
+      id: group.id,
+      name: group.name,
+      weight: normalizeWeight(parseNumber(group.weight)),
+    })),
+    sessions: sessionRows.map((session) => ({
+      id: session.id,
+      name: session.name,
+      audienceType: session.audienceType,
+      weight: normalizeWeight(parseNumber(session.weight)),
+      factors: factorsBySession.get(session.id) ?? [],
+    })),
+  };
+}
+
+export async function getScorecardWeights(schoolId: string): Promise<ScorecardWeights> {
+  try {
+    await ensureDefaultsSeeded(schoolId);
+    return await getSchoolScorecardWeights(schoolId);
+  } catch (error) {
+    if (isMissingSchoolIdColumn(error)) {
+      return getLegacyScorecardWeights();
+    }
+
+    throw error;
+  }
 }
 
 export async function saveScorecardWeights(schoolId: string, payload: ScorecardWeightsPayload): Promise<void> {
