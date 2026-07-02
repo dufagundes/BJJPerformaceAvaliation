@@ -37,6 +37,8 @@ begin
   limit 1;
 
   if target_user_id is null then
+    target_user_id := gen_random_uuid();
+
     insert into "User" (
       "id",
       "schoolId",
@@ -47,7 +49,7 @@ begin
       "isActive",
       "createdAt"
     ) values (
-      gen_random_uuid(),
+      target_user_id,
       target_school_id,
       'Test Admin',
       'admin@test.local',
@@ -65,6 +67,11 @@ begin
       "isActive" = true
     where "id" = target_user_id;
   end if;
+
+  update "User"
+  set "isActive" = false
+  where lower("email") = 'admin@test.local'
+    and "id" <> target_user_id;
 
   if not exists (select 1 from "AdminConfig" where "schoolId" = target_school_id) then
     insert into "AdminConfig" (
