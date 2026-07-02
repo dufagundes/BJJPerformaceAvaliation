@@ -232,6 +232,123 @@ function normalizeOptions(options: unknown): EvaluationFormOption[] {
     .filter((option): option is EvaluationFormOption => option !== null);
 }
 
+function isMissingSchoolIdColumn(error: unknown): boolean {
+  const candidate = error as { code?: string; message?: string; meta?: { column?: string } };
+  return (
+    (candidate.code === "42703" || candidate.code === "P2022") &&
+    ((candidate.message ?? "").includes("schoolId") || (candidate.meta?.column ?? "").includes("schoolId"))
+  );
+}
+
+function mapQuestionRows(rows: Array<{
+  id: string;
+  staffRole: string;
+  audienceType: EvaluationAudienceType;
+  text: string;
+  type: EvaluationQuestionType;
+  isRequired: boolean;
+  options: unknown;
+  order: number;
+}>): EvaluationFormQuestion[] {
+  return rows.map((row) => ({
+    options:
+      row.type === EvaluationQuestionType.TEXT
+        ? []
+        : (() => {
+            const normalized = normalizeOptions(row.options);
+            if (normalized.length === 0) {
+              return DEFAULT_SCORED_OPTIONS;
+            }
+
+            if (isLegacyNumericDefaultOptions(normalized)) {
+              return DEFAULT_SCORED_OPTIONS;
+            }
+
+            return normalized;
+          })(),
+    id: row.id,
+    staffRole: row.staffRole,
+    audienceType: row.audienceType,
+    text: row.text,
+    type: row.type === EvaluationQuestionType.TEXT ? EvaluationQuestionType.TEXT : EvaluationQuestionType.MULTIPLE_CHOICE,
+    isRequired: row.isRequired,
+    order: row.order,
+  }));
+}
+
+function getDefaultEvaluationFormQuestions(
+  audienceType?: EvaluationAudienceType,
+  staffRole = HEAD_INSTRUCTOR_ROLE,
+): EvaluationFormQuestion[] {
+  const audienceMatches = (question: Omit<EvaluationFormQuestionPayload, "id">) => !audienceType ||
+    question.audienceType === EvaluationAudienceType.ALL ||
+    question.audienceType === audienceType;
+  const roleQuestions = DEFAULT_QUESTIONS.filter((question) => (question.staffRole ?? "") === staffRole && audienceMatches(question));
+  const questions = roleQuestions.length > 0
+    ? roleQuestions
+    : DEFAULT_QUESTIONS.filter((question) => (question.staffRole ?? "") === HEAD_INSTRUCTOR_ROLE && audienceMatches(question));
+
+  return mapQuestionRows(questions.map((question) => ({
+    id: `default-${question.staffRole}-${question.audienceType}-${question.order}`,
+    staffRole: question.staffRole ?? "",
+    audienceType: question.audienceType,
+    text: question.text,
+    type: question.type,
+    isRequired: question.isRequired,
+    options: question.options,
+    order: question.order,
+  })));
+}
+
+async function getLegacyEvaluationFormQuestions(
+  audienceType?: EvaluationAudienceType,
+  staffRole = HEAD_INSTRUCTOR_ROLE,
+): Promise<EvaluationFormQuestion[]> {
+  const audienceClause = audienceType
+    ? `AND ("audienceType" = 'ALL'::"EvaluationAudienceType" OR "audienceType" = $2::"EvaluationAudienceType")`
+    : "";
+  const params = audienceType ? [staffRole, audienceType] : [staffRole];
+  let rows = (await prisma.$queryRawUnsafe(
+    `
+    SELECT "id", "staffRole", "audienceType", "text", "type", "isRequired", "options", "order"
+    FROM "EvaluationFormQuestion"
+    WHERE "staffRole" = $1::TEXT
+    ${audienceClause}
+    ORDER BY "staffRole" ASC, "audienceType" ASC, "order" ASC
+    `,
+    ...params,
+  )) as Array<{
+    id: string;
+    staffRole: string;
+    audienceType: EvaluationAudienceType;
+    text: string;
+    type: EvaluationQuestionType;
+    isRequired: boolean;
+    options: unknown;
+    order: number;
+  }>;
+
+  if (rows.length === 0 && staffRole !== HEAD_INSTRUCTOR_ROLE) {
+    const fallbackParams = audienceType ? [HEAD_INSTRUCTOR_ROLE, audienceType] : [HEAD_INSTRUCTOR_ROLE];
+    rows = (await prisma.$queryRawUnsafe(
+      `
+      SELECT "id", "staffRole", "audienceType", "text", "type", "isRequired", "options", "order"
+      FROM "EvaluationFormQuestion"
+      WHERE "staffRole" = $1::TEXT
+      ${audienceClause}
+      ORDER BY "staffRole" ASC, "audienceType" ASC, "order" ASC
+      `,
+      ...fallbackParams,
+    )) as typeof rows;
+  }
+
+  if (rows.length === 0) {
+    return getDefaultEvaluationFormQuestions(audienceType, staffRole);
+  }
+
+  return mapQuestionRows(rows);
+}
+
 async function ensureDefaultsSeeded(schoolId: string) {
   await prisma.$transaction(async (tx) => {
     for (const question of DEFAULT_QUESTIONS) {
@@ -295,49 +412,46 @@ export async function getEvaluationFormQuestions(
   audienceType?: EvaluationAudienceType,
   staffRole = HEAD_INSTRUCTOR_ROLE,
 ): Promise<EvaluationFormQuestion[]> {
-  await ensureDefaultsSeeded(schoolId);
+  try {
+    await ensureDefaultsSeeded(schoolId);
+  } catch (error) {
+    if (isMissingSchoolIdColumn(error)) {
+      return getLegacyEvaluationFormQuestions(audienceType, staffRole);
+    }
+
+    throw error;
+  }
 
   const audienceFilter = audienceType
     ? { OR: [{ audienceType: EvaluationAudienceType.ALL }, { audienceType }] }
     : {};
 
-  let rows = await prisma.evaluationFormQuestion.findMany({
-    where: { schoolId, staffRole, ...audienceFilter },
-    orderBy: [{ staffRole: "asc" }, { audienceType: "asc" }, { order: "asc" }],
-  });
-
-  // Fall back to HEAD_INSTRUCTOR questions when no questions are configured for the given role
-  if (rows.length === 0 && staffRole !== HEAD_INSTRUCTOR_ROLE) {
-    rows = await prisma.evaluationFormQuestion.findMany({
-      where: { schoolId, staffRole: HEAD_INSTRUCTOR_ROLE, ...audienceFilter },
+  try {
+    let rows = await prisma.evaluationFormQuestion.findMany({
+      where: { schoolId, staffRole, ...audienceFilter },
       orderBy: [{ staffRole: "asc" }, { audienceType: "asc" }, { order: "asc" }],
     });
+
+    // Fall back to HEAD_INSTRUCTOR questions when no questions are configured for the given role
+    if (rows.length === 0 && staffRole !== HEAD_INSTRUCTOR_ROLE) {
+      rows = await prisma.evaluationFormQuestion.findMany({
+        where: { schoolId, staffRole: HEAD_INSTRUCTOR_ROLE, ...audienceFilter },
+        orderBy: [{ staffRole: "asc" }, { audienceType: "asc" }, { order: "asc" }],
+      });
+    }
+
+    if (rows.length === 0) {
+      return getDefaultEvaluationFormQuestions(audienceType, staffRole);
+    }
+
+    return mapQuestionRows(rows);
+  } catch (error) {
+    if (isMissingSchoolIdColumn(error)) {
+      return getLegacyEvaluationFormQuestions(audienceType, staffRole);
+    }
+
+    throw error;
   }
-
-  return rows.map((row) => ({
-    options:
-      row.type === EvaluationQuestionType.TEXT
-        ? []
-        : (() => {
-            const normalized = normalizeOptions(row.options);
-            if (normalized.length === 0) {
-              return DEFAULT_SCORED_OPTIONS;
-            }
-
-            if (isLegacyNumericDefaultOptions(normalized)) {
-              return DEFAULT_SCORED_OPTIONS;
-            }
-
-            return normalized;
-          })(),
-    id: row.id,
-    staffRole: row.staffRole,
-    audienceType: row.audienceType,
-    text: row.text,
-    type: row.type === EvaluationQuestionType.TEXT ? EvaluationQuestionType.TEXT : EvaluationQuestionType.MULTIPLE_CHOICE,
-    isRequired: row.isRequired,
-    order: row.order,
-  }));
 }
 
 function validateQuestionPayload(payload: EvaluationFormQuestionPayload[]): string[] {
