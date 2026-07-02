@@ -17,10 +17,16 @@ export function EvalProAppShell({
   subtitle?: string;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950 lg:flex">
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar
+        isOpen={sidebarOpen}
+        isCollapsed={sidebarCollapsed}
+        onClose={() => setSidebarOpen(false)}
+        onToggleCollapse={() => setSidebarCollapsed((collapsed) => !collapsed)}
+      />
       <div className="min-w-0 flex-1">
         <Header onMenuClick={() => setSidebarOpen(true)} user={user} title={title} subtitle={subtitle} />
         <div className="px-4 py-6 sm:px-6 lg:px-8">{children}</div>
