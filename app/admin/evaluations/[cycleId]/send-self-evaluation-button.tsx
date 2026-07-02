@@ -40,6 +40,7 @@ export default function SendSelfEvaluationButton({ cycleId }: { cycleId: string 
   return (
     <div className="space-y-2">
       <Button type="button" variant="outline" onClick={() => void sendSelfEvaluation()} disabled={isSending}>
+        <i className={`bi ${isSending ? "bi-arrow-repeat" : "bi-person-lines-fill"} mr-2`} aria-hidden="true" />
         {isSending ? "Sending..." : "Send Self Evaluation"}
       </Button>
       {message ? (

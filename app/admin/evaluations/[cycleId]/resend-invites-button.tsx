@@ -82,6 +82,7 @@ export default function ResendInvitesButton({ cycleId }: { cycleId: string }) {
   return (
     <div className="space-y-2">
       <Button type="button" onClick={() => void resendInvites()} disabled={isSending}>
+        <i className={`bi ${isSending ? "bi-arrow-repeat" : "bi-send"} mr-2`} aria-hidden="true" />
         {isSending ? "Sending..." : "Resend Pending Emails"}
       </Button>
       {message ? (

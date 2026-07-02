@@ -803,30 +803,50 @@ export default async function EvaluationCycleDetailPage({
 
               <div className="grid overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:grid-cols-2 xl:grid-cols-[minmax(0,2fr)_repeat(5,minmax(130px,1fr))]">
                 <div className="border-b border-slate-200 p-5 lg:col-span-2 xl:col-span-1 xl:border-b-0 xl:border-r">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Cycle Overview</p>
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
+                      <i className="bi bi-clipboard-data" aria-hidden="true" />
+                    </span>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Cycle Overview</p>
+                  </div>
                   <p className="mt-2 text-sm leading-6 text-slate-700">{cycle.description}</p>
                 </div>
                 <div className="border-b border-slate-200 p-5 sm:border-r xl:border-b-0">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Role</p>
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
+                    <i className="bi bi-person-badge" aria-hidden="true" />
+                  </span>
+                  <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Role</p>
                   <p className="mt-3 text-sm font-semibold text-slate-950">{roleLabel}</p>
                 </div>
                 <div className="border-b border-slate-200 p-5 xl:border-b-0 xl:border-r">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Deadline</p>
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
+                    <i className="bi bi-calendar-event" aria-hidden="true" />
+                  </span>
+                  <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Deadline</p>
                   <p className="mt-3 text-sm font-semibold text-slate-950">{formatDate(cycle.deadline)}</p>
                   <p className="mt-1 text-xs text-amber-600">{daysRemaining} day{daysRemaining === 1 ? "" : "s"} remaining</p>
                 </div>
                 <div className="border-b border-slate-200 p-5 sm:border-r xl:border-b-0">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Total Evaluators</p>
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
+                    <i className="bi bi-people" aria-hidden="true" />
+                  </span>
+                  <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Total Evaluators</p>
                   <p className="mt-3 text-2xl font-semibold text-[#0B1F3A]">{invitedReviewers}</p>
                   <p className="mt-1 text-xs text-slate-500">{peerReviewers.length} peers, {contactReviewers.length} parents/students</p>
                 </div>
                 <div className="border-b border-slate-200 p-5 xl:border-b-0 xl:border-r">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Response Status</p>
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
+                    <i className="bi bi-activity" aria-hidden="true" />
+                  </span>
+                  <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Response Status</p>
                   <p className="mt-3 text-2xl font-semibold text-[#0B1F3A]">{completionPercent}%</p>
                   <p className="mt-1 text-xs text-slate-500">{responseStatus}</p>
                 </div>
                 <div className="p-5">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Current Score</p>
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
+                    <i className="bi bi-speedometer2" aria-hidden="true" />
+                  </span>
+                  <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Current Score</p>
                   <p className="mt-3 text-2xl font-semibold text-[#0B1F3A]">{currentScore}</p>
                   <span className={`mt-2 inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getBadgeClasses(performanceBadge)}`}>
                     {performanceBadge}
