@@ -114,8 +114,11 @@ function parseNumber(value: unknown): number {
 }
 
 function isMissingSchoolIdColumn(error: unknown): boolean {
-  const candidate = error as { code?: string; message?: string };
-  return candidate.code === "42703" && (candidate.message ?? "").includes("schoolId");
+  const candidate = error as { code?: string; message?: string; meta?: { code?: string; message?: string; column?: string } };
+  const code = candidate.code ?? candidate.meta?.code ?? "";
+  const message = `${candidate.message ?? ""} ${candidate.meta?.message ?? ""} ${candidate.meta?.column ?? ""}`;
+
+  return (code === "42703" || code === "P2010" || code === "P2022") && message.includes("schoolId");
 }
 
 function buildDefaultScorecardWeights(): ScorecardWeights {
@@ -322,61 +325,65 @@ async function getSchoolScorecardWeights(schoolId: string): Promise<ScorecardWei
 }
 
 async function getLegacyScorecardWeights(): Promise<ScorecardWeights> {
-  const groupRows = (await prisma.$queryRawUnsafe(
-    `
-    SELECT "id", "name", "weight"
-    FROM "EvaluationGroup"
-    ORDER BY "name" ASC
-    `,
-  )) as Array<{ id: string; name: GroupName; weight: unknown }>;
+  try {
+    const groupRows = (await prisma.$queryRawUnsafe(
+      `
+      SELECT "id", "name", "weight"
+      FROM "EvaluationGroup"
+      ORDER BY "name" ASC
+      `,
+    )) as Array<{ id: string; name: GroupName; weight: unknown }>;
 
-  const sessionRows = (await prisma.$queryRawUnsafe(
-    `
-    SELECT s."id", s."name", s."audienceType", s."weight"
-    FROM "EvaluationSession" s
-    ORDER BY s."audienceType" ASC, s."name" ASC
-    `,
-  )) as Array<{ id: string; name: string; audienceType: GroupName; weight: unknown }>;
+    const sessionRows = (await prisma.$queryRawUnsafe(
+      `
+      SELECT s."id", s."name", s."audienceType", s."weight"
+      FROM "EvaluationSession" s
+      ORDER BY s."audienceType" ASC, s."name" ASC
+      `,
+    )) as Array<{ id: string; name: string; audienceType: GroupName; weight: unknown }>;
 
-  const factorRows = (await prisma.$queryRawUnsafe(
-    `
-    SELECT q."id", q."sessionId", q."text", q."order", q."weight"
-    FROM "EvaluationQuestion" q
-    INNER JOIN "EvaluationSession" s ON s."id" = q."sessionId"
-    ORDER BY q."sessionId" ASC, q."order" ASC
-    `,
-  )) as Array<{ id: string; sessionId: string; text: string; order: number; weight: unknown }>;
+    const factorRows = (await prisma.$queryRawUnsafe(
+      `
+      SELECT q."id", q."sessionId", q."text", q."order", q."weight"
+      FROM "EvaluationQuestion" q
+      INNER JOIN "EvaluationSession" s ON s."id" = q."sessionId"
+      ORDER BY q."sessionId" ASC, q."order" ASC
+      `,
+    )) as Array<{ id: string; sessionId: string; text: string; order: number; weight: unknown }>;
 
-  if (groupRows.length === 0 || sessionRows.length === 0) {
+    if (groupRows.length === 0 || sessionRows.length === 0) {
+      return buildDefaultScorecardWeights();
+    }
+
+    const factorsBySession = new Map<string, ScorecardFactorWeight[]>();
+    for (const factor of factorRows) {
+      const list = factorsBySession.get(factor.sessionId) ?? [];
+      list.push({
+        id: factor.id,
+        questionText: factor.text,
+        order: Number(factor.order),
+        weight: normalizeWeight(parseNumber(factor.weight)),
+      });
+      factorsBySession.set(factor.sessionId, list);
+    }
+
+    return {
+      groups: groupRows.map((group) => ({
+        id: group.id,
+        name: group.name,
+        weight: normalizeWeight(parseNumber(group.weight)),
+      })),
+      sessions: sessionRows.map((session) => ({
+        id: session.id,
+        name: session.name,
+        audienceType: session.audienceType,
+        weight: normalizeWeight(parseNumber(session.weight)),
+        factors: factorsBySession.get(session.id) ?? [],
+      })),
+    };
+  } catch {
     return buildDefaultScorecardWeights();
   }
-
-  const factorsBySession = new Map<string, ScorecardFactorWeight[]>();
-  for (const factor of factorRows) {
-    const list = factorsBySession.get(factor.sessionId) ?? [];
-    list.push({
-      id: factor.id,
-      questionText: factor.text,
-      order: Number(factor.order),
-      weight: normalizeWeight(parseNumber(factor.weight)),
-    });
-    factorsBySession.set(factor.sessionId, list);
-  }
-
-  return {
-    groups: groupRows.map((group) => ({
-      id: group.id,
-      name: group.name,
-      weight: normalizeWeight(parseNumber(group.weight)),
-    })),
-    sessions: sessionRows.map((session) => ({
-      id: session.id,
-      name: session.name,
-      audienceType: session.audienceType,
-      weight: normalizeWeight(parseNumber(session.weight)),
-      factors: factorsBySession.get(session.id) ?? [],
-    })),
-  };
 }
 
 export async function getScorecardWeights(schoolId: string): Promise<ScorecardWeights> {
