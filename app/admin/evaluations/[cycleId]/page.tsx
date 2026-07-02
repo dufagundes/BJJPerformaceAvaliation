@@ -234,6 +234,80 @@ function EvaluationBreakdownCard({ breakdown }: { breakdown: AudienceBreakdown }
   );
 }
 
+function SelfEvaluationBreakdownCard({
+  answers,
+  status,
+}: {
+  answers: SelfEvaluationAnswers;
+  status: string;
+}) {
+  const isComplete = status === "Completed";
+  const answeredCount = SELF_EVALUATION_QUESTIONS.filter((question) => answers[`q${question.order}`]?.trim()).length;
+  const responsePercent = isComplete ? "100%" : "0%";
+  const topStrength = answers.q3?.trim() || "Awaiting self reflection";
+  const lowestArea = answers.q4?.trim() || "Awaiting self reflection";
+
+  return (
+    <details className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <summary className="flex cursor-pointer list-none flex-col gap-5 p-5 marker:hidden lg:flex-row lg:items-start lg:justify-between">
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-3">
+            <h3 className="text-lg font-semibold text-[#0B1F3A]">Self Evaluation</h3>
+            <span className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${isComplete ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-50 text-slate-600"}`}>
+              {isComplete ? `${answeredCount} responses` : "Pending"}
+            </span>
+          </div>
+          <dl className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+            <div>
+              <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Average Score</dt>
+              <dd className="mt-1 text-lg font-semibold text-slate-950">Qualitative</dd>
+            </div>
+            <div>
+              <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Response %</dt>
+              <dd className="mt-1 text-lg font-semibold text-slate-950">{responsePercent}</dd>
+            </div>
+            <div>
+              <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Weight</dt>
+              <dd className="mt-1 text-lg font-semibold text-slate-950">Not scored</dd>
+            </div>
+            <div>
+              <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Top Strength</dt>
+              <dd className="mt-1 line-clamp-2 text-sm font-medium text-slate-800">{topStrength}</dd>
+            </div>
+            <div>
+              <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Lowest Area</dt>
+              <dd className="mt-1 line-clamp-2 text-sm font-medium text-slate-800">{lowestArea}</dd>
+            </div>
+          </dl>
+        </div>
+        <span className="inline-flex shrink-0 items-center justify-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900 transition-colors hover:bg-slate-50">
+          View Details
+        </span>
+      </summary>
+
+      <div className="border-t border-slate-100 px-5 pb-5 pt-4">
+        <h4 className="text-sm font-semibold text-slate-950">Questions</h4>
+        {isComplete ? (
+          <div className="mt-4 space-y-3">
+            {SELF_EVALUATION_QUESTIONS.map((question) => (
+              <article key={question.order} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <p className="text-sm font-semibold text-slate-900">{question.order}. {question.text}</p>
+                <p className="mt-3 whitespace-pre-wrap rounded-lg bg-white p-3 text-sm leading-6 text-slate-700">
+                  {answers[`q${question.order}`]?.trim() || "No answer provided."}
+                </p>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            The self evaluation has been configured and sent, but the staff member has not submitted it yet.
+          </p>
+        )}
+      </div>
+    </details>
+  );
+}
+
 function EvaluationTimeline({ stages }: { stages: TimelineStage[] }) {
   return (
     <section aria-labelledby="evaluation-timeline-heading" className="card border-0 shadow-sm">
@@ -557,7 +631,6 @@ export default async function EvaluationCycleDetailPage({
   const audienceBreakdowns = [
     buildAudienceBreakdown("Peer Evaluation", peerScoreGroup),
     buildAudienceBreakdown("Parents & Students", parentStudentScoreGroup),
-    buildAudienceBreakdown("Self Evaluation", null),
     buildAudienceBreakdown("Manager Evaluation", null),
   ];
   const responseDates = cycle.reviewers
@@ -779,6 +852,7 @@ export default async function EvaluationCycleDetailPage({
             {audienceBreakdowns.map((breakdown) => (
               <EvaluationBreakdownCard key={breakdown.title} breakdown={breakdown} />
             ))}
+            <SelfEvaluationBreakdownCard answers={selfEvaluationAnswers} status={selfEvaluationStatus} />
           </div>
         </section>
 
