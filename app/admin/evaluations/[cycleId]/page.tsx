@@ -5,6 +5,7 @@ import SendSelfEvaluationButton from "./send-self-evaluation-button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../components/ui/card";
 import { getAdminSession } from "../../../../lib/adminAuth";
 import { prisma } from "../../../../lib/prisma";
+import { SELF_EVALUATION_QUESTIONS } from "../../../../lib/selfEvaluationQuestions";
 import { calculateCycleScorecard } from "../../../../lib/weightedScorecard";
 
 export const dynamic = "force-dynamic";
@@ -29,6 +30,8 @@ type TimelineStage = {
   status: string;
   complete: boolean;
 };
+
+type SelfEvaluationAnswers = Record<string, string>;
 
 function formatDate(value: Date): string {
   return value.toLocaleDateString("en-US", {
@@ -269,6 +272,77 @@ function EvaluationTimeline({ stages }: { stages: TimelineStage[] }) {
   );
 }
 
+function asSelfEvaluationAnswers(value: unknown): SelfEvaluationAnswers {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return {};
+  }
+
+  const answers: SelfEvaluationAnswers = {};
+  for (const question of SELF_EVALUATION_QUESTIONS) {
+    const answer = (value as Record<string, unknown>)[`q${question.order}`];
+    answers[`q${question.order}`] = typeof answer === "string" ? answer : "";
+  }
+
+  return answers;
+}
+
+function SelfEvaluationReflectionCard({
+  answers,
+  status,
+  submittedAt,
+}: {
+  answers: SelfEvaluationAnswers;
+  status: string;
+  submittedAt: Date | null;
+}) {
+  const answeredCount = SELF_EVALUATION_QUESTIONS.filter((question) => answers[`q${question.order}`]?.trim()).length;
+  const isComplete = status === "COMPLETED";
+
+  return (
+    <Card className="rounded-2xl border-slate-200 bg-white shadow-sm">
+      <CardHeader>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <CardTitle className="text-[#0B1F3A]">Self Evaluation Reflection</CardTitle>
+            <p className="mt-1 text-sm text-slate-500">Qualitative reflection submitted by the evaluated staff member.</p>
+          </div>
+          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${isComplete ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600"}`}>
+            {isComplete ? "Completed" : "Pending"}
+          </span>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {submittedAt ? (
+          <p className="text-sm text-slate-600">Submitted on {formatDate(submittedAt)} · {answeredCount}/{SELF_EVALUATION_QUESTIONS.length} questions answered</p>
+        ) : (
+          <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            The staff member has not submitted their self evaluation yet.
+          </p>
+        )}
+
+        {isComplete ? (
+          <div className="space-y-3">
+            {SELF_EVALUATION_QUESTIONS.map((question) => {
+              const answer = answers[`q${question.order}`]?.trim();
+
+              return (
+                <details key={question.order} className="rounded-xl border border-slate-200 bg-slate-50 p-4" open={question.order <= 2}>
+                  <summary className="cursor-pointer text-sm font-semibold text-slate-950">
+                    {question.order}. {question.text}
+                  </summary>
+                  <p className="mt-3 whitespace-pre-wrap rounded-lg bg-white p-3 text-sm leading-6 text-slate-700">
+                    {answer || "No answer provided."}
+                  </p>
+                </details>
+              );
+            })}
+          </div>
+        ) : null}
+      </CardContent>
+    </Card>
+  );
+}
+
 function AudienceProgressCard({
   title,
   description,
@@ -367,7 +441,7 @@ export default async function EvaluationCycleDetailPage({
         deadline: Date;
         createdAt: Date;
         subject: { id: string; name: string; email: string; staffProfile: { title: string } | null };
-        selfEvaluation: { status: string; submittedAt: Date | null } | null;
+        selfEvaluation: { status: string; submittedAt: Date | null; answers: unknown } | null;
         reviewers: Array<{
           id: string;
           type: string;
@@ -402,6 +476,7 @@ export default async function EvaluationCycleDetailPage({
           select: {
             status: true,
             submittedAt: true,
+            answers: true,
           },
         },
         reviewers: {
@@ -476,6 +551,7 @@ export default async function EvaluationCycleDetailPage({
   const roleLabel = cycle.subject.staffProfile?.title ?? "Staff Member";
   const responseStatus = `${completedReviewers}/${invitedReviewers} completed (${completionPercent}%)`;
   const selfEvaluationStatus = cycle.selfEvaluation?.status === "COMPLETED" ? "Completed" : "Pending";
+  const selfEvaluationAnswers = asSelfEvaluationAnswers(cycle.selfEvaluation?.answers);
   const peerScoreGroup = scorecard?.groups.find((group) => group.name === "Peers") ?? null;
   const parentStudentScoreGroup = scorecard?.groups.find((group) => group.name === "Parents/Students") ?? null;
   const audienceBreakdowns = [
@@ -765,6 +841,12 @@ export default async function EvaluationCycleDetailPage({
                 completed={contactCompleted}
               />
             </section>
+
+            <SelfEvaluationReflectionCard
+              answers={selfEvaluationAnswers}
+              status={selfEvaluationStatus}
+              submittedAt={cycle.selfEvaluation?.submittedAt ?? null}
+            />
 
             <Card id="performance-summary" className="rounded-2xl border-slate-200 bg-white shadow-sm">
               <CardHeader>
