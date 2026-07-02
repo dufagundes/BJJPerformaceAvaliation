@@ -212,6 +212,7 @@ export default function EvaluationQuestionClient({
                 variant="outline"
                 onClick={() => setCurrentQuestionIndex(Math.max(0, currentQuestionIndex - 1))}
                 disabled={isFirstQuestion}
+                className="order-2 sm:order-1"
               >
                 ← Previous
               </Button>
@@ -227,6 +228,7 @@ export default function EvaluationQuestionClient({
                     onNavigateToOpenEnded?.();
                   }}
                   disabled={!isCurrentAnswered}
+                  className="order-1 sm:order-2"
                 >
                   Next →
                 </Button>
@@ -235,6 +237,7 @@ export default function EvaluationQuestionClient({
                   type="button"
                   onClick={() => setCurrentQuestionIndex(currentQuestionIndex + 1)}
                   disabled={!isCurrentAnswered}
+                  className="order-1 sm:order-2"
                 >
                   Next →
                 </Button>
