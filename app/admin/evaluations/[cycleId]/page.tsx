@@ -511,7 +511,7 @@ export default async function EvaluationCycleDetailPage({
   searchParams,
 }: {
   params: Promise<{ cycleId: string }>;
-  searchParams?: Promise<{ sent?: string; failed?: string; total?: string }>;
+  searchParams?: Promise<{ sent?: string; failed?: string; total?: string; error?: string }>;
 }) {
   const adminSession = await getAdminSession();
   if (!adminSession) {
@@ -638,6 +638,7 @@ export default async function EvaluationCycleDetailPage({
   const sentCount = Number(deliveryParams?.sent ?? NaN);
   const failedCount = Number(deliveryParams?.failed ?? NaN);
   const totalCount = Number(deliveryParams?.total ?? NaN);
+  const deliveryError = deliveryParams?.error?.trim() ?? "";
   const hasDeliverySummary = [sentCount, failedCount, totalCount].every(Number.isFinite);
 
   let scorecard: Awaited<ReturnType<typeof calculateCycleScorecard>> | null = null;
@@ -845,9 +846,16 @@ export default async function EvaluationCycleDetailPage({
 
         {hasDeliverySummary ? (
           <div className={`rounded-xl border px-4 py-3 text-sm shadow-sm ${failedCount > 0 ? "border-rose-200 bg-rose-50 text-rose-800" : "border-emerald-200 bg-emerald-50 text-emerald-800"}`}>
-            {failedCount > 0
-              ? `${sentCount} of ${totalCount} invitations were sent. ${failedCount} failed. Check EMAIL_FROM, RESEND_API_KEY, and your verified Resend domain.`
-              : `All ${sentCount} invitations were sent.`}
+            <p>
+              {failedCount > 0
+                ? `${sentCount} of ${totalCount} emails were sent. ${failedCount} failed.`
+                : `All ${sentCount} emails were sent.`}
+            </p>
+            {failedCount > 0 ? (
+              <p className="mt-1">
+                {deliveryError || "Check EMAIL_FROM, RESEND_API_KEY, your verified Resend domain, and whether the recipient is allowed by your Resend account."}
+              </p>
+            ) : null}
           </div>
         ) : null}
 

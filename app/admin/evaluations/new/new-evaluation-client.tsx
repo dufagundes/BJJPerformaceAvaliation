@@ -218,6 +218,7 @@ export default function NewEvaluationClient() {
           sent: number;
           failed: number;
           total: number;
+          errors?: string[];
         };
       }>(response);
       if (!response.ok || !data.cycle?.id) {
@@ -225,11 +226,19 @@ export default function NewEvaluationClient() {
       }
 
       const deliverySummary = data.deliverySummary;
-      const query = deliverySummary
-        ? `?sent=${deliverySummary.sent}&failed=${deliverySummary.failed}&total=${deliverySummary.total}`
-        : "";
+      const query = new URLSearchParams();
+      if (deliverySummary) {
+        query.set("sent", String(deliverySummary.sent));
+        query.set("failed", String(deliverySummary.failed));
+        query.set("total", String(deliverySummary.total));
+        if (deliverySummary.errors?.[0]) {
+          query.set("error", deliverySummary.errors[0]);
+        }
+      }
 
-      router.push(`/admin/evaluations/${data.cycle.id}${query}`);
+      const queryString = query.size > 0 ? `?${query.toString()}` : "";
+
+      router.push(`/admin/evaluations/${data.cycle.id}${queryString}`);
       router.refresh();
     } catch (error) {
       setIsError(true);

@@ -242,8 +242,12 @@ export async function POST(request: Request) {
     });
   }
 
-  const sent = reviewerResults.filter((reviewer) => reviewer.delivery.ok).length;
-  const failed = reviewerResults.length - sent;
+  const deliveryResults = [selfEvaluationDelivery, ...reviewerResults.map((reviewer) => reviewer.delivery)];
+  const sent = deliveryResults.filter((delivery) => delivery.ok).length;
+  const failed = deliveryResults.length - sent;
+  const errors = deliveryResults
+    .filter((delivery) => !delivery.ok && delivery.error)
+    .map((delivery) => delivery.error as string);
 
   return NextResponse.json(
     {
@@ -256,7 +260,8 @@ export async function POST(request: Request) {
       deliverySummary: {
         sent,
         failed,
-        total: reviewerResults.length,
+        total: deliveryResults.length,
+        errors,
       },
       reviewers: reviewerResults,
       selfEvaluation: {
