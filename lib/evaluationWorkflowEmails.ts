@@ -24,6 +24,8 @@ type MailTemplate = {
   text: string;
 };
 
+const BRAND_NAME = "GB Staff Evaluation";
+
 export type MailDelivery = {
   ok: boolean;
   id?: string;
@@ -60,14 +62,36 @@ function formatDate(value: Date): string {
   });
 }
 
+function formatFromAddress(from: string): string {
+  if (from.includes("<") && from.includes(">")) {
+    return from;
+  }
+
+  return `${BRAND_NAME} <${from}>`;
+}
+
+function buildFooterHtml(): string {
+  return `
+    <div style="padding: 18px 32px 26px; color: #6b7280; font-size: 12px; line-height: 1.5;">
+      <p style="margin: 0 0 6px;">You are receiving this because your school invited you to provide feedback through ${BRAND_NAME}.</p>
+      <p style="margin: 0;">Sent by ${BRAND_NAME} for bjjstaffvaluation.com.</p>
+    </div>
+  `;
+}
+
+function buildFooterText(): string {
+  return `You are receiving this because your school invited you to provide feedback through ${BRAND_NAME}.\nSent by ${BRAND_NAME} for bjjstaffvaluation.com.`;
+}
+
 export function buildInvitationEmailTemplate(input: InviteTemplateInput): MailTemplate {
   const reviewLink = getReviewLink(input.inviteToken);
   const deadlineDate = formatDate(input.deadline);
 
   return {
-    subject: `Share feedback for ${input.subjectName}`,
+    subject: `${BRAND_NAME}: feedback request for ${input.subjectName}`,
     html: `
       <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6; max-width: 640px; margin: 0 auto; background: #ffffff;">
+        <div style="display:none;max-height:0;overflow:hidden;color:#ffffff;opacity:0;">Your school invited you to provide feedback for ${input.subjectName}.</div>
         <div style="border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;">
           <div style="background: #111827; padding: 28px 32px; color: #ffffff;">
             <p style="margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #bfdbfe;">Performance Evaluation</p>
@@ -87,10 +111,11 @@ export function buildInvitationEmailTemplate(input: InviteTemplateInput): MailTe
               </a>
             </p>
           </div>
+          ${buildFooterHtml()}
         </div>
       </div>
     `,
-    text: `Hi ${input.reviewerName},\n\nYou have been invited to share feedback for ${input.subjectName}. Families, students, and colleagues each see different parts of a school community, and your observations help create a fairer, more useful picture.\n\nDeadline: ${deadlineDate}\n\nFill Out Evaluation: ${reviewLink}\n\nThis invitation is personal to you. No account is required.`,
+    text: `Hi ${input.reviewerName},\n\nYour school invited you to share feedback for ${input.subjectName}. Families, students, and colleagues each see different parts of a school community, and your observations help create a fairer, more useful picture.\n\nDeadline: ${deadlineDate}\n\nFill Out Evaluation: ${reviewLink}\n\nThis invitation is personal to you. No account is required.\n\n${buildFooterText()}`,
   };
 }
 
@@ -100,9 +125,10 @@ export function buildReminderEmailTemplate(input: ReminderTemplateInput): MailTe
   const label = input.daysRemaining <= 1 ? "1 day" : `${input.daysRemaining} days`;
 
   return {
-    subject: `Reminder: Your evaluation closes in ${label}`,
+    subject: `${BRAND_NAME}: evaluation reminder for ${input.subjectName}`,
     html: `
       <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6; max-width: 640px; margin: 0 auto; background: #ffffff;">
+        <div style="display:none;max-height:0;overflow:hidden;color:#ffffff;opacity:0;">Your school invited you to complete feedback for ${input.subjectName}.</div>
         <div style="border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;">
           <div style="background: #111827; padding: 28px 32px; color: #ffffff;">
             <p style="margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #bfdbfe;">Evaluation Reminder</p>
@@ -121,10 +147,11 @@ export function buildReminderEmailTemplate(input: ReminderTemplateInput): MailTe
               </a>
             </p>
           </div>
+          ${buildFooterHtml()}
         </div>
       </div>
     `,
-    text: `Hi ${input.reviewerName},\n\nReminder: your confidential evaluation for ${input.subjectName} closes in ${label}. Your experience can help the school recognize strengths and identify where support would make the biggest difference.\n\nDeadline: ${deadlineDate}\n\nFill Out Evaluation: ${reviewLink}\n\nThis invitation is personal to you. No account is required.`,
+    text: `Hi ${input.reviewerName},\n\nReminder: your school invited you to complete feedback for ${input.subjectName}. This evaluation closes in ${label}. Your experience can help the school recognize strengths and identify where support would make the biggest difference.\n\nDeadline: ${deadlineDate}\n\nFill Out Evaluation: ${reviewLink}\n\nThis invitation is personal to you. No account is required.\n\n${buildFooterText()}`,
   };
 }
 
@@ -133,9 +160,10 @@ export function buildSelfEvaluationEmailTemplate(input: SelfEvaluationTemplateIn
   const deadlineDate = formatDate(input.deadline);
 
   return {
-    subject: `Complete your self evaluation for ${input.cycleName}`,
+    subject: `${BRAND_NAME}: self evaluation for ${input.cycleName}`,
     html: `
       <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6; max-width: 640px; margin: 0 auto; background: #ffffff;">
+        <div style="display:none;max-height:0;overflow:hidden;color:#ffffff;opacity:0;">Your school invited you to complete your self evaluation.</div>
         <div style="border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;">
           <div style="background: #111827; padding: 28px 32px; color: #ffffff;">
             <p style="margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #bfdbfe;">Self Evaluation</p>
@@ -154,10 +182,11 @@ export function buildSelfEvaluationEmailTemplate(input: SelfEvaluationTemplateIn
               </a>
             </p>
           </div>
+          ${buildFooterHtml()}
         </div>
       </div>
     `,
-    text: `Hi ${input.staffName},\n\nYou have been invited to complete a self evaluation for ${input.cycleName}. This is not part of your scorecard. It is your opportunity to describe your accomplishments, strengths, challenges, improvement areas, and goals in your own words.\n\nDeadline: ${deadlineDate}\n\nComplete Self Evaluation: ${selfEvaluationLink}\n\nThis private link is personal to you. No account is required.`,
+    text: `Hi ${input.staffName},\n\nYour school invited you to complete a self evaluation for ${input.cycleName}. This is not part of your scorecard. It is your opportunity to describe your accomplishments, strengths, challenges, improvement areas, and goals in your own words.\n\nDeadline: ${deadlineDate}\n\nComplete Self Evaluation: ${selfEvaluationLink}\n\nThis private link is personal to you. No account is required.\n\n${buildFooterText()}`,
   };
 }
 
@@ -175,7 +204,7 @@ async function sendMail(to: string, template: MailTemplate): Promise<MailDeliver
 
     const resend = new Resend(apiKey);
     const response = await resend.emails.send({
-      from,
+      from: formatFromAddress(from),
       to,
       subject: template.subject,
       html: template.html,
