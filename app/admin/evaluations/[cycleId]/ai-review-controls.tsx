@@ -1,11 +1,13 @@
 "use client";
 
-import { jsPDF } from "jspdf";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import ExecutiveAiReport from "./executive-ai-report";
+import type { ExecutiveReportData } from "./executive-ai-report";
 
 type Props = {
   cycleId: string;
   subjectName: string;
+  reportData: ExecutiveReportData;
 };
 
 type ApiSuccess = {
@@ -43,10 +45,6 @@ const tabs: ReportTab[] = [
 
 function isUnavailableFallback(value: string): boolean {
   return value.includes("AI feedback is currently unavailable");
-}
-
-function escapeHtml(value: string): string {
-  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 function sectionPattern(heading: string): RegExp {
@@ -123,37 +121,6 @@ function getProgressWidthClass(percent: number): string {
   return "invisible";
 }
 
-function printMarkdown(title: string, markdown: string, onError: (message: string) => void) {
-  if (!markdown) {
-    return;
-  }
-
-  const win = window.open("", "_blank", "noopener,noreferrer,width=900,height=700");
-  if (!win) {
-    onError("Popup blocked. Please allow popups to print or save the AI report.");
-    return;
-  }
-
-  win.document.write(`<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <title>${escapeHtml(title)}</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
-</head>
-<body class="p-4">
-  <main class="container">
-    <h1 class="h3 mb-4">${escapeHtml(title)}</h1>
-    <pre class="bg-light border rounded p-4 text-wrap white-space-pre-wrap">${escapeHtml(markdown)}</pre>
-  </main>
-</body>
-</html>`);
-
-  win.document.close();
-  win.focus();
-  win.print();
-}
-
 function toFileName(value: string): string {
   return value
     .toLowerCase()
@@ -161,78 +128,41 @@ function toFileName(value: string): string {
     .replace(/^-+|-+$/g, "") || "ai-performance-report";
 }
 
-function downloadMarkdownPdf(title: string, markdown: string, onError: (message: string) => void) {
-  if (!markdown) {
+async function downloadReportPdf(
+  title: string,
+  reportElement: HTMLElement | null,
+  onError: (message: string) => void,
+) {
+  if (!reportElement) {
     return;
   }
 
   try {
-    const doc = new jsPDF({ unit: "pt", format: "letter" });
-    const margin = 48;
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const contentWidth = pageWidth - margin * 2;
-    let y = margin;
-
-    function addPageIfNeeded(height = 18) {
-      if (y + height <= pageHeight - margin) {
-        return;
-      }
-
-      doc.addPage();
-      y = margin;
-    }
-
-    function addWrappedText(text: string, fontSize: number, lineHeight: number, style: "normal" | "bold" = "normal") {
-      doc.setFont("helvetica", style);
-      doc.setFontSize(fontSize);
-      const lines = doc.splitTextToSize(text, contentWidth) as string[];
-
-      lines.forEach((line) => {
-        addPageIfNeeded(lineHeight);
-        doc.text(line, margin, y);
-        y += lineHeight;
-      });
-    }
-
-    doc.setProperties({ title, subject: "AI Performance Report" });
-    addWrappedText(title, 18, 24, "bold");
-    addWrappedText(`Generated ${new Date().toLocaleString()}`, 10, 16);
-    y += 14;
-
-    tabs.forEach((tab) => {
-      const content = getTabContent(markdown, tab);
-      const items = getReadableItems(content);
-      addPageIfNeeded(42);
-      addWrappedText(tab.label, 14, 20, "bold");
-
-      if (items.length === 0) {
-        addWrappedText("No content generated for this section.", 10, 15);
-        y += 10;
-        return;
-      }
-
-      items.forEach((item, index) => {
-        addWrappedText(`${index + 1}. ${item}`, 10, 15);
-        y += 6;
-      });
-
-      y += 10;
-    });
-
-    doc.save(`${toFileName(title)}.pdf`);
+    const html2pdf = (await import("html2pdf.js")).default;
+    await html2pdf()
+      .set({
+        margin: 0.35,
+        filename: `${toFileName(title)}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: "#f8f9fa" },
+        jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+        pagebreak: { mode: ["avoid-all", "css", "legacy"], avoid: [".report-card"] },
+      })
+      .from(reportElement)
+      .save();
   } catch {
     onError("Unable to download the PDF report from this browser.");
   }
 }
 
-export default function AiReviewControls({ cycleId, subjectName }: Props) {
+export default function AiReviewControls({ cycleId, subjectName, reportData }: Props) {
   const [activeTab, setActiveTab] = useState<ReportTab["id"]>("overview");
   const [isGenerating, setIsGenerating] = useState(false);
   const [reviewMarkdown, setReviewMarkdown] = useState("");
   const [error, setError] = useState("");
   const [savedAt, setSavedAt] = useState("");
   const [showFullReport, setShowFullReport] = useState(false);
+  const reportRef = useRef<HTMLDivElement | null>(null);
 
   const storageKey = useMemo(() => `ai-review:${cycleId}`, [cycleId]);
   const activeTabConfig = tabs.find((tab) => tab.id === activeTab) ?? tabs[0];
@@ -347,6 +277,18 @@ export default function AiReviewControls({ cycleId, subjectName }: Props) {
     window.localStorage.removeItem(storageKey);
     setSavedAt("");
     setError("");
+  }
+
+  function handleDownloadPdf() {
+    setShowFullReport(true);
+    window.setTimeout(() => {
+      void downloadReportPdf(`${subjectName} AI Performance Report`, reportRef.current, setError);
+    }, 0);
+  }
+
+  function handlePrintReport() {
+    setShowFullReport(true);
+    window.setTimeout(() => window.print(), 0);
   }
 
   return (
@@ -479,7 +421,7 @@ export default function AiReviewControls({ cycleId, subjectName }: Props) {
           </div>
 
           <div className="d-grid gap-2">
-            <button type="button" className="btn btn-outline-primary" onClick={() => downloadMarkdownPdf(`${subjectName} AI Performance Report`, reviewMarkdown, setError)} disabled={!reviewMarkdown}>
+            <button type="button" className="btn btn-outline-primary" onClick={handleDownloadPdf} disabled={!reviewMarkdown}>
               <i className="bi bi-download me-2" aria-hidden="true" />
               Download PDF
             </button>
@@ -487,7 +429,7 @@ export default function AiReviewControls({ cycleId, subjectName }: Props) {
               <i className="bi bi-share me-2" aria-hidden="true" />
               Share Report
             </button>
-            <button type="button" className="btn btn-outline-secondary" onClick={() => printMarkdown(`${subjectName} AI Performance Report`, reviewMarkdown, setError)} disabled={!reviewMarkdown}>
+            <button type="button" className="btn btn-outline-secondary" onClick={handlePrintReport} disabled={!reviewMarkdown}>
               <i className="bi bi-printer me-2" aria-hidden="true" />
               Print Report
             </button>
@@ -510,43 +452,16 @@ export default function AiReviewControls({ cycleId, subjectName }: Props) {
                   <h2 id="full-ai-report-title" className="modal-title h5">Full AI Report</h2>
                   <button type="button" className="btn-close" aria-label="Close" onClick={() => setShowFullReport(false)} />
                 </div>
-                <div className="modal-body">
-                  <div className="accordion" id="full-ai-report-sections">
-                    {tabs.map((tab, index) => {
-                      const content = getTabContent(reviewMarkdown, tab);
-                      const items = getReadableItems(content);
-
-                      return (
-                        <details className="accordion-item" key={`full-${tab.id}`} open={index === 0}>
-                          <summary className="accordion-button collapsed">
-                            <i className={`bi ${tab.icon} me-2`} aria-hidden="true" />
-                            {tab.label}
-                          </summary>
-                          <div className="accordion-body">
-                            {items.length > 0 ? (
-                              <div className="row g-3">
-                                {items.map((item, itemIndex) => (
-                                  <div className="col-md-6" key={`full-${tab.id}-${itemIndex}`}>
-                                    <article className="card h-100">
-                                      <div className="card-body">
-                                        <p className="mb-0 small">{item}</p>
-                                      </div>
-                                    </article>
-                                  </div>
-                                ))}
-                              </div>
-                            ) : (
-                              <p className="mb-0 text-secondary">No content generated for this section.</p>
-                            )}
-                          </div>
-                        </details>
-                      );
-                    })}
-                  </div>
+                <div className="modal-body bg-light p-0">
+                  <ExecutiveAiReport data={reportData} reviewMarkdown={reviewMarkdown} reportRef={reportRef} />
                 </div>
                 <div className="modal-footer">
                   <button type="button" className="btn btn-outline-secondary" onClick={() => setShowFullReport(false)}>Close</button>
-                  <button type="button" className="btn btn-primary" onClick={() => downloadMarkdownPdf(`${subjectName} AI Performance Report`, reviewMarkdown, setError)}>
+                  <button type="button" className="btn btn-outline-secondary" onClick={handlePrintReport}>
+                    <i className="bi bi-printer me-2" aria-hidden="true" />
+                    Print Report
+                  </button>
+                  <button type="button" className="btn btn-primary" onClick={handleDownloadPdf}>
                     <i className="bi bi-download me-2" aria-hidden="true" />
                     Download PDF
                   </button>

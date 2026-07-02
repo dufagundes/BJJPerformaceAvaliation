@@ -1,5 +1,6 @@
 import Link from "next/link";
 import AiReviewControls from "./ai-review-controls";
+import type { ExecutiveReportData, ExecutiveReportScoreItem } from "./executive-ai-report";
 import ResendInvitesButton from "./resend-invites-button";
 import SendSelfEvaluationButton from "./send-self-evaluation-button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../components/ui/card";
@@ -98,6 +99,34 @@ function getInitials(name: string): string {
   const first = parts[0]?.[0] ?? "E";
   const second = parts.length > 1 ? parts[parts.length - 1]?.[0] : parts[0]?.[1];
   return `${first}${second ?? ""}`.toUpperCase();
+}
+
+function getLogoText(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase() || "SC";
+}
+
+function getGroupReportItems(groups: ScorecardGroup[] | undefined, sortDirection: "asc" | "desc"): ExecutiveReportScoreItem[] {
+  const items = groups?.flatMap((group) =>
+    group.sessions.flatMap((session) =>
+      session.factors
+        .filter((factor) => factor.responseCount > 0)
+        .map((factor) => ({
+          label: factor.questionText,
+          evaluator: group.name,
+          score: factor.normalizedScore,
+        })),
+    ),
+  ) ?? [];
+
+  return items.sort((first, second) =>
+    sortDirection === "asc" ? (first.score ?? 0) - (second.score ?? 0) : (second.score ?? 0) - (first.score ?? 0),
+  );
 }
 
 function getBadgeClasses(label: string): string {
@@ -623,6 +652,7 @@ export default async function EvaluationCycleDetailPage({
   const currentScore = scorecard ? scorecard.finalScore.toFixed(1) : "--";
   const performanceBadge = scorecard?.scoreLabel ?? "Not Scored";
   const roleLabel = cycle.subject.staffProfile?.title ?? "Staff Member";
+  const schoolName = adminSession.schoolName ?? "School";
   const responseStatus = `${completedReviewers}/${invitedReviewers} completed (${completionPercent}%)`;
   const selfEvaluationStatus = cycle.selfEvaluation?.status === "COMPLETED" ? "Completed" : "Pending";
   const selfEvaluationAnswers = asSelfEvaluationAnswers(cycle.selfEvaluation?.answers);
@@ -633,6 +663,33 @@ export default async function EvaluationCycleDetailPage({
     buildAudienceBreakdown("Parents & Students", parentStudentScoreGroup),
     buildAudienceBreakdown("Manager Evaluation", null),
   ];
+  const reportData: ExecutiveReportData = {
+    schoolName,
+    schoolLogoText: getLogoText(schoolName),
+    employeeName: cycle.subject.name,
+    employeeEmail: cycle.subject.email,
+    employeeInitials: getInitials(cycle.subject.name),
+    position: roleLabel,
+    cycleName: cycle.description,
+    evaluationDate: formatDate(cycle.deadline),
+    generatedDate: formatDate(new Date()),
+    evaluationType: "360-Degree Evaluation",
+    responsesReceived: completedReviewers,
+    responsesExpected: invitedReviewers,
+    completionPercent,
+    overallScore: scorecard?.finalScore ?? null,
+    performanceLabel: scorecard?.scoreLabel ?? "Not Scored",
+    evaluatorScores: [
+      { label: "Manager", evaluator: "Manager", score: null },
+      { label: "Peers", evaluator: "Peers", score: peerScoreGroup?.groupScore ?? null },
+      { label: "Parents", evaluator: "Parents & Students", score: parentStudentScoreGroup?.groupScore ?? null },
+      { label: "Self", evaluator: "Self Evaluation", score: null },
+    ],
+    strengths: getGroupReportItems(scorecard?.groups, "desc").slice(0, 6),
+    developmentPriorities: getGroupReportItems(scorecard?.groups, "asc").slice(0, 6),
+    previousScore: null,
+    targetScore: 85,
+  };
   const responseDates = cycle.reviewers
     .map((reviewer) => reviewer.response?.submittedAt ?? null)
     .filter((value): value is Date => value !== null);
@@ -1078,7 +1135,7 @@ export default async function EvaluationCycleDetailPage({
             </div>
 
             <aside className="col-12 col-lg-4 space-y-6 lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto">
-              <AiReviewControls cycleId={cycle.id} subjectName={cycle.subject.name} />
+              <AiReviewControls cycleId={cycle.id} subjectName={cycle.subject.name} reportData={reportData} />
 
             <Card className="rounded-2xl border-slate-200 bg-white shadow-sm">
               <CardHeader>
