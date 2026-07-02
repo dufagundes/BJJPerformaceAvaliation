@@ -56,7 +56,7 @@ export function Sidebar({ isOpen, isCollapsed, onClose, onToggleCollapse }: Side
       />
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 flex w-72 flex-col bg-gradient-to-b from-slate-950 via-slate-900 to-indigo-950 px-4 py-5 text-white shadow-2xl transition-all duration-300 lg:static lg:z-auto lg:min-h-screen lg:translate-x-0 lg:shadow-none",
+          "fixed inset-y-0 left-0 z-40 flex w-72 flex-col bg-gradient-to-b from-slate-950 via-slate-900 to-indigo-950 px-4 py-5 text-white shadow-2xl transition-all duration-300 lg:relative lg:static lg:z-auto lg:min-h-screen lg:translate-x-0 lg:shadow-none",
           isCollapsed ? "lg:w-20 lg:px-3" : "lg:w-72",
           isOpen ? "translate-x-0" : "-translate-x-full",
         )}
@@ -77,7 +77,7 @@ export function Sidebar({ isOpen, isCollapsed, onClose, onToggleCollapse }: Side
             title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             className={cn(
               "hidden rounded-md p-2 text-slate-300 transition hover:bg-white/10 hover:text-white lg:inline-flex",
-              isCollapsed ? "lg:absolute lg:left-14 lg:top-5 lg:bg-white/10" : "",
+              isCollapsed ? "lg:absolute lg:right-2 lg:top-5 lg:bg-white/10" : "",
             )}
             onClick={onToggleCollapse}
           >
@@ -93,7 +93,7 @@ export function Sidebar({ isOpen, isCollapsed, onClose, onToggleCollapse }: Side
           </button>
         </div>
 
-        <nav aria-label="Main navigation" className="flex-1 space-y-1">
+        <nav aria-label="Main navigation" className={cn("flex-1 space-y-1", isCollapsed ? "lg:flex lg:flex-col lg:items-center" : "")}>
           {navigationItems.map((item) => (
             (() => {
               const active = isActivePath(pathname, item.href);
@@ -104,16 +104,17 @@ export function Sidebar({ isOpen, isCollapsed, onClose, onToggleCollapse }: Side
                   href={item.href}
                   onClick={onClose}
                   title={isCollapsed ? item.label : undefined}
+                  aria-label={isCollapsed ? item.label : undefined}
                   className={cn(
                     "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition",
-                    isCollapsed ? "lg:justify-center lg:px-2" : "",
+                    isCollapsed ? "lg:h-11 lg:w-11 lg:justify-center lg:px-0" : "",
                     active
                       ? "bg-white text-slate-950 shadow-sm"
                       : "text-slate-300 hover:bg-white/10 hover:text-white",
                   )}
                   aria-current={active ? "page" : undefined}
                 >
-                  <Icon name={item.icon} className="h-5 w-5" />
+                  <Icon name={item.icon} className="h-5 w-5 shrink-0" />
                   <span className={cn(isCollapsed ? "lg:hidden" : "")}>{item.label}</span>
                 </Link>
               );
