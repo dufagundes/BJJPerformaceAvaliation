@@ -773,10 +773,6 @@ export default async function EvaluationCycleDetailPage({
                     {cycle.subject.name}
                   </h1>
                   <p className="mt-1 text-sm text-slate-600">{cycle.subject.email}</p>
-                  <div className="mt-5 rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Cycle Overview</p>
-                    <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-700">{cycle.description}</p>
-                  </div>
                   <dl className="mt-5 grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
                     <div>
                       <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Role</dt>
@@ -832,6 +828,11 @@ export default async function EvaluationCycleDetailPage({
                     </div>
                   </details>
                 </div>
+              </div>
+
+              <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Cycle Overview</p>
+                <p className="mt-2 text-sm leading-6 text-slate-700">{cycle.description}</p>
               </div>
             </div>
           </div>
