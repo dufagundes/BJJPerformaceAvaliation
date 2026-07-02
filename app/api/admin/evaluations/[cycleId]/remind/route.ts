@@ -1,6 +1,7 @@
+import { randomUUID } from "crypto";
 import { NextResponse } from "next/server";
 import { getAdminSession, unauthorizedAdminResponse } from "../../../../../../lib/adminAuth";
-import { sendEvaluationInvitationEmail, sendEvaluationReminderEmail } from "../../../../../../lib/evaluationWorkflowEmails";
+import { sendEvaluationInvitationEmail, sendEvaluationReminderEmail, sendSelfEvaluationEmail } from "../../../../../../lib/evaluationWorkflowEmails";
 import { prisma } from "../../../../../../lib/prisma";
 
 function daysUntil(deadline: Date): number {
@@ -35,9 +36,18 @@ export async function POST(
     where: { id: cycleId, schoolId: adminSession.schoolId },
     select: {
       id: true,
+      description: true,
       deadline: true,
       subject: {
-        select: { name: true },
+        select: { name: true, email: true },
+      },
+      selfEvaluation: {
+        select: {
+          id: true,
+          status: true,
+          inviteToken: true,
+          tokenExpiresAt: true,
+        },
       },
       reviewers: {
         where: {
@@ -64,6 +74,7 @@ export async function POST(
   }
 
   const results: Array<{
+    kind: "self-evaluation" | "reviewer";
     reviewerId: string;
     email: string;
     ok: boolean;
@@ -71,9 +82,63 @@ export async function POST(
     error?: string;
   }> = [];
 
+  let selfEvaluation = cycle.selfEvaluation;
+  if (!selfEvaluation) {
+    selfEvaluation = await prisma.selfEvaluation.create({
+      data: {
+        cycleId: cycle.id,
+        inviteToken: randomUUID(),
+        tokenExpiresAt: cycle.deadline,
+      },
+      select: {
+        id: true,
+        status: true,
+        inviteToken: true,
+        tokenExpiresAt: true,
+      },
+    });
+  }
+
+  if (selfEvaluation.status !== "COMPLETED") {
+    if (selfEvaluation.tokenExpiresAt.getTime() < Date.now()) {
+      results.push({
+        kind: "self-evaluation",
+        reviewerId: selfEvaluation.id,
+        email: cycle.subject.email,
+        ok: false,
+        error: "Self evaluation link is expired.",
+      });
+    } else if (!cycle.subject.email) {
+      results.push({
+        kind: "self-evaluation",
+        reviewerId: selfEvaluation.id,
+        email: "",
+        ok: false,
+        error: "Staff member has no email address.",
+      });
+    } else {
+      const delivery = await sendSelfEvaluationEmail(cycle.subject.email, {
+        staffName: cycle.subject.name,
+        cycleName: cycle.description,
+        deadline: cycle.deadline,
+        inviteToken: selfEvaluation.inviteToken,
+      });
+
+      results.push({
+        kind: "self-evaluation",
+        reviewerId: selfEvaluation.id,
+        email: cycle.subject.email,
+        ok: delivery.ok,
+        deliveryId: delivery.id,
+        error: delivery.error,
+      });
+    }
+  }
+
   for (const reviewer of cycle.reviewers) {
     if (reviewer.tokenExpiresAt.getTime() < Date.now()) {
       results.push({
+        kind: "reviewer",
         reviewerId: reviewer.id,
         email: reviewer.user?.email || reviewer.contact?.email || "",
         ok: false,
@@ -85,6 +150,7 @@ export async function POST(
     const target = reviewer.user || reviewer.contact;
     if (!target?.email) {
       results.push({
+        kind: "reviewer",
         reviewerId: reviewer.id,
         email: "",
         ok: false,
@@ -108,6 +174,7 @@ export async function POST(
         });
 
     results.push({
+      kind: "reviewer",
       reviewerId: reviewer.id,
       email: target.email,
       ok: delivery.ok,

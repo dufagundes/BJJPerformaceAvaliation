@@ -8,6 +8,7 @@ type ResendResponse = {
   sent?: number;
   failed?: number;
   results?: Array<{
+    kind?: "self-evaluation" | "reviewer";
     email: string;
     ok: boolean;
     error?: string;
@@ -43,11 +44,11 @@ export default function ResendInvitesButton({ cycleId }: { cycleId: string }) {
       if (failed > 0) {
         const firstError = data.results?.find((result) => !result.ok)?.error;
         setIsError(true);
-        setMessage(`${sent} invitations sent. ${failed} failed.${firstError ? ` First error: ${firstError}` : ""}`);
+        setMessage(`${sent} pending emails sent. ${failed} failed.${firstError ? ` First error: ${firstError}` : ""}`);
         return;
       }
 
-      setMessage(`${sent} pending invitations sent.`);
+      setMessage(`${sent} pending emails sent.`);
     } catch (error) {
       setIsError(true);
       setMessage(error instanceof Error ? error.message : "Could not resend invitations.");
@@ -59,7 +60,7 @@ export default function ResendInvitesButton({ cycleId }: { cycleId: string }) {
   return (
     <div className="space-y-2">
       <Button type="button" onClick={() => void resendInvites()} disabled={isSending}>
-        {isSending ? "Sending..." : "Resend Pending Invites"}
+        {isSending ? "Sending..." : "Resend Pending Emails"}
       </Button>
       {message ? (
         <p className={`rounded-md border px-3 py-2 text-sm ${isError ? "border-rose-300 bg-rose-50 text-rose-800" : "border-emerald-300 bg-emerald-50 text-emerald-800"}`}>
