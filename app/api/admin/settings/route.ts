@@ -34,7 +34,7 @@ export async function GET(_request: Request) {
 
   const config = await getOrCreateAdminConfig(adminSession.schoolId);
   try {
-    const scorecardWeights = await getScorecardWeights();
+    const scorecardWeights = await getScorecardWeights(adminSession.schoolId);
     return NextResponse.json({ config, scorecardWeights }, { status: 200 });
   } catch {
     return NextResponse.json(
@@ -97,9 +97,9 @@ export async function PUT(request: Request) {
   });
 
   if (payload.scorecardWeights) {
-    await saveScorecardWeights(payload.scorecardWeights);
+    await saveScorecardWeights(adminSession.schoolId, payload.scorecardWeights);
   }
 
-  const scorecardWeights = payload.scorecardWeights ? await getScorecardWeights() : undefined;
+  const scorecardWeights = payload.scorecardWeights ? await getScorecardWeights(adminSession.schoolId) : undefined;
   return NextResponse.json({ ok: true, config, scorecardWeights }, { status: 200 });
 }

@@ -149,16 +149,17 @@ export function validateScorecardWeights(payload: ScorecardWeightsPayload): stri
   return errors;
 }
 
-async function ensureDefaultsSeeded() {
+async function ensureDefaultsSeeded(schoolId: string) {
   await prisma.$transaction(async (tx) => {
     for (const group of DEFAULT_GROUPS) {
       await tx.$executeRawUnsafe(
         `
-        INSERT INTO "EvaluationGroup" ("id", "name", "weight", "createdAt", "updatedAt")
-        VALUES ($1::UUID, $2::"ReviewerType", $3::DECIMAL(8,6), NOW(), NOW())
-        ON CONFLICT ("name") DO NOTHING
+        INSERT INTO "EvaluationGroup" ("id", "schoolId", "name", "weight", "createdAt", "updatedAt")
+        VALUES ($1::UUID, $2::UUID, $3::"ReviewerType", $4::DECIMAL(8,6), NOW(), NOW())
+        ON CONFLICT ("schoolId", "name") DO NOTHING
         `,
         randomUUID(),
+        schoolId,
         group.name,
         normalizeWeight(group.weight),
       );
@@ -167,11 +168,12 @@ async function ensureDefaultsSeeded() {
     for (const session of DEFAULT_SESSIONS) {
       await tx.$executeRawUnsafe(
         `
-        INSERT INTO "EvaluationSession" ("id", "name", "audienceType", "weight", "createdAt", "updatedAt")
-        VALUES ($1::UUID, $2::TEXT, $3::"EvaluationAudienceType", $4::DECIMAL(8,6), NOW(), NOW())
-        ON CONFLICT ("audienceType", "name") DO NOTHING
+        INSERT INTO "EvaluationSession" ("id", "schoolId", "name", "audienceType", "weight", "createdAt", "updatedAt")
+        VALUES ($1::UUID, $2::UUID, $3::TEXT, $4::"EvaluationAudienceType", $5::DECIMAL(8,6), NOW(), NOW())
+        ON CONFLICT ("schoolId", "audienceType", "name") DO NOTHING
         `,
         randomUUID(),
+        schoolId,
         session.name,
         session.audienceType,
         normalizeWeight(session.weight),
@@ -180,9 +182,10 @@ async function ensureDefaultsSeeded() {
       await tx.$executeRawUnsafe(
         `
         UPDATE "EvaluationSession"
-        SET "weight" = $3::DECIMAL(8,6), "updatedAt" = NOW()
-        WHERE "name" = $1::TEXT AND "audienceType" = $2::"EvaluationAudienceType"
+        SET "weight" = $4::DECIMAL(8,6), "updatedAt" = NOW()
+        WHERE "schoolId" = $1::UUID AND "name" = $2::TEXT AND "audienceType" = $3::"EvaluationAudienceType"
         `,
+        schoolId,
         session.name,
         session.audienceType,
         normalizeWeight(session.weight),
@@ -192,13 +195,14 @@ async function ensureDefaultsSeeded() {
         await tx.$executeRawUnsafe(
           `
           INSERT INTO "EvaluationQuestion" ("id", "sessionId", "text", "type", "weight", "order")
-          SELECT $1::UUID, s."id", $4::TEXT, 'RATING'::"EvaluationQuestionType", $5::DECIMAL(8,6), $6::INT
+          SELECT $1::UUID, s."id", $5::TEXT, 'RATING'::"EvaluationQuestionType", $6::DECIMAL(8,6), $7::INT
           FROM "EvaluationSession" s
-          WHERE s."name" = $2::TEXT AND s."audienceType" = $3::"EvaluationAudienceType"
+          WHERE s."schoolId" = $2::UUID AND s."name" = $3::TEXT AND s."audienceType" = $4::"EvaluationAudienceType"
           ON CONFLICT ("sessionId", "order") DO UPDATE
           SET "text" = EXCLUDED."text", "type" = EXCLUDED."type", "weight" = EXCLUDED."weight"
           `,
           randomUUID(),
+          schoolId,
           session.name,
           session.audienceType,
           factor.text,
@@ -214,10 +218,11 @@ async function ensureDefaultsSeeded() {
         WHERE "sessionId" = (
           SELECT s."id"
           FROM "EvaluationSession" s
-          WHERE s."name" = $1::TEXT AND s."audienceType" = $2::"EvaluationAudienceType"
+          WHERE s."schoolId" = $1::UUID AND s."name" = $2::TEXT AND s."audienceType" = $3::"EvaluationAudienceType"
         )
-        AND NOT ("order" = ANY($3::INT[]))
+        AND NOT ("order" = ANY($4::INT[]))
         `,
+        schoolId,
         session.name,
         session.audienceType,
         allowedOrders,
@@ -226,9 +231,9 @@ async function ensureDefaultsSeeded() {
   });
 }
 
-export async function getScorecardWeights(): Promise<ScorecardWeights> {
+export async function getScorecardWeights(schoolId: string): Promise<ScorecardWeights> {
   try {
-    await ensureDefaultsSeeded();
+    await ensureDefaultsSeeded(schoolId);
   } catch {
     // Migration may not be applied yet. Fall through and let SELECT fail with a clear API error.
   }
@@ -237,24 +242,31 @@ export async function getScorecardWeights(): Promise<ScorecardWeights> {
     `
     SELECT "id", "name", "weight"
     FROM "EvaluationGroup"
+    WHERE "schoolId" = $1::UUID
     ORDER BY "name" ASC
     `,
+    schoolId,
   )) as Array<{ id: string; name: GroupName; weight: unknown }>;
 
   const sessionRows = (await prisma.$queryRawUnsafe(
     `
     SELECT s."id", s."name", s."audienceType", s."weight"
     FROM "EvaluationSession" s
+    WHERE s."schoolId" = $1::UUID
     ORDER BY s."audienceType" ASC, s."name" ASC
     `,
+    schoolId,
   )) as Array<{ id: string; name: string; audienceType: GroupName; weight: unknown }>;
 
   const factorRows = (await prisma.$queryRawUnsafe(
     `
     SELECT q."id", q."sessionId", q."text", q."order", q."weight"
     FROM "EvaluationQuestion" q
+    INNER JOIN "EvaluationSession" s ON s."id" = q."sessionId"
+    WHERE s."schoolId" = $1::UUID
     ORDER BY q."sessionId" ASC, q."order" ASC
     `,
+    schoolId,
   )) as Array<{ id: string; sessionId: string; text: string; order: number; weight: unknown }>;
 
   const factorsBySession = new Map<string, ScorecardFactorWeight[]>();
@@ -285,7 +297,7 @@ export async function getScorecardWeights(): Promise<ScorecardWeights> {
   };
 }
 
-export async function saveScorecardWeights(payload: ScorecardWeightsPayload): Promise<void> {
+export async function saveScorecardWeights(schoolId: string, payload: ScorecardWeightsPayload): Promise<void> {
   const errors = validateScorecardWeights(payload);
   if (errors.length > 0) {
     throw new Error(errors[0]);
@@ -297,10 +309,11 @@ export async function saveScorecardWeights(payload: ScorecardWeightsPayload): Pr
         `
         UPDATE "EvaluationGroup"
         SET "weight" = $2::DECIMAL(8,6), "updatedAt" = NOW()
-        WHERE "id" = $1::UUID
+        WHERE "id" = $1::UUID AND "schoolId" = $3::UUID
         `,
         group.id,
         normalizeWeight(group.weight),
+        schoolId,
       );
     }
 
@@ -309,10 +322,11 @@ export async function saveScorecardWeights(payload: ScorecardWeightsPayload): Pr
         `
         UPDATE "EvaluationSession"
         SET "weight" = $2::DECIMAL(8,6), "updatedAt" = NOW()
-        WHERE "id" = $1::UUID
+        WHERE "id" = $1::UUID AND "schoolId" = $3::UUID
         `,
         session.id,
         normalizeWeight(session.weight),
+        schoolId,
       );
 
       for (const factor of session.factors) {
@@ -321,9 +335,11 @@ export async function saveScorecardWeights(payload: ScorecardWeightsPayload): Pr
           UPDATE "EvaluationQuestion"
           SET "weight" = $2::DECIMAL(8,6)
           WHERE "id" = $1::UUID
+          AND "sessionId" IN (SELECT "id" FROM "EvaluationSession" WHERE "schoolId" = $3::UUID)
           `,
           factor.id,
           normalizeWeight(factor.weight),
+          schoolId,
         );
       }
     }

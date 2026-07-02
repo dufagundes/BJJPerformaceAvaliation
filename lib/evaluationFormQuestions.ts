@@ -232,12 +232,13 @@ function normalizeOptions(options: unknown): EvaluationFormOption[] {
     .filter((option): option is EvaluationFormOption => option !== null);
 }
 
-async function ensureDefaultsSeeded() {
+async function ensureDefaultsSeeded(schoolId: string) {
   await prisma.$transaction(async (tx) => {
     for (const question of DEFAULT_QUESTIONS) {
       await tx.evaluationFormQuestion.upsert({
         where: {
-          staffRole_audienceType_order: {
+          schoolId_staffRole_audienceType_order: {
+            schoolId,
             staffRole: question.staffRole ?? "",
             audienceType: question.audienceType,
             order: question.order,
@@ -245,6 +246,7 @@ async function ensureDefaultsSeeded() {
         },
         create: {
           id: randomUUID(),
+          schoolId,
           staffRole: question.staffRole ?? "",
           audienceType: question.audienceType,
           text: question.text,
@@ -276,6 +278,7 @@ async function ensureDefaultsSeeded() {
     for (const [audienceType, allowedOrders] of defaultsByAudience.entries()) {
       await tx.evaluationFormQuestion.deleteMany({
         where: {
+          schoolId,
           staffRole: HEAD_INSTRUCTOR_ROLE,
           audienceType,
           order: {
@@ -288,24 +291,25 @@ async function ensureDefaultsSeeded() {
 }
 
 export async function getEvaluationFormQuestions(
+  schoolId: string,
   audienceType?: EvaluationAudienceType,
   staffRole = HEAD_INSTRUCTOR_ROLE,
 ): Promise<EvaluationFormQuestion[]> {
-  await ensureDefaultsSeeded();
+  await ensureDefaultsSeeded(schoolId);
 
   const audienceFilter = audienceType
     ? { OR: [{ audienceType: EvaluationAudienceType.ALL }, { audienceType }] }
     : {};
 
   let rows = await prisma.evaluationFormQuestion.findMany({
-    where: { staffRole, ...audienceFilter },
+    where: { schoolId, staffRole, ...audienceFilter },
     orderBy: [{ staffRole: "asc" }, { audienceType: "asc" }, { order: "asc" }],
   });
 
   // Fall back to HEAD_INSTRUCTOR questions when no questions are configured for the given role
   if (rows.length === 0 && staffRole !== HEAD_INSTRUCTOR_ROLE) {
     rows = await prisma.evaluationFormQuestion.findMany({
-      where: { staffRole: HEAD_INSTRUCTOR_ROLE, ...audienceFilter },
+      where: { schoolId, staffRole: HEAD_INSTRUCTOR_ROLE, ...audienceFilter },
       orderBy: [{ staffRole: "asc" }, { audienceType: "asc" }, { order: "asc" }],
     });
   }
@@ -376,7 +380,7 @@ export function validateEvaluationFormQuestions(payload: EvaluationFormQuestionP
   return validateQuestionPayload(payload);
 }
 
-export async function saveEvaluationFormQuestions(payload: EvaluationFormQuestionPayload[]): Promise<EvaluationFormQuestion[]> {
+export async function saveEvaluationFormQuestions(schoolId: string, payload: EvaluationFormQuestionPayload[]): Promise<EvaluationFormQuestion[]> {
   const errors = validateQuestionPayload(payload);
   if (errors.length > 0) {
     throw new Error(errors[0]);
@@ -397,22 +401,25 @@ export async function saveEvaluationFormQuestions(payload: EvaluationFormQuestio
       };
 
       if (question.id) {
-        keepIds.add(question.id);
-        await tx.evaluationFormQuestion.upsert({
-          where: { id: question.id },
-          create: { id: question.id, ...data },
-          update: data,
+        const updated = await tx.evaluationFormQuestion.updateMany({
+          where: { id: question.id, schoolId },
+          data,
         });
-      } else {
-        const created = await tx.evaluationFormQuestion.create({
-          data: { id: randomUUID(), ...data },
-          select: { id: true },
-        });
-        keepIds.add(created.id);
+        if (updated.count > 0) {
+          keepIds.add(question.id);
+          continue;
+        }
       }
+
+      const created = await tx.evaluationFormQuestion.create({
+        data: { id: randomUUID(), schoolId, ...data },
+        select: { id: true },
+      });
+      keepIds.add(created.id);
     }
 
     const existing = await tx.evaluationFormQuestion.findMany({
+      where: { schoolId },
       select: { id: true },
     });
 
@@ -424,5 +431,5 @@ export async function saveEvaluationFormQuestions(payload: EvaluationFormQuestio
   });
 
   const defaultStaffRole = payload[0]?.staffRole?.trim() ?? "";
-  return getEvaluationFormQuestions(undefined, defaultStaffRole);
+  return getEvaluationFormQuestions(schoolId, undefined, defaultStaffRole);
 }

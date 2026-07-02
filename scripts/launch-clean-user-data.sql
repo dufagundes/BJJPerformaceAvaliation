@@ -1,6 +1,7 @@
 -- Launch cleanup script for Supabase SQL Editor.
 -- Purpose: remove test/user-entered data before creating the first real school.
--- This preserves schema, migrations, evaluation questions, scorecard weights, and app configuration tables.
+-- This preserves schema and migrations. School-specific questions, scorecard weights,
+-- and app configuration are removed with their school and regenerated from app defaults for new schools.
 -- Review carefully before running against production.
 
 begin;

@@ -50,13 +50,13 @@ const adminTools = [
     href: "/admin/contacts",
   },
   {
-    title: "Schools & Admins",
-    description: "Create pilot schools and administrator logins.",
+    title: "Platform: Schools & Admins",
+    description: "Create schools and administrator logins.",
     href: "/admin/schools",
   },
   {
-    title: "Scorecard Builder",
-    description: "Edit evaluation questions, audiences, options, and scorecard setup.",
+    title: "School Scorecard Builder",
+    description: "Edit this school's evaluation questions, audiences, options, and scorecard setup.",
     href: "/admin/scorecard",
   },
   {

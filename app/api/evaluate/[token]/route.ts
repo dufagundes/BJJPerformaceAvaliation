@@ -66,6 +66,7 @@ export async function GET(
       tokenExpiresAt: true,
       cycle: {
         select: {
+          schoolId: true,
           deadline: true,
           subject: {
             select: {
@@ -98,6 +99,7 @@ export async function GET(
   }
 
   const questions = await getEvaluationFormQuestions(
+    reviewer.cycle.schoolId,
     reviewer.type,
     reviewer.cycle.subject.staffProfile?.title ?? "",
   );
@@ -152,6 +154,7 @@ export async function POST(
       tokenExpiresAt: true,
       cycle: {
         select: {
+          schoolId: true,
           deadline: true,
           subject: {
             select: {
@@ -183,6 +186,7 @@ export async function POST(
   }
 
   const questions = await getEvaluationFormQuestions(
+    reviewer.cycle.schoolId,
     reviewer.type,
     reviewer.cycle.subject.staffProfile?.title ?? "",
   );

@@ -247,6 +247,7 @@ export async function calculateCycleScorecard(cycleId: string): Promise<CycleSco
     where: { id: cycleId },
     select: {
       id: true,
+      schoolId: true,
       subject: {
         select: {
           name: true,
@@ -273,7 +274,7 @@ export async function calculateCycleScorecard(cycleId: string): Promise<CycleSco
     throw new Error("Cycle not found.");
   }
 
-  const weights = await getScorecardWeights();
+  const weights = await getScorecardWeights(cycle.schoolId);
 
   const groupsByName = new Map(weights.groups.map((group) => [group.name, group]));
   const sessionsByAudience = new Map<GroupName, ScorecardSessionWeight[]>();

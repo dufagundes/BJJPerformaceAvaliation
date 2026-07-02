@@ -12,19 +12,19 @@ type SidebarProps = {
 
 const navigationItems = [
   { label: "Dashboard", icon: "dashboard" as const, href: "/dashboard" },
-  { label: "Students", icon: "employees" as const, href: "/admin/contacts" },
+  { label: "Students & Parents", icon: "employees" as const, href: "/admin/contacts" },
   { label: "Evaluations", icon: "reviews" as const, href: "/admin/cycles" },
-  { label: "Reports", icon: "reports" as const, href: "/admin/staff" },
+  { label: "Staff & Reports", icon: "reports" as const, href: "/admin/staff" },
   { label: "Calendar", icon: "progress" as const, href: "/admin/cycles" },
   { label: "Messages", icon: "feedback" as const, href: "/pending-evaluations" },
-  { label: "Admin Settings", icon: "settings" as const, href: "/admin/settings" },
+  { label: "School Settings", icon: "settings" as const, href: "/admin/settings" },
 ];
 
 const settingsItems = [
-  { label: "Contacts", href: "/admin/contacts" },
-  { label: "Schools & Admins", href: "/admin/schools-admins" },
-  { label: "Scorecard Builder", href: "/admin/scorecard-builder" },
-  { label: "Evaluation Defaults", href: "/admin/evaluation-defaults" },
+  { label: "School Contacts", href: "/admin/contacts" },
+  { label: "Platform: Schools & Admins", href: "/admin/schools-admins" },
+  { label: "School Scorecard Builder", href: "/admin/scorecard-builder" },
+  { label: "School Evaluation Defaults", href: "/admin/evaluation-defaults" },
   { label: "Test Email", href: "/admin/test-email" },
 ];
 

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { EvaluationAudienceType, EvaluationQuestionType } from "@prisma/client";
-import { isAdminApiRequestAuthorized, unauthorizedAdminResponse } from "../../../../lib/adminAuth";
+import { getAdminSession, unauthorizedAdminResponse } from "../../../../lib/adminAuth";
 import {
   getEvaluationFormQuestions,
   saveEvaluationFormQuestions,
@@ -22,17 +22,19 @@ type SavePayload = {
   }>;
 };
 
-export async function GET(request: Request) {
-  if (!(await isAdminApiRequestAuthorized(request))) {
+export async function GET() {
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
     return unauthorizedAdminResponse();
   }
 
-  const questions = await getEvaluationFormQuestions(undefined, HEAD_INSTRUCTOR_ROLE);
+  const questions = await getEvaluationFormQuestions(adminSession.schoolId, undefined, HEAD_INSTRUCTOR_ROLE);
   return NextResponse.json({ questions }, { status: 200 });
 }
 
 export async function PUT(request: Request) {
-  if (!(await isAdminApiRequestAuthorized(request))) {
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
     return unauthorizedAdminResponse();
   }
 
@@ -63,6 +65,7 @@ export async function PUT(request: Request) {
 
   try {
     const savedQuestions = await saveEvaluationFormQuestions(
+      adminSession.schoolId,
       questions.map((question) => ({
         id: question.id,
         staffRole: question.staffRole,

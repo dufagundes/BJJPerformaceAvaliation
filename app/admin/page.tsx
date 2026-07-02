@@ -42,8 +42,8 @@ const quickLinks = [
   },
   {
     href: "/admin/schools",
-    label: "Schools & Admins",
-    description: "Register schools and create administrator accounts for pilots.",
+    label: "Platform: Schools & Admins",
+    description: "Register new schools and create their first administrator accounts.",
   },
   {
     href: "/admin/test-email",
@@ -52,8 +52,8 @@ const quickLinks = [
   },
   {
     href: "/admin/scorecard",
-    label: "Scorecard Builder",
-    description: "Add, remove, and tune the evaluation questions and dropdown options.",
+    label: "School Scorecard Builder",
+    description: "Add, remove, and tune this school's evaluation questions and dropdown options.",
   },
 ];
 
