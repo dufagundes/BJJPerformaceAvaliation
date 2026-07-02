@@ -5,58 +5,85 @@
 
 begin;
 
-with target_school as (
-  insert into "School" ("id", "name", "isActive", "createdAt", "updatedAt")
-  values (gen_random_uuid(), 'Default School', true, now(), now())
-  on conflict ("name")
-  do update set "isActive" = true, "updatedAt" = now()
-  returning "id"
-), reset_user as (
-  insert into "User" (
-    "id",
-    "schoolId",
-    "name",
-    "email",
-    "passwordHash",
-    "role",
-    "isActive",
-    "createdAt"
-  )
-  select
-    gen_random_uuid(),
-    target_school."id",
-    'Test Admin',
-    'admin@test.local',
-    '$2a$12$tDFMZWvrcksmv9sL..mq..nzXH5j0UhviNz3svvrpOAPwyMxXIB16',
-    'ADMIN'::"UserRole",
-    true,
-    now()
-  from target_school
-  on conflict ("schoolId", "email")
-  do update set
-    "name" = excluded."name",
-    "passwordHash" = excluded."passwordHash",
-    "role" = excluded."role",
-    "isActive" = true
-  returning "id", "schoolId", "email", "role", "isActive"
-)
-insert into "AdminConfig" (
-  "id",
-  "schoolId",
-  "defaultCycleDurationDays",
-  "defaultContactsToInvite",
-  "reminderScheduleDaysBefore",
-  "updatedAt"
-)
-select
-  gen_random_uuid(),
-  reset_user."schoolId",
-  15,
-  5,
-  array[3, 1],
-  now()
-from reset_user
-on conflict ("schoolId") do nothing;
+do $$
+declare
+  target_school_id uuid;
+  target_user_id uuid;
+begin
+  select "id"
+  into target_school_id
+  from "School"
+  where "name" = 'Default School'
+  order by "createdAt" asc
+  limit 1;
+
+  if target_school_id is null then
+    target_school_id := gen_random_uuid();
+
+    insert into "School" ("id", "name", "isActive", "createdAt", "updatedAt")
+    values (target_school_id, 'Default School', true, now(), now());
+  else
+    update "School"
+    set "isActive" = true, "updatedAt" = now()
+    where "id" = target_school_id;
+  end if;
+
+  select "id"
+  into target_user_id
+  from "User"
+  where "schoolId" = target_school_id
+    and lower("email") = 'admin@test.local'
+  order by "createdAt" asc
+  limit 1;
+
+  if target_user_id is null then
+    insert into "User" (
+      "id",
+      "schoolId",
+      "name",
+      "email",
+      "passwordHash",
+      "role",
+      "isActive",
+      "createdAt"
+    ) values (
+      gen_random_uuid(),
+      target_school_id,
+      'Test Admin',
+      'admin@test.local',
+      '$2a$12$tDFMZWvrcksmv9sL..mq..nzXH5j0UhviNz3svvrpOAPwyMxXIB16',
+      'ADMIN'::"UserRole",
+      true,
+      now()
+    );
+  else
+    update "User"
+    set
+      "name" = 'Test Admin',
+      "passwordHash" = '$2a$12$tDFMZWvrcksmv9sL..mq..nzXH5j0UhviNz3svvrpOAPwyMxXIB16',
+      "role" = 'ADMIN'::"UserRole",
+      "isActive" = true
+    where "id" = target_user_id;
+  end if;
+
+  if not exists (select 1 from "AdminConfig" where "schoolId" = target_school_id) then
+    insert into "AdminConfig" (
+      "id",
+      "schoolId",
+      "defaultCycleDurationDays",
+      "defaultContactsToInvite",
+      "reminderScheduleDaysBefore",
+      "updatedAt"
+    ) values (
+      gen_random_uuid(),
+      target_school_id,
+      15,
+      5,
+      array[3, 1],
+      now()
+    );
+  end if;
+end $$;
 
 commit;
 
