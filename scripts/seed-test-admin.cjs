@@ -14,9 +14,9 @@ async function main() {
     select: { id: true },
   });
 
-  const existing = await prisma.user.findUnique({ where: { email } });
+  const existing = await prisma.user.findUnique({ where: { schoolId_email: { schoolId: school.id, email } } });
   const user = await prisma.user.upsert({
-    where: { email },
+    where: { schoolId_email: { schoolId: school.id, email } },
     create: {
       schoolId: school.id,
       name: "Test Admin",
