@@ -1,5 +1,6 @@
 "use client";
 
+import { jsPDF } from "jspdf";
 import { useEffect, useMemo, useState } from "react";
 
 type Props = {
@@ -151,6 +152,78 @@ function printMarkdown(title: string, markdown: string, onError: (message: strin
   win.document.close();
   win.focus();
   win.print();
+}
+
+function toFileName(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "ai-performance-report";
+}
+
+function downloadMarkdownPdf(title: string, markdown: string, onError: (message: string) => void) {
+  if (!markdown) {
+    return;
+  }
+
+  try {
+    const doc = new jsPDF({ unit: "pt", format: "letter" });
+    const margin = 48;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const contentWidth = pageWidth - margin * 2;
+    let y = margin;
+
+    function addPageIfNeeded(height = 18) {
+      if (y + height <= pageHeight - margin) {
+        return;
+      }
+
+      doc.addPage();
+      y = margin;
+    }
+
+    function addWrappedText(text: string, fontSize: number, lineHeight: number, style: "normal" | "bold" = "normal") {
+      doc.setFont("helvetica", style);
+      doc.setFontSize(fontSize);
+      const lines = doc.splitTextToSize(text, contentWidth) as string[];
+
+      lines.forEach((line) => {
+        addPageIfNeeded(lineHeight);
+        doc.text(line, margin, y);
+        y += lineHeight;
+      });
+    }
+
+    doc.setProperties({ title, subject: "AI Performance Report" });
+    addWrappedText(title, 18, 24, "bold");
+    addWrappedText(`Generated ${new Date().toLocaleString()}`, 10, 16);
+    y += 14;
+
+    tabs.forEach((tab) => {
+      const content = getTabContent(markdown, tab);
+      const items = getReadableItems(content);
+      addPageIfNeeded(42);
+      addWrappedText(tab.label, 14, 20, "bold");
+
+      if (items.length === 0) {
+        addWrappedText("No content generated for this section.", 10, 15);
+        y += 10;
+        return;
+      }
+
+      items.forEach((item, index) => {
+        addWrappedText(`${index + 1}. ${item}`, 10, 15);
+        y += 6;
+      });
+
+      y += 10;
+    });
+
+    doc.save(`${toFileName(title)}.pdf`);
+  } catch {
+    onError("Unable to download the PDF report from this browser.");
+  }
 }
 
 export default function AiReviewControls({ cycleId, subjectName }: Props) {
@@ -406,7 +479,7 @@ export default function AiReviewControls({ cycleId, subjectName }: Props) {
           </div>
 
           <div className="d-grid gap-2">
-            <button type="button" className="btn btn-outline-primary" onClick={() => printMarkdown(`${subjectName} AI Performance Report`, reviewMarkdown, setError)} disabled={!reviewMarkdown}>
+            <button type="button" className="btn btn-outline-primary" onClick={() => downloadMarkdownPdf(`${subjectName} AI Performance Report`, reviewMarkdown, setError)} disabled={!reviewMarkdown}>
               <i className="bi bi-download me-2" aria-hidden="true" />
               Download PDF
             </button>
@@ -473,7 +546,7 @@ export default function AiReviewControls({ cycleId, subjectName }: Props) {
                 </div>
                 <div className="modal-footer">
                   <button type="button" className="btn btn-outline-secondary" onClick={() => setShowFullReport(false)}>Close</button>
-                  <button type="button" className="btn btn-primary" onClick={() => printMarkdown(`${subjectName} AI Performance Report`, reviewMarkdown, setError)}>
+                  <button type="button" className="btn btn-primary" onClick={() => downloadMarkdownPdf(`${subjectName} AI Performance Report`, reviewMarkdown, setError)}>
                     <i className="bi bi-download me-2" aria-hidden="true" />
                     Download PDF
                   </button>
