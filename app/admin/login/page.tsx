@@ -9,7 +9,7 @@ import { signIn } from "next-auth/react";
 function AdminLoginPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/admin/dashboard";
+  const callbackUrl = searchParams.get("callbackUrl") || "/admin";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -34,7 +34,7 @@ function AdminLoginPageContent() {
       return;
     }
 
-    router.push(result.url || "/admin/dashboard");
+    router.push(result.url || "/admin");
     router.refresh();
   }
 
