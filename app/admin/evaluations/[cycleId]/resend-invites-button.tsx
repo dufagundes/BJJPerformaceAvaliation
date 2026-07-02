@@ -15,6 +15,27 @@ type ResendResponse = {
   }>;
 };
 
+function pluralize(count: number, singular: string, plural = `${singular}s`) {
+  return `${count} ${count === 1 ? singular : plural}`;
+}
+
+function getDeliveryBreakdown(results: ResendResponse["results"] = []) {
+  const successful = results.filter((result) => result.ok);
+  const reviewerCount = successful.filter((result) => result.kind === "reviewer").length;
+  const selfEvaluationCount = successful.filter((result) => result.kind === "self-evaluation").length;
+  const parts: string[] = [];
+
+  if (reviewerCount > 0) {
+    parts.push(pluralize(reviewerCount, "reviewer invitation"));
+  }
+
+  if (selfEvaluationCount > 0) {
+    parts.push(pluralize(selfEvaluationCount, "self-evaluation email"));
+  }
+
+  return parts.length > 0 ? ` (${parts.join(", ")})` : "";
+}
+
 export default function ResendInvitesButton({ cycleId }: { cycleId: string }) {
   const [isSending, setIsSending] = useState(false);
   const [message, setMessage] = useState("");
@@ -41,14 +62,15 @@ export default function ResendInvitesButton({ cycleId }: { cycleId: string }) {
 
       const sent = data.sent ?? 0;
       const failed = data.failed ?? 0;
+      const breakdown = getDeliveryBreakdown(data.results);
       if (failed > 0) {
         const firstError = data.results?.find((result) => !result.ok)?.error;
         setIsError(true);
-        setMessage(`${sent} pending emails sent. ${failed} failed.${firstError ? ` First error: ${firstError}` : ""}`);
+        setMessage(`${sent} pending emails accepted by the email service${breakdown}. ${failed} failed.${firstError ? ` First error: ${firstError}` : ""}`);
         return;
       }
 
-      setMessage(`${sent} pending emails sent.`);
+      setMessage(`${sent} pending emails accepted by the email service${breakdown}.`);
     } catch (error) {
       setIsError(true);
       setMessage(error instanceof Error ? error.message : "Could not resend invitations.");
