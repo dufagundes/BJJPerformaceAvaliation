@@ -757,8 +757,9 @@ export default async function EvaluationCycleDetailPage({
           </nav>
 
           <div className="mt-5 border-t border-slate-100 bg-gradient-to-r from-white via-white to-slate-50 p-6">
-            <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
-              <div className="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-center">
+            <div className="space-y-6">
+              <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
+                <div className="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-center">
                 <div className="flex h-28 w-28 shrink-0 items-center justify-center rounded-full border-4 border-white bg-[#0B1F3A] text-3xl font-semibold text-white shadow-md ring-1 ring-slate-200">
                   {getInitials(cycle.subject.name)}
                 </div>
@@ -773,41 +774,10 @@ export default async function EvaluationCycleDetailPage({
                     {cycle.subject.name}
                   </h1>
                   <p className="mt-1 text-sm text-slate-600">{cycle.subject.email}</p>
-                  <dl className="mt-5 grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
-                    <div>
-                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Role</dt>
-                      <dd className="mt-1 font-medium text-slate-900">{roleLabel}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Deadline</dt>
-                      <dd className="mt-1 font-medium text-slate-900">{formatDate(cycle.deadline)}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Total Evaluators</dt>
-                      <dd className="mt-1 font-medium text-slate-900">{invitedReviewers}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Response Status</dt>
-                      <dd className="mt-1 font-medium text-slate-900">{responseStatus}</dd>
-                    </div>
-                  </dl>
                 </div>
               </div>
 
               <div className="flex shrink-0 flex-col gap-4 xl:items-end">
-                <div className="grid gap-3 sm:grid-cols-2 xl:min-w-80">
-                  <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Current Score</p>
-                    <p className="mt-2 text-4xl font-semibold text-[#0B1F3A]">{currentScore}</p>
-                  </div>
-                  <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Performance Badge</p>
-                    <span className={`mt-3 inline-flex rounded-full border px-3 py-1.5 text-sm font-semibold ${getBadgeClasses(performanceBadge)}`}>
-                      {performanceBadge}
-                    </span>
-                  </div>
-                </div>
-
                 <div className="flex flex-col gap-2 sm:flex-row xl:justify-end">
                   <ResendInvitesButton cycleId={cycle.id} />
                   <SendSelfEvaluationButton cycleId={cycle.id} />
@@ -829,10 +799,39 @@ export default async function EvaluationCycleDetailPage({
                   </details>
                 </div>
               </div>
+              </div>
 
-              <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Cycle Overview</p>
-                <p className="mt-2 text-sm leading-6 text-slate-700">{cycle.description}</p>
+              <div className="grid overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:grid-cols-2 xl:grid-cols-[minmax(0,2fr)_repeat(5,minmax(130px,1fr))]">
+                <div className="border-b border-slate-200 p-5 lg:col-span-2 xl:col-span-1 xl:border-b-0 xl:border-r">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Cycle Overview</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-700">{cycle.description}</p>
+                </div>
+                <div className="border-b border-slate-200 p-5 sm:border-r xl:border-b-0">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Role</p>
+                  <p className="mt-3 text-sm font-semibold text-slate-950">{roleLabel}</p>
+                </div>
+                <div className="border-b border-slate-200 p-5 xl:border-b-0 xl:border-r">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Deadline</p>
+                  <p className="mt-3 text-sm font-semibold text-slate-950">{formatDate(cycle.deadline)}</p>
+                  <p className="mt-1 text-xs text-amber-600">{daysRemaining} day{daysRemaining === 1 ? "" : "s"} remaining</p>
+                </div>
+                <div className="border-b border-slate-200 p-5 sm:border-r xl:border-b-0">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Total Evaluators</p>
+                  <p className="mt-3 text-2xl font-semibold text-[#0B1F3A]">{invitedReviewers}</p>
+                  <p className="mt-1 text-xs text-slate-500">{peerReviewers.length} peers, {contactReviewers.length} parents/students</p>
+                </div>
+                <div className="border-b border-slate-200 p-5 xl:border-b-0 xl:border-r">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Response Status</p>
+                  <p className="mt-3 text-2xl font-semibold text-[#0B1F3A]">{completionPercent}%</p>
+                  <p className="mt-1 text-xs text-slate-500">{responseStatus}</p>
+                </div>
+                <div className="p-5">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Current Score</p>
+                  <p className="mt-3 text-2xl font-semibold text-[#0B1F3A]">{currentScore}</p>
+                  <span className={`mt-2 inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getBadgeClasses(performanceBadge)}`}>
+                    {performanceBadge}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
