@@ -304,33 +304,12 @@ async function getLegacyEvaluationFormQuestions(
   audienceType?: EvaluationAudienceType,
   staffRole = HEAD_INSTRUCTOR_ROLE,
 ): Promise<EvaluationFormQuestion[]> {
-  const audienceClause = audienceType
-    ? `AND ("audienceType" = 'ALL'::"EvaluationAudienceType" OR "audienceType" = $2::"EvaluationAudienceType")`
-    : "";
-  const params = audienceType ? [staffRole, audienceType] : [staffRole];
-  let rows = (await prisma.$queryRawUnsafe(
-    `
-    SELECT "id", "staffRole", "audienceType", "text", "type", "isRequired", "options", "order"
-    FROM "EvaluationFormQuestion"
-    WHERE "staffRole" = $1::TEXT
-    ${audienceClause}
-    ORDER BY "staffRole" ASC, "audienceType" ASC, "order" ASC
-    `,
-    ...params,
-  )) as Array<{
-    id: string;
-    staffRole: string;
-    audienceType: EvaluationAudienceType;
-    text: string;
-    type: EvaluationQuestionType;
-    isRequired: boolean;
-    options: unknown;
-    order: number;
-  }>;
-
-  if (rows.length === 0 && staffRole !== HEAD_INSTRUCTOR_ROLE) {
-    const fallbackParams = audienceType ? [HEAD_INSTRUCTOR_ROLE, audienceType] : [HEAD_INSTRUCTOR_ROLE];
-    rows = (await prisma.$queryRawUnsafe(
+  try {
+    const audienceClause = audienceType
+      ? `AND "audienceType" = $2::"EvaluationAudienceType"`
+      : "";
+    const params = audienceType ? [staffRole, audienceType] : [staffRole];
+    let rows = (await prisma.$queryRawUnsafe(
       `
       SELECT "id", "staffRole", "audienceType", "text", "type", "isRequired", "options", "order"
       FROM "EvaluationFormQuestion"
@@ -338,15 +317,40 @@ async function getLegacyEvaluationFormQuestions(
       ${audienceClause}
       ORDER BY "staffRole" ASC, "audienceType" ASC, "order" ASC
       `,
-      ...fallbackParams,
-    )) as typeof rows;
-  }
+      ...params,
+    )) as Array<{
+      id: string;
+      staffRole: string;
+      audienceType: EvaluationAudienceType;
+      text: string;
+      type: EvaluationQuestionType;
+      isRequired: boolean;
+      options: unknown;
+      order: number;
+    }>;
 
-  if (rows.length === 0) {
+    if (rows.length === 0 && staffRole !== HEAD_INSTRUCTOR_ROLE) {
+      const fallbackParams = audienceType ? [HEAD_INSTRUCTOR_ROLE, audienceType] : [HEAD_INSTRUCTOR_ROLE];
+      rows = (await prisma.$queryRawUnsafe(
+        `
+        SELECT "id", "staffRole", "audienceType", "text", "type", "isRequired", "options", "order"
+        FROM "EvaluationFormQuestion"
+        WHERE "staffRole" = $1::TEXT
+        ${audienceClause}
+        ORDER BY "staffRole" ASC, "audienceType" ASC, "order" ASC
+        `,
+        ...fallbackParams,
+      )) as typeof rows;
+    }
+
+    if (rows.length === 0) {
+      return getDefaultEvaluationFormQuestions(audienceType, staffRole);
+    }
+
+    return mapQuestionRows(rows);
+  } catch {
     return getDefaultEvaluationFormQuestions(audienceType, staffRole);
   }
-
-  return mapQuestionRows(rows);
 }
 
 async function ensureDefaultsSeeded(schoolId: string) {
