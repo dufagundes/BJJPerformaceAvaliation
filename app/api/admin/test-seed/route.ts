@@ -19,7 +19,7 @@ export async function POST() {
 
     // 1. Create or get test admin
     let testAdmin = await prisma.user.findUnique({
-      where: { email: "admin@example.com" },
+      where: { schoolId_email: { schoolId: school.id, email: "admin@example.com" } },
     });
 
     if (!testAdmin) {
@@ -37,7 +37,7 @@ export async function POST() {
 
     // 2. Create or get test staff member
     let staffMember = await prisma.user.findUnique({
-      where: { email: "test-staff@example.com" },
+      where: { schoolId_email: { schoolId: school.id, email: "test-staff@example.com" } },
     });
 
     if (!staffMember) {
@@ -106,7 +106,7 @@ export async function POST() {
 
     // 3. Create test peer reviewers (users)
     let testPeer1 = await prisma.user.findUnique({
-      where: { email: "peer1@example.com" },
+      where: { schoolId_email: { schoolId: school.id, email: "peer1@example.com" } },
     });
     if (!testPeer1) {
       testPeer1 = await prisma.user.create({
@@ -122,7 +122,7 @@ export async function POST() {
     }
 
     let testPeer2 = await prisma.user.findUnique({
-      where: { email: "peer2@example.com" },
+      where: { schoolId_email: { schoolId: school.id, email: "peer2@example.com" } },
     });
     if (!testPeer2) {
       testPeer2 = await prisma.user.create({

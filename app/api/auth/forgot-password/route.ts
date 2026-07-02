@@ -20,10 +20,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Email is required." }, { status: 400 });
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email },
+  const users = await prisma.user.findMany({
+    where: {
+      email,
+      role: "ADMIN",
+      isActive: true,
+      school: {
+        is: {
+          isActive: true,
+        },
+      },
+    },
     select: { id: true, email: true, name: true, role: true },
   });
+  const user = users.length === 1 ? users[0] : null;
 
   if (!user || user.role !== "ADMIN") {
     return NextResponse.json({ ok: true, message: "If that admin email exists, a reset link has been sent." }, { status: 200 });

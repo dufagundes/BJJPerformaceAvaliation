@@ -29,8 +29,17 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email },
+        const users = await prisma.user.findMany({
+          where: {
+            email,
+            role: UserRole.ADMIN,
+            isActive: true,
+            school: {
+              is: {
+                isActive: true,
+              },
+            },
+          },
           select: {
             id: true,
             name: true,
@@ -48,7 +57,13 @@ export const authOptions: NextAuthOptions = {
           },
         });
 
-          if (!user || user.role !== UserRole.ADMIN || !user.isActive || !user.school.isActive) {
+        if (users.length !== 1) {
+          return null;
+        }
+
+        const user = users[0];
+
+        if (!user || user.role !== UserRole.ADMIN || !user.isActive || !user.school.isActive) {
           return null;
         }
 
