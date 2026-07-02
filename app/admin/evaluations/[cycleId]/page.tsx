@@ -768,26 +768,19 @@ export default async function EvaluationCycleDetailPage({
                     <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${getStatusClasses(cycle.status)}`}>
                       {getStatusLabel(cycle.status)}
                     </span>
-                    <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600">
-                      360-Degree Evaluation
-                    </span>
                   </div>
                   <h1 className="mt-3 truncate text-3xl font-semibold tracking-tight text-[#0B1F3A] sm:text-4xl">
                     {cycle.subject.name}
                   </h1>
                   <p className="mt-1 text-sm text-slate-600">{cycle.subject.email}</p>
-                  <dl className="mt-5 grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2 lg:grid-cols-3">
-                    <div>
-                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Cycle</dt>
-                      <dd className="mt-1 font-medium text-slate-900">{cycle.description}</dd>
-                    </div>
+                  <div className="mt-5 rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-sm">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Cycle Overview</p>
+                    <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-700">{cycle.description}</p>
+                  </div>
+                  <dl className="mt-5 grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
                     <div>
                       <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Role</dt>
                       <dd className="mt-1 font-medium text-slate-900">{roleLabel}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Evaluation Type</dt>
-                      <dd className="mt-1 font-medium text-slate-900">360-Degree Evaluation</dd>
                     </div>
                     <div>
                       <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Deadline</dt>
