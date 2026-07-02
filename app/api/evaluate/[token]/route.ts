@@ -14,7 +14,16 @@ function getFirstName(fullName: string): string {
   if (!name) {
     return "this staff member";
   }
-  return name.split(/\s+/)[0] ?? "this staff member";
+
+  const parts = name.split(/\s+/);
+  const firstPart = parts[0] ?? "";
+  const titleWords = new Set(["coach", "professor", "instructor"]);
+
+  if (titleWords.has(firstPart.toLowerCase()) && parts[1]) {
+    return `${firstPart} ${parts[1]}`;
+  }
+
+  return firstPart || "this staff member";
 }
 
 function validateAnswers(answers: unknown, questions: Array<{ order: number; type: EvaluationQuestionType; isRequired: boolean }>): answers is EvaluationAnswers {
