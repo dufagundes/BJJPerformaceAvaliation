@@ -158,7 +158,7 @@ export default function ContactsClient() {
     }
   }
 
-  async function deactivate(contactId: string) {
+  async function updateContactStatus(contactId: string, nextStatus: "ACTIVE" | "INACTIVE") {
     setMessage("");
     setIsError(false);
 
@@ -168,19 +168,19 @@ export default function ContactsClient() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ status: "INACTIVE" }),
+        body: JSON.stringify({ status: nextStatus }),
       });
 
       const data = (await response.json()) as { error?: string };
       if (!response.ok) {
-        throw new Error(data.error ?? "Could not deactivate contact.");
+        throw new Error(data.error ?? `Could not ${nextStatus === "ACTIVE" ? "activate" : "deactivate"} contact.`);
       }
 
-      setMessage("Contact deactivated.");
+      setMessage(`Contact ${nextStatus === "ACTIVE" ? "activated" : "deactivated"}.`);
       await loadContacts();
     } catch (error) {
       setIsError(true);
-      setMessage(error instanceof Error ? error.message : "Could not deactivate contact.");
+      setMessage(error instanceof Error ? error.message : `Could not ${nextStatus === "ACTIVE" ? "activate" : "deactivate"} contact.`);
     }
   }
 
@@ -490,8 +490,10 @@ export default function ContactsClient() {
                                 <>
                                   <Button type="button" variant="outline" onClick={() => startEdit(contact)}>Edit</Button>
                                   {contact.isActive ? (
-                                    <Button type="button" variant="outline" onClick={() => void deactivate(contact.id)}>Deactivate</Button>
-                                  ) : null}
+                                    <Button type="button" variant="outline" onClick={() => void updateContactStatus(contact.id, "INACTIVE")}>Deactivate</Button>
+                                  ) : (
+                                    <Button type="button" variant="outline" onClick={() => void updateContactStatus(contact.id, "ACTIVE")}>Activate</Button>
+                                  )}
                                 </>
                               )}
                             </div>
