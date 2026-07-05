@@ -1,5 +1,6 @@
 -- Delete incorrectly uploaded contacts for the school owned by info@gblindale.com.
 -- Run in Supabase SQL Editor.
+-- Run select-contacts-for-info-gblindale.sql first to preview the affected rows.
 --
 -- Safety behavior:
 -- - Resolves the school from the active user info@gblindale.com.
