@@ -59,7 +59,7 @@ export async function PATCH(
 
   const existing = await prisma.contact.findFirst({
     where: { id: contactId, schoolId: adminSession.schoolId },
-    select: { id: true, type: true },
+    select: { id: true, type: true, studentName: true },
   });
 
   if (!existing) {
@@ -67,7 +67,7 @@ export async function PATCH(
   }
 
   const finalType = type ?? existing.type;
-  const finalStudentName = finalType === ContactType.PARENT ? (studentName ?? undefined) : null;
+  const finalStudentName = finalType === ContactType.PARENT ? (studentName ?? existing.studentName ?? undefined) : null;
 
   if (finalType === ContactType.PARENT && (!finalStudentName || finalStudentName.length === 0)) {
     return NextResponse.json({ error: "studentName is required for Parent contacts." }, { status: 400 });
