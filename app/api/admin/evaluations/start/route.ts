@@ -13,6 +13,20 @@ type StartEvaluationPayload = {
   contactIds?: string[];
 };
 
+const EMAIL_SEND_DELAY_MS = 150;
+
+function wait(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+async function pauseBeforeEmailSend(attemptCount: number): Promise<void> {
+  if (attemptCount > 0) {
+    await wait(EMAIL_SEND_DELAY_MS);
+  }
+}
+
 export async function POST(request: Request) {
   const adminSession = await getAdminSession();
   if (!adminSession) {
@@ -136,6 +150,7 @@ export async function POST(request: Request) {
 
   let selfEvaluation: { id: string; status: ReviewerStatus | string; inviteToken: string };
   let selfEvaluationDelivery: { ok: boolean; id?: string; error?: string };
+  let emailSendAttempts = 0;
 
   try {
     const selfEvaluationToken = randomUUID();
@@ -151,6 +166,9 @@ export async function POST(request: Request) {
         inviteToken: true,
       },
     });
+
+    await pauseBeforeEmailSend(emailSendAttempts);
+    emailSendAttempts += 1;
 
     selfEvaluationDelivery = await sendSelfEvaluationEmail(subject.email, {
       staffName: subject.name,
@@ -188,6 +206,9 @@ export async function POST(request: Request) {
       },
     });
 
+    await pauseBeforeEmailSend(emailSendAttempts);
+    emailSendAttempts += 1;
+
     const delivery = await sendEvaluationInvitationEmail(peer.email, {
       reviewerName: peer.name,
       subjectName: subject.name,
@@ -223,6 +244,9 @@ export async function POST(request: Request) {
         inviteToken: true,
       },
     });
+
+    await pauseBeforeEmailSend(emailSendAttempts);
+    emailSendAttempts += 1;
 
     const delivery = await sendEvaluationInvitationEmail(contact.email, {
       reviewerName: contact.name,

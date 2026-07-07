@@ -8,6 +8,20 @@ function daysUntil(deadline: Date): number {
   return Math.max(0, Math.ceil((deadline.getTime() - Date.now()) / (24 * 60 * 60 * 1000)));
 }
 
+const EMAIL_SEND_DELAY_MS = 150;
+
+function wait(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+async function pauseBeforeEmailSend(attemptCount: number): Promise<void> {
+  if (attemptCount > 0) {
+    await wait(EMAIL_SEND_DELAY_MS);
+  }
+}
+
 export async function POST(
   request: Request,
   context: { params: Promise<{ cycleId: string }> },
@@ -81,6 +95,7 @@ export async function POST(
     deliveryId?: string;
     error?: string;
   }> = [];
+  let emailSendAttempts = 0;
 
   let selfEvaluation = cycle.selfEvaluation;
   if (!selfEvaluation) {
@@ -117,6 +132,9 @@ export async function POST(
         error: "Staff member has no email address.",
       });
     } else {
+      await pauseBeforeEmailSend(emailSendAttempts);
+      emailSendAttempts += 1;
+
       const delivery = await sendSelfEvaluationEmail(cycle.subject.email, {
         staffName: cycle.subject.name,
         cycleName: cycle.description,
@@ -165,6 +183,9 @@ export async function POST(
       deadline: cycle.deadline,
       inviteToken: reviewer.inviteToken,
     };
+
+    await pauseBeforeEmailSend(emailSendAttempts);
+    emailSendAttempts += 1;
 
     const delivery = template === "invitation"
       ? await sendEvaluationInvitationEmail(target.email, emailInput)
