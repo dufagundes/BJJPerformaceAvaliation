@@ -18,6 +18,9 @@ export default function EmailTemplatesPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewHtml, setPreviewHtml] = useState("");
+  const [previewSubject, setPreviewSubject] = useState("");
 
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
   const [defaults, setDefaults] = useState<Record<string, EmailTemplate>>({});
@@ -90,6 +93,38 @@ export default function EmailTemplatesPage() {
     }
   };
 
+  const handlePreview = () => {
+    const form = document.getElementById("template-form") as HTMLFormElement;
+    if (!form) return;
+    
+    const formData = new FormData(form);
+    let html = formData.get("htmlContent") as string;
+    let subject = formData.get("subject") as string;
+
+    // Sample data for preview
+    const sampleData = {
+      reviewerName: "Coach Rodriguez",
+      subjectName: "Coach Santos",
+      staffName: "Coach Santos",
+      cycleName: "Annual Performance Review 2026",
+      schoolName: "GB Lindale",
+      deadline: "July 31, 2026",
+      daysRemaining: "7 days",
+      magicLink: "https://bjjstaffvaluation.com/evaluate/sample-preview",
+    };
+
+    // Replace placeholders with sample data
+    Object.entries(sampleData).forEach(([key, value]) => {
+      const regex = new RegExp(`{${key}}`, "g");
+      html = html.replace(regex, value);
+      subject = subject.replace(regex, value);
+    });
+
+    setPreviewSubject(subject);
+    setPreviewHtml(html);
+    setShowPreview(true);
+  };
+
   if (isLoading) {
     return (
       <main className="px-4 py-8">
@@ -141,6 +176,38 @@ export default function EmailTemplatesPage() {
           </div>
         )}
 
+        {showPreview && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-lg bg-white shadow-lg">
+              <div className="sticky top-0 border-b border-slate-200 bg-slate-50 px-6 py-4 flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-slate-900">Email Preview</h2>
+                <button
+                  onClick={() => setShowPreview(false)}
+                  className="inline-flex items-center justify-center h-8 w-8 text-slate-500 hover:text-slate-700 hover:bg-slate-200 rounded"
+                  aria-label="Close preview"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="p-6 space-y-4">
+                <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-sm text-slate-600">
+                    <strong>Preview with sample data:</strong> Coach Rodriguez, Coach Santos, GB Lindale, July 31, 2026
+                  </p>
+                </div>
+                <div className="bg-slate-50 border border-slate-200 rounded p-4">
+                  <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Subject:</p>
+                  <p className="text-sm font-semibold text-slate-900">{previewSubject}</p>
+                </div>
+                <div 
+                  className="bg-white rounded-lg border border-slate-200 p-6 overflow-auto max-h-96 email-preview"
+                  dangerouslySetInnerHTML={{ __html: previewHtml }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
         <Card>
           <CardHeader>
             <CardTitle>Email Template Editor</CardTitle>
@@ -165,7 +232,7 @@ export default function EmailTemplatesPage() {
               </div>
 
               {currentTemplate && (
-                <form onSubmit={handleUpdate} className="space-y-4">
+                <form onSubmit={handleUpdate} id="template-form" className="space-y-4">
                   <div>
                     <p className="text-sm text-slate-600 mb-4">{labels[activeTab].description}</p>
                   </div>
@@ -209,9 +276,16 @@ export default function EmailTemplatesPage() {
                     </div>
                   </div>
 
-                  <div className="flex gap-2 pt-4">
+                  <div className="flex gap-2 pt-4 flex-wrap">
+                    <Button 
+                      type="button" 
+                      onClick={handlePreview}
+                      variant="outline"
+                    >
+                      👁️ Preview
+                    </Button>
                     <Button type="submit" disabled={isSaving}>
-                      {isSaving ? "Saving..." : "Save Template"}
+                      {isSaving ? "Saving..." : "✓ Save Template"}
                     </Button>
                   </div>
                 </form>
@@ -263,3 +337,4 @@ export default function EmailTemplatesPage() {
     </main>
   );
 }
+
