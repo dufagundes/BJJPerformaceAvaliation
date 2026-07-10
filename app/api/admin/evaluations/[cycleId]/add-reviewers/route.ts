@@ -35,7 +35,7 @@ export async function POST(
         deadline: true,
         status: true,
         subject: { select: { name: true } },
-        school: { select: { id: true } },
+        school: { select: { id: true, name: true } },
       },
     });
 
@@ -113,7 +113,9 @@ export async function POST(
           await sendEvaluationInviteSms(
             reviewerPhone,
             reviewerName,
-            reviewLink
+            reviewLink,
+            cycle.school?.name || "Your School",
+            cycle.subject?.name || "staff member"
           ).catch((error) => {
             console.warn(`[sms] Failed to send SMS to ${reviewerName}:`, error);
           });

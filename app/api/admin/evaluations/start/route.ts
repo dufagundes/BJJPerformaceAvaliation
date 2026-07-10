@@ -63,7 +63,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Subject cannot be selected as a peer evaluator." }, { status: 400 });
   }
 
-  const [subject, peersPool, selectedContacts] = await Promise.all([
+  const [subject, peersPool, selectedContacts, school] = await Promise.all([
     prisma.user.findFirst({
       where: { id: subjectId, schoolId: adminSession.schoolId },
       select: { id: true, name: true, email: true, phone: true, role: true },
@@ -100,6 +100,10 @@ export async function POST(request: Request) {
         phone: true,
         type: true,
       },
+    }),
+    prisma.school.findFirst({
+      where: { id: adminSession.schoolId },
+      select: { name: true },
     }),
   ]);
 
@@ -250,7 +254,13 @@ export async function POST(request: Request) {
     // Send SMS if phone number is available
     if (peer.phone?.trim()) {
       const reviewLink = `${process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/evaluate/${inviteToken}`;
-      await sendEvaluationInviteSms(peer.phone, peer.name, reviewLink).catch((error) => {
+      await sendEvaluationInviteSms(
+        peer.phone,
+        peer.name,
+        reviewLink,
+        school?.name || "Your School",
+        subject.name
+      ).catch((error) => {
         console.warn(`[sms] Failed to send invite SMS to peer ${peer.id}:`, error);
       });
     }
@@ -305,7 +315,13 @@ export async function POST(request: Request) {
     // Send SMS if phone number is available
     if (contact.phone?.trim()) {
       const reviewLink = `${process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/evaluate/${inviteToken}`;
-      await sendEvaluationInviteSms(contact.phone, contact.name, reviewLink).catch((error) => {
+      await sendEvaluationInviteSms(
+        contact.phone,
+        contact.name,
+        reviewLink,
+        school?.name || "Your School",
+        subject.name
+      ).catch((error) => {
         console.warn(`[sms] Failed to send invite SMS to contact ${contact.id}:`, error);
       });
     }

@@ -117,7 +117,7 @@ export default function SmsTemplatesPage() {
 
         <div className="mb-6">
           <h1 className="text-3xl font-semibold text-slate-900">SMS Templates</h1>
-          <p className="mt-2 text-slate-600">Customize SMS messages sent to reviewers. Always include {`{link}`} so recipients can access the evaluation.</p>
+          <p className="mt-2 text-slate-600">Customize SMS messages sent to reviewers. Personalize with school name, staff names, and evaluation links. Note: Longer messages use more SMS credits, but personalization improves response rates.</p>
         </div>
 
         {message && (
@@ -144,7 +144,7 @@ export default function SmsTemplatesPage() {
                   required
                 />
                 <p className="text-xs text-slate-500 mt-2">
-                  Available placeholders: {"{name}, {days}, {link}"}
+                  Available placeholders: {"{name}, {schoolName}, {subject}, {link}"}
                 </p>
               </div>
               {characterCounts.invite && (
@@ -172,7 +172,7 @@ export default function SmsTemplatesPage() {
                   required
                 />
                 <p className="text-xs text-slate-500 mt-2">
-                  Available placeholders: {"{name}, {days}, {link}"}
+                  Available placeholders: {"{name}, {days}, {schoolName}, {subject}, {link}"}
                 </p>
               </div>
               {characterCounts.reminder && (
@@ -200,7 +200,7 @@ export default function SmsTemplatesPage() {
                   required
                 />
                 <p className="text-xs text-slate-500 mt-2">
-                  Available placeholders: {"{name}"}
+                  Available placeholders: {"{name}, {schoolName}"}
                 </p>
               </div>
               {characterCounts.completion && (

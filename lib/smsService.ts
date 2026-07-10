@@ -15,9 +15,9 @@ export type SmsTemplateConfig = {
 };
 
 const DEFAULT_TEMPLATES: Required<SmsTemplateConfig> = {
-  invite: "Hi {name}, you're invited to evaluate. {link}",
-  reminder: "{name}, reminder: {days} days left. {link}",
-  completion: "Thank you {name}!",
+  invite: "Hi {name}, {schoolName} here. We'd appreciate your feedback evaluating {subject}. Your input helps us grow together: {link}",
+  reminder: "{schoolName} reminder: {days} days to complete your evaluation of {subject}. We value your collaboration: {link}",
+  completion: "Thanks {name}! Your feedback for {schoolName} means a lot. We appreciate you.",
 };
 
 export { DEFAULT_TEMPLATES };
@@ -170,13 +170,16 @@ export async function sendEvaluationInviteSms(
   phoneNumber: string,
   name: string,
   evaluationLink: string,
+  schoolName: string = "Your School",
+  staffName: string = "staff member",
   template?: string
 ): Promise<SendSmsResult> {
   const messageTemplate = template || DEFAULT_TEMPLATES.invite;
   const message = messageTemplate
     .replace("{name}", name)
     .replace("{link}", evaluationLink)
-    .replace("{subject}", "staff evaluation"); // Generic fallback
+    .replace("{schoolName}", schoolName)
+    .replace("{subject}", staffName);
   return sendSms(phoneNumber, message);
 }
 
@@ -184,22 +187,29 @@ export async function sendReminderSms(
   phoneNumber: string,
   name: string,
   daysDue: number,
+  schoolName: string = "Your School",
+  staffName: string = "staff member",
   template?: string
 ): Promise<SendSmsResult> {
   const messageTemplate = template || DEFAULT_TEMPLATES.reminder;
   const message = messageTemplate
     .replace("{name}", name)
     .replace("{days}", daysDue.toString())
-    .replace("{link}", ""); // Link not typically included in reminders
+    .replace("{link}", "")
+    .replace("{schoolName}", schoolName)
+    .replace("{subject}", staffName);
   return sendSms(phoneNumber, message.trim());
 }
 
 export async function sendCompletionConfirmationSms(
   phoneNumber: string,
   name: string,
+  schoolName: string = "Your School",
   template?: string
 ): Promise<SendSmsResult> {
   const messageTemplate = template || DEFAULT_TEMPLATES.completion;
-  const message = messageTemplate.replace("{name}", name);
+  const message = messageTemplate
+    .replace("{name}", name)
+    .replace("{schoolName}", schoolName);
   return sendSms(phoneNumber, message);
 }

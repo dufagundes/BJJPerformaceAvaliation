@@ -45,6 +45,16 @@ export async function sendEvaluationReminders(daysBeforeArray?: number[]) {
           id: true,
           deadline: true,
           remindersSentAt: true,
+          subject: {
+            select: {
+              name: true,
+            },
+          },
+          school: {
+            select: {
+              name: true,
+            },
+          },
           reviewers: {
             where: {
               status: "PENDING", // Only pending reviews
@@ -100,6 +110,8 @@ export async function sendEvaluationReminders(daysBeforeArray?: number[]) {
                   phone,
                   name,
                   daysBefore,
+                  cycle.school?.name || "Your School",
+                  cycle.subject?.name || "staff member",
                   templates.reminder
                 );
 

@@ -170,10 +170,13 @@ export async function sendEvaluationInvite(input: SendInviteInput): Promise<Invi
     // Send SMS if phone number is provided
     if (input.evaluatorPhone?.trim()) {
       const evaluationLink = buildEvaluationLink(input.token);
+      const schoolName = process.env.SCHOOL_NAME?.trim() || "Your School";
       const smsResult = await sendEvaluationInviteSms(
         input.evaluatorPhone,
         input.evaluatorName,
-        evaluationLink
+        evaluationLink,
+        schoolName,
+        input.staffFullName
       );
 
       if (!smsResult.ok) {
