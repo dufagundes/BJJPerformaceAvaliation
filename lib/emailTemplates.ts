@@ -21,9 +21,10 @@ const DEFAULT_TEMPLATES: Record<EmailTemplateType, EmailTemplate> = {
           </div>
           <div style="padding: 28px 32px;">
             <p style="margin: 0 0 16px;">Hi {reviewerName},</p>
-            <p style="margin: 0 0 16px;">You have been invited to share feedback for <strong>{subjectName}</strong>. Your observations help create a fairer, more useful picture of their contributions.</p>
-            <p style="margin: 0 0 20px;">The evaluation is short, confidential, and focused on practical feedback that supports professional growth.</p>
+            <p style="margin: 0 0 16px;">You have been invited to share feedback for <strong>{subjectName}</strong>. Families, students, and colleagues each see different parts of a school community, and your observations help create a fairer, more useful picture.</p>
+            <p style="margin: 0 0 20px;">The evaluation is short, confidential, and focused on practical feedback that can support professional growth.</p>
             <div style="margin: 0 0 24px; padding: 14px 16px; border-left: 4px solid #C8102E; background: #f9fafb; color: #374151;">
+              <strong>School:</strong> {schoolName}<br />
               <strong>Deadline:</strong> {deadline}<br />
               No account is required. This invitation is personal to you.
             </div>
@@ -36,7 +37,7 @@ const DEFAULT_TEMPLATES: Record<EmailTemplateType, EmailTemplate> = {
         </div>
       </div>
     `,
-    textContent: `Hi {reviewerName},\n\nYou have been invited to share feedback for {subjectName}. Your observations help create a fairer, more useful picture of their contributions.\n\nDeadline: {deadline}\n\nFill Out Evaluation: {magicLink}\n\nThis invitation is personal to you. No account is required.`,
+    textContent: `Hi {reviewerName},\n\nYou have been invited to share feedback for {subjectName}. Families, students, and colleagues each see different parts of a school community, and your observations help create a fairer, more useful picture.\n\nThe evaluation is short, confidential, and focused on practical feedback that can support professional growth.\n\nSchool: {schoolName}\nDeadline: {deadline}\n\nFill Out Evaluation: {magicLink}\n\nThis invitation is personal to you. No account is required.`,
   },
   reminder: {
     subject: "GB Staff Evaluation: reminder for {subjectName}",
@@ -51,6 +52,7 @@ const DEFAULT_TEMPLATES: Record<EmailTemplateType, EmailTemplate> = {
             <p style="margin: 0 0 16px;">Hi {reviewerName},</p>
             <p style="margin: 0 0 16px;">This is a reminder to complete your confidential evaluation for <strong>{subjectName}</strong>. Your experience helps the school recognize strengths and identify where support would make the biggest difference.</p>
             <div style="margin: 0 0 24px; padding: 14px 16px; border-left: 4px solid #C8102E; background: #f9fafb; color: #374151;">
+              <strong>School:</strong> {schoolName}<br />
               <strong>Deadline:</strong> {deadline}<br />
               No account is required. This invitation is personal to you.
             </div>
@@ -63,7 +65,7 @@ const DEFAULT_TEMPLATES: Record<EmailTemplateType, EmailTemplate> = {
         </div>
       </div>
     `,
-    textContent: `Hi {reviewerName},\n\nReminder: complete your evaluation for {subjectName}. This closes in {daysRemaining}. Your experience helps the school recognize strengths and identify where support would make the biggest difference.\n\nDeadline: {deadline}\n\nFill Out Evaluation: {magicLink}\n\nThis invitation is personal to you. No account is required.`,
+    textContent: `Hi {reviewerName},\n\nReminder: complete your evaluation for {subjectName}. This closes in {daysRemaining}. Your experience helps the school recognize strengths and identify where support would make the biggest difference.\n\nSchool: {schoolName}\nDeadline: {deadline}\n\nFill Out Evaluation: {magicLink}\n\nThis invitation is personal to you. No account is required.`,
   },
   self_evaluation: {
     subject: "GB Staff Evaluation: self evaluation for {cycleName}",
@@ -78,6 +80,7 @@ const DEFAULT_TEMPLATES: Record<EmailTemplateType, EmailTemplate> = {
             <p style="margin: 0 0 16px;">Hi {staffName},</p>
             <p style="margin: 0 0 16px;">You have been invited to complete a self evaluation for <strong>{cycleName}</strong>. This is your opportunity to describe your accomplishments, strengths, challenges, improvement areas, and goals in your own words.</p>
             <div style="margin: 0 0 24px; padding: 14px 16px; border-left: 4px solid #C8102E; background: #f9fafb; color: #374151;">
+              <strong>School:</strong> {schoolName}<br />
               <strong>Deadline:</strong> {deadline}<br />
               No account is required. This private link is personal to you.
             </div>
@@ -90,7 +93,7 @@ const DEFAULT_TEMPLATES: Record<EmailTemplateType, EmailTemplate> = {
         </div>
       </div>
     `,
-    textContent: `Hi {staffName},\n\nYou have been invited to complete a self evaluation for {cycleName}. This is your opportunity to describe your accomplishments, strengths, challenges, improvement areas, and goals in your own words.\n\nDeadline: {deadline}\n\nComplete Self Evaluation: {magicLink}\n\nThis private link is personal to you. No account is required.`,
+    textContent: `Hi {staffName},\n\nYou have been invited to complete a self evaluation for {cycleName}. This is your opportunity to describe your accomplishments, strengths, challenges, improvement areas, and goals in your own words.\n\nSchool: {schoolName}\nDeadline: {deadline}\n\nComplete Self Evaluation: {magicLink}\n\nThis private link is personal to you. No account is required.`,
   },
 };
 

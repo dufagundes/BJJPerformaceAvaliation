@@ -180,7 +180,7 @@ export default function EmailTemplatesPage() {
                       className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm font-mono"
                       required
                     />
-                    <p className="text-xs text-slate-500">Available placeholders: {"{reviewerName}, {subjectName}, {staffName}, {cycleName}, {deadline}, {daysRemaining}, {magicLink}"}</p>
+                    <p className="text-xs text-slate-500">Available placeholders: {"{reviewerName}, {subjectName}, {staffName}, {cycleName}, {schoolName}, {deadline}, {daysRemaining}, {magicLink}"}</p>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
@@ -231,6 +231,7 @@ export default function EmailTemplatesPage() {
                 <ul className="space-y-1 text-slate-600 font-mono">
                   <li>{"{reviewerName}"} - Reviewer's name</li>
                   <li>{"{subjectName}"} - Staff member being evaluated</li>
+                  <li>{"{schoolName}"} - School name</li>
                   <li>{"{deadline}"} - Evaluation deadline</li>
                   <li>{"{magicLink}"} - Evaluation link (required)</li>
                 </ul>
@@ -240,6 +241,7 @@ export default function EmailTemplatesPage() {
                 <ul className="space-y-1 text-slate-600 font-mono">
                   <li>{"{reviewerName}"} - Reviewer's name</li>
                   <li>{"{subjectName}"} - Staff member being evaluated</li>
+                  <li>{"{schoolName}"} - School name</li>
                   <li>{"{daysRemaining}"} - Days until deadline</li>
                   <li>{"{magicLink}"} - Evaluation link (required)</li>
                 </ul>
@@ -249,6 +251,7 @@ export default function EmailTemplatesPage() {
                 <ul className="space-y-1 text-slate-600 font-mono">
                   <li>{"{staffName}"} - Staff member name</li>
                   <li>{"{cycleName}"} - Evaluation cycle name</li>
+                  <li>{"{schoolName}"} - School name</li>
                   <li>{"{deadline}"} - Deadline date</li>
                   <li>{"{magicLink}"} - Self-eval link (required)</li>
                 </ul>

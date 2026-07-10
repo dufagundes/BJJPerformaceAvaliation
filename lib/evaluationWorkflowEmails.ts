@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 import { logEmailMessage } from "./messageLogging";
 import { getEmailTemplate } from "./emailTemplates";
+import { prisma } from "./prisma";
 
 type InviteTemplateInput = {
   reviewerName: string;
@@ -100,6 +101,13 @@ export async function buildInvitationEmailTemplate(
   const reviewLink = getReviewLink(input.inviteToken);
   const deadlineDate = formatDate(input.deadline);
 
+  // Fetch school name and template
+  const school = await prisma.school.findUnique({
+    where: { id: schoolId },
+    select: { name: true },
+  });
+  const schoolName = school?.name || "Your School";
+
   // Fetch from database or get defaults
   const dbTemplate = await getEmailTemplate(schoolId, "invitation");
 
@@ -107,6 +115,7 @@ export async function buildInvitationEmailTemplate(
     reviewerName: input.reviewerName,
     subjectName: input.subjectName,
     deadline: deadlineDate,
+    schoolName,
     magicLink: reviewLink,
   };
 
@@ -125,6 +134,13 @@ export async function buildReminderEmailTemplate(
   const deadlineDate = formatDate(input.deadline);
   const label = input.daysRemaining <= 1 ? "1 day" : `${input.daysRemaining} days`;
 
+  // Fetch school name and template
+  const school = await prisma.school.findUnique({
+    where: { id: schoolId },
+    select: { name: true },
+  });
+  const schoolName = school?.name || "Your School";
+
   // Fetch from database or get defaults
   const dbTemplate = await getEmailTemplate(schoolId, "reminder");
 
@@ -133,6 +149,7 @@ export async function buildReminderEmailTemplate(
     subjectName: input.subjectName,
     deadline: deadlineDate,
     daysRemaining: label,
+    schoolName,
     magicLink: reviewLink,
   };
 
@@ -150,6 +167,13 @@ export async function buildSelfEvaluationEmailTemplate(
   const selfEvaluationLink = getSelfEvaluationLink(input.inviteToken);
   const deadlineDate = formatDate(input.deadline);
 
+  // Fetch school name and template
+  const school = await prisma.school.findUnique({
+    where: { id: schoolId },
+    select: { name: true },
+  });
+  const schoolName = school?.name || "Your School";
+
   // Fetch from database or get defaults
   const dbTemplate = await getEmailTemplate(schoolId, "self_evaluation");
 
@@ -157,6 +181,7 @@ export async function buildSelfEvaluationEmailTemplate(
     staffName: input.staffName,
     cycleName: input.cycleName,
     deadline: deadlineDate,
+    schoolName,
     magicLink: selfEvaluationLink,
   };
 
