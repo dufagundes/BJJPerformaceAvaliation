@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Button from "@/components/ui/button";
 
 export default function AddReviewersButton({ cycleId }: { cycleId: string }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,7 +20,6 @@ export default function AddReviewersButton({ cycleId }: { cycleId: string }) {
     
     // Fetch available reviewers (users or contacts)
     try {
-      const endpoint = reviewerType === "PEER" ? "users" : "contacts";
       const response = await fetch(
         `/api/admin/available-reviewers?type=${reviewerType}&cycleId=${cycleId}`
       );

@@ -45,7 +45,6 @@ export async function POST(req: NextRequest) {
     const fromNumber = params.get("From") || "";
     const toNumber = params.get("To") || "";
     const messageSid = params.get("MessageSid") || "";
-    const accountSid = params.get("AccountSid") || "";
 
     // Extract schoolId from message context
     // For now, we'll need to look up the original message to find the schoolId
@@ -93,7 +92,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   return NextResponse.json({
     message: "Twilio SMS webhook endpoint",
     method: "POST",

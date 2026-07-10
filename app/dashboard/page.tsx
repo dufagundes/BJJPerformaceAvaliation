@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+// @ts-ignore
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { EvalProAppShell } from "./_components/app-shell";

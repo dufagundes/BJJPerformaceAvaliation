@@ -44,9 +44,9 @@ export async function GET(req: NextRequest) {
       offset,
     };
 
-    let smsMessages = [];
-    let emailMessages = [];
-    let smsReplies = [];
+    let smsMessages: any[] = [];
+    let emailMessages: any[] = [];
+    let smsReplies: any[] = [];
 
     if (type === "sms" || type === "all") {
       try {

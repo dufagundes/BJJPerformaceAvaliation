@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
     const assignedReviewers = await prisma.reviewer.findMany({
       where: {
         cycleId,
-        type,
+        type: (type as "PEER" | "PARENT_STUDENT"),
       },
       select: {
         userId: type === "PEER" ? true : false,

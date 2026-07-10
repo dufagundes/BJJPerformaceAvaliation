@@ -7,7 +7,7 @@ import {
 } from "@/lib/smsTemplates";
 import { DEFAULT_TEMPLATES } from "@/lib/smsService";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const adminSession = await getAdminSession();
   if (!adminSession) {
     return unauthorizedAdminResponse();

@@ -121,12 +121,6 @@ export async function POST(
 
         // Send email if available
         if (reviewerEmail?.trim()) {
-          const deadlineDate = cycle.deadline.toLocaleDateString("en-US", {
-            month: "long",
-            day: "numeric",
-            year: "numeric",
-          });
-
           await sendEvaluationInvitationEmail(
             reviewerEmail,
             {

@@ -134,7 +134,7 @@ export async function sendSms(
         await Promise.all(
           results.map((result, index) =>
             logSmsMessage({
-              schoolId: metadata.schoolId,
+              schoolId: metadata.schoolId as string,
               cycleId: metadata.cycleId,
               reviewerId: metadata.reviewerId,
               twilioSid: result.sid,
