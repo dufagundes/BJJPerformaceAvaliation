@@ -3,6 +3,7 @@ import AiReviewControls from "./ai-review-controls";
 import type { ExecutiveReportData, ExecutiveReportScoreItem } from "./executive-ai-report";
 import ResendInvitesButton from "./resend-invites-button";
 import SendSelfEvaluationButton from "./send-self-evaluation-button";
+import AddReviewersButton from "./add-reviewers-button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../components/ui/card";
 import { getAdminSession } from "../../../../lib/adminAuth";
 import { prisma } from "../../../../lib/prisma";
@@ -1183,7 +1184,10 @@ export default async function EvaluationCycleDetailPage({
 
             <Card className="rounded-2xl border-slate-200 bg-white shadow-sm">
               <CardHeader>
-                <CardTitle className="text-[#0B1F3A]">Reviewer Roster</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-[#0B1F3A]">Reviewer Roster</CardTitle>
+                  <AddReviewersButton cycleId={cycle.id} />
+                </div>
               </CardHeader>
               <CardContent className="space-y-5">
                 <div>
