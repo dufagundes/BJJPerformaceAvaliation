@@ -103,15 +103,23 @@ export async function POST(
     await pauseBeforeEmailSend(emailSendAttempts);
     emailSendAttempts += 1;
 
-    const daysRemaining = Math.max(0, Math.ceil((reviewer.tokenExpiresAt.getTime() - Date.now()) / (24 * 60 * 60 * 1000)));
+    const daysRemaining = Math.ceil((reviewer.tokenExpiresAt.getTime() - Date.now()) / (24 * 60 * 60 * 1000));
 
-    const delivery = await sendEvaluationReminderEmail(email, {
-      reviewerName: name,
-      subjectName: cycle.subject.name,
-      deadline: cycle.deadline,
-      inviteToken: reviewer.inviteToken,
-      daysRemaining,
-    });
+    const delivery = await sendEvaluationReminderEmail(
+      email,
+      {
+        reviewerName: name,
+        subjectName: cycle.subject.name,
+        deadline: cycle.deadline,
+        inviteToken: reviewer.inviteToken,
+        daysRemaining,
+      },
+      adminSession.schoolId,
+      {
+        cycleId,
+        reviewerId: reviewer.id,
+      }
+    );
 
     results.push({
       name,

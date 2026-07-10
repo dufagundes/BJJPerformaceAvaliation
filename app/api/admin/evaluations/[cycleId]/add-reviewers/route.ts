@@ -129,8 +129,8 @@ export async function POST(
               deadline: cycle.deadline,
               inviteToken,
             },
+            cycle.school.id,
             {
-              schoolId: cycle.school.id,
               cycleId,
               reviewerId: newReviewer.id,
             }

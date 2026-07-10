@@ -68,12 +68,19 @@ export async function POST(
     return NextResponse.json({ error: "Self evaluation link is expired." }, { status: 400 });
   }
 
-  const delivery = await sendSelfEvaluationEmail(cycle.subject.email, {
-    staffName: cycle.subject.name,
-    cycleName: cycle.description,
-    deadline: cycle.deadline,
-    inviteToken: selfEvaluation.inviteToken,
-  });
+  const delivery = await sendSelfEvaluationEmail(
+    cycle.subject.email,
+    {
+      staffName: cycle.subject.name,
+      cycleName: cycle.description,
+      deadline: cycle.deadline,
+      inviteToken: selfEvaluation.inviteToken,
+    },
+    adminSession.schoolId,
+    {
+      cycleId: cycle.id,
+    }
+  );
 
   if (!delivery.ok) {
     return NextResponse.json(

@@ -27,7 +27,9 @@ export async function POST(
       tokenExpiresAt: true,
       cycle: {
         select: {
+          id: true,
           deadline: true,
+          schoolId: true,
           subject: {
             select: { name: true },
           },
@@ -55,12 +57,20 @@ export async function POST(
     return NextResponse.json({ error: "Reviewer has no email address." }, { status: 400 });
   }
 
-  const delivery = await sendEvaluationInvitationEmail(target.email, {
-    reviewerName: target.name,
-    subjectName: reviewer.cycle.subject.name,
-    deadline: reviewer.cycle.deadline,
-    inviteToken: reviewer.inviteToken,
-  });
+  const delivery = await sendEvaluationInvitationEmail(
+    target.email,
+    {
+      reviewerName: target.name,
+      subjectName: reviewer.cycle.subject.name,
+      deadline: reviewer.cycle.deadline,
+      inviteToken: reviewer.inviteToken,
+    },
+    reviewer.cycle.schoolId,
+    {
+      cycleId: reviewer.cycle.id,
+      reviewerId: reviewer.id,
+    }
+  );
 
   if (!delivery.ok) {
     return NextResponse.json(

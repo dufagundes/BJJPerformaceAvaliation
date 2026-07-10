@@ -135,12 +135,19 @@ export async function POST(
       await pauseBeforeEmailSend(emailSendAttempts);
       emailSendAttempts += 1;
 
-      const delivery = await sendSelfEvaluationEmail(cycle.subject.email, {
-        staffName: cycle.subject.name,
-        cycleName: cycle.description,
-        deadline: cycle.deadline,
-        inviteToken: selfEvaluation.inviteToken,
-      });
+      const delivery = await sendSelfEvaluationEmail(
+        cycle.subject.email,
+        {
+          staffName: cycle.subject.name,
+          cycleName: cycle.description,
+          deadline: cycle.deadline,
+          inviteToken: selfEvaluation.inviteToken,
+        },
+        adminSession.schoolId,
+        {
+          cycleId: cycle.id,
+        }
+      );
 
       results.push({
         kind: "self-evaluation",
@@ -188,11 +195,27 @@ export async function POST(
     emailSendAttempts += 1;
 
     const delivery = template === "invitation"
-      ? await sendEvaluationInvitationEmail(target.email, emailInput)
-      : await sendEvaluationReminderEmail(target.email, {
-          ...emailInput,
-          daysRemaining: daysUntil(cycle.deadline),
-        });
+      ? await sendEvaluationInvitationEmail(
+          target.email,
+          emailInput,
+          adminSession.schoolId,
+          {
+            cycleId: cycle.id,
+            reviewerId: reviewer.id,
+          }
+        )
+      : await sendEvaluationReminderEmail(
+          target.email,
+          {
+            ...emailInput,
+            daysRemaining: daysUntil(cycle.deadline),
+          },
+          adminSession.schoolId,
+          {
+            cycleId: cycle.id,
+            reviewerId: reviewer.id,
+          }
+        );
 
     results.push({
       kind: "reviewer",

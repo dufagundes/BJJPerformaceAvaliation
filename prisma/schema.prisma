@@ -94,8 +94,24 @@ model School {
   smsMessages       SmsMessage[]
   smsReplies        SmsReply[]
   emailMessages     EmailMessage[]
+  emailTemplates    EmailTemplate[]
 
   @@index([isActive])
+}
+
+model EmailTemplate {
+  id           String @id @default(uuid()) @db.Uuid
+  schoolId     String @db.Uuid
+  templateType String // 'invitation', 'reminder', 'self_evaluation'
+  subject      String
+  htmlContent  String
+  textContent  String
+  updatedAt    DateTime @updatedAt
+
+  school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  @@unique([schoolId, templateType])
+  @@index([schoolId])
 }
 
 model StaffMember {

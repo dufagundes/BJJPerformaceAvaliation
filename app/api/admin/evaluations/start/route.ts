@@ -173,12 +173,19 @@ export async function POST(request: Request) {
     await pauseBeforeEmailSend(emailSendAttempts);
     emailSendAttempts += 1;
 
-    selfEvaluationDelivery = await sendSelfEvaluationEmail(subject.email, {
-      staffName: subject.name,
-      cycleName: description,
-      deadline,
-      inviteToken: selfEvaluation.inviteToken,
-    });
+    selfEvaluationDelivery = await sendSelfEvaluationEmail(
+      subject.email,
+      {
+        staffName: subject.name,
+        cycleName: description,
+        deadline,
+        inviteToken: selfEvaluation.inviteToken,
+      },
+      adminSession.schoolId,
+      {
+        cycleId: cycle.id,
+      }
+    );
 
     // Send SMS to subject for self-evaluation if phone is available
     if (subject.phone?.trim()) {
@@ -225,12 +232,20 @@ export async function POST(request: Request) {
     await pauseBeforeEmailSend(emailSendAttempts);
     emailSendAttempts += 1;
 
-    const delivery = await sendEvaluationInvitationEmail(peer.email, {
-      reviewerName: peer.name,
-      subjectName: subject.name,
-      deadline,
-      inviteToken,
-    });
+    const delivery = await sendEvaluationInvitationEmail(
+      peer.email,
+      {
+        reviewerName: peer.name,
+        subjectName: subject.name,
+        deadline,
+        inviteToken,
+      },
+      adminSession.schoolId,
+      {
+        cycleId: cycle.id,
+        reviewerId: reviewer.id,
+      }
+    );
 
     // Send SMS if phone number is available
     if (peer.phone?.trim()) {
@@ -272,12 +287,20 @@ export async function POST(request: Request) {
     await pauseBeforeEmailSend(emailSendAttempts);
     emailSendAttempts += 1;
 
-    const delivery = await sendEvaluationInvitationEmail(contact.email, {
-      reviewerName: contact.name,
-      subjectName: subject.name,
-      deadline,
-      inviteToken,
-    });
+    const delivery = await sendEvaluationInvitationEmail(
+      contact.email,
+      {
+        reviewerName: contact.name,
+        subjectName: subject.name,
+        deadline,
+        inviteToken,
+      },
+      adminSession.schoolId,
+      {
+        cycleId: cycle.id,
+        reviewerId: reviewer.id,
+      }
+    );
 
     // Send SMS if phone number is available
     if (contact.phone?.trim()) {

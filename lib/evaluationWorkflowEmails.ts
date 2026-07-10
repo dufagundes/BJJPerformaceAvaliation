@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import { logEmailMessage } from "./messageLogging";
+import { getEmailTemplate } from "./emailTemplates";
 
 type InviteTemplateInput = {
   reviewerName: string;
@@ -84,110 +85,85 @@ function buildFooterText(): string {
   return `You are receiving this because your school invited you to provide feedback through ${BRAND_NAME}.\nSent by ${BRAND_NAME} for bjjstaffvaluation.com.`;
 }
 
-export function buildInvitationEmailTemplate(input: InviteTemplateInput): MailTemplate {
+function substitutePlaceholders(content: string, replacements: Record<string, string>): string {
+  let result = content;
+  Object.entries(replacements).forEach(([key, value]) => {
+    result = result.replace(new RegExp(`{${key}}`, "g"), value);
+  });
+  return result;
+}
+
+export async function buildInvitationEmailTemplate(
+  input: InviteTemplateInput,
+  schoolId: string
+): Promise<MailTemplate> {
   const reviewLink = getReviewLink(input.inviteToken);
   const deadlineDate = formatDate(input.deadline);
 
+  // Fetch from database or get defaults
+  const dbTemplate = await getEmailTemplate(schoolId, "invitation");
+
+  const substitutions = {
+    reviewerName: input.reviewerName,
+    subjectName: input.subjectName,
+    deadline: deadlineDate,
+    magicLink: reviewLink,
+  };
+
   return {
-    subject: `${BRAND_NAME}: feedback request for ${input.subjectName}`,
-    html: `
-      <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6; max-width: 640px; margin: 0 auto; background: #ffffff;">
-        <div style="display:none;max-height:0;overflow:hidden;color:#ffffff;opacity:0;">Your school invited you to provide feedback for ${input.subjectName}.</div>
-        <div style="border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;">
-          <div style="background: #111827; padding: 28px 32px; color: #ffffff;">
-            <p style="margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #bfdbfe;">Performance Evaluation</p>
-            <h1 style="margin: 0; font-size: 24px; line-height: 1.25;">Your perspective can help ${input.subjectName} grow</h1>
-          </div>
-          <div style="padding: 28px 32px;">
-            <p style="margin: 0 0 16px;">Hi ${input.reviewerName},</p>
-            <p style="margin: 0 0 16px;">You have been invited to share feedback for <strong>${input.subjectName}</strong>. Families, students, and colleagues each see different parts of a school community, and your observations help create a fairer, more useful picture.</p>
-            <p style="margin: 0 0 20px;">The evaluation is short, confidential, and focused on practical feedback that can support professional growth.</p>
-            <div style="margin: 0 0 24px; padding: 14px 16px; border-left: 4px solid #C8102E; background: #f9fafb; color: #374151;">
-              <strong>Deadline:</strong> ${deadlineDate}<br />
-              No account is required. This invitation is personal to you.
-            </div>
-            <p style="margin: 0;">
-              <a href="${reviewLink}" style="display:inline-block;background:#C8102E;color:#ffffff;text-decoration:none;padding:13px 20px;border-radius:8px;font-weight:700;">
-                Fill Out Evaluation
-              </a>
-            </p>
-          </div>
-          ${buildFooterHtml()}
-        </div>
-      </div>
-    `,
-    text: `Hi ${input.reviewerName},\n\nYour school invited you to share feedback for ${input.subjectName}. Families, students, and colleagues each see different parts of a school community, and your observations help create a fairer, more useful picture.\n\nDeadline: ${deadlineDate}\n\nFill Out Evaluation: ${reviewLink}\n\nThis invitation is personal to you. No account is required.\n\n${buildFooterText()}`,
+    subject: substitutePlaceholders(dbTemplate.subject, substitutions),
+    html: substitutePlaceholders(dbTemplate.htmlContent, substitutions) + buildFooterHtml(),
+    text: substitutePlaceholders(dbTemplate.textContent, substitutions) + `\n\n${buildFooterText()}`,
   };
 }
 
-export function buildReminderEmailTemplate(input: ReminderTemplateInput): MailTemplate {
+export async function buildReminderEmailTemplate(
+  input: ReminderTemplateInput,
+  schoolId: string
+): Promise<MailTemplate> {
   const reviewLink = getReviewLink(input.inviteToken);
   const deadlineDate = formatDate(input.deadline);
   const label = input.daysRemaining <= 1 ? "1 day" : `${input.daysRemaining} days`;
 
+  // Fetch from database or get defaults
+  const dbTemplate = await getEmailTemplate(schoolId, "reminder");
+
+  const substitutions = {
+    reviewerName: input.reviewerName,
+    subjectName: input.subjectName,
+    deadline: deadlineDate,
+    daysRemaining: label,
+    magicLink: reviewLink,
+  };
+
   return {
-    subject: `${BRAND_NAME}: evaluation reminder for ${input.subjectName}`,
-    html: `
-      <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6; max-width: 640px; margin: 0 auto; background: #ffffff;">
-        <div style="display:none;max-height:0;overflow:hidden;color:#ffffff;opacity:0;">Your school invited you to complete feedback for ${input.subjectName}.</div>
-        <div style="border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;">
-          <div style="background: #111827; padding: 28px 32px; color: #ffffff;">
-            <p style="margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #bfdbfe;">Evaluation Reminder</p>
-            <h1 style="margin: 0; font-size: 24px; line-height: 1.25;">Feedback for ${input.subjectName} closes in ${label}</h1>
-          </div>
-          <div style="padding: 28px 32px;">
-            <p style="margin: 0 0 16px;">Hi ${input.reviewerName},</p>
-            <p style="margin: 0 0 16px;">This is a reminder to complete your confidential evaluation for <strong>${input.subjectName}</strong>. Your experience can help the school recognize strengths and identify where support would make the biggest difference.</p>
-            <div style="margin: 0 0 24px; padding: 14px 16px; border-left: 4px solid #C8102E; background: #f9fafb; color: #374151;">
-              <strong>Deadline:</strong> ${deadlineDate}<br />
-              No account is required. This invitation is personal to you.
-            </div>
-            <p style="margin: 0;">
-              <a href="${reviewLink}" style="display:inline-block;background:#C8102E;color:#ffffff;text-decoration:none;padding:13px 20px;border-radius:8px;font-weight:700;">
-                Fill Out Evaluation
-              </a>
-            </p>
-          </div>
-          ${buildFooterHtml()}
-        </div>
-      </div>
-    `,
-    text: `Hi ${input.reviewerName},\n\nReminder: your school invited you to complete feedback for ${input.subjectName}. This evaluation closes in ${label}. Your experience can help the school recognize strengths and identify where support would make the biggest difference.\n\nDeadline: ${deadlineDate}\n\nFill Out Evaluation: ${reviewLink}\n\nThis invitation is personal to you. No account is required.\n\n${buildFooterText()}`,
+    subject: substitutePlaceholders(dbTemplate.subject, substitutions),
+    html: substitutePlaceholders(dbTemplate.htmlContent, substitutions) + buildFooterHtml(),
+    text: substitutePlaceholders(dbTemplate.textContent, substitutions) + `\n\n${buildFooterText()}`,
   };
 }
 
-export function buildSelfEvaluationEmailTemplate(input: SelfEvaluationTemplateInput): MailTemplate {
+export async function buildSelfEvaluationEmailTemplate(
+  input: SelfEvaluationTemplateInput,
+  schoolId: string
+): Promise<MailTemplate> {
   const selfEvaluationLink = getSelfEvaluationLink(input.inviteToken);
   const deadlineDate = formatDate(input.deadline);
 
+  // Fetch from database or get defaults
+  const dbTemplate = await getEmailTemplate(schoolId, "self_evaluation");
+
+  const substitutions = {
+    staffName: input.staffName,
+    cycleName: input.cycleName,
+    deadline: deadlineDate,
+    magicLink: selfEvaluationLink,
+  };
+
   return {
-    subject: `${BRAND_NAME}: self evaluation for ${input.cycleName}`,
-    html: `
-      <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6; max-width: 640px; margin: 0 auto; background: #ffffff;">
-        <div style="display:none;max-height:0;overflow:hidden;color:#ffffff;opacity:0;">Your school invited you to complete your self evaluation.</div>
-        <div style="border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;">
-          <div style="background: #111827; padding: 28px 32px; color: #ffffff;">
-            <p style="margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #bfdbfe;">Self Evaluation</p>
-            <h1 style="margin: 0; font-size: 24px; line-height: 1.25;">Reflect on your progress before your review meeting</h1>
-          </div>
-          <div style="padding: 28px 32px;">
-            <p style="margin: 0 0 16px;">Hi ${input.staffName},</p>
-            <p style="margin: 0 0 16px;">You have been invited to complete a self evaluation for <strong>${input.cycleName}</strong>. This is not part of your scorecard. It is your opportunity to describe your accomplishments, strengths, challenges, improvement areas, and goals in your own words.</p>
-            <div style="margin: 0 0 24px; padding: 14px 16px; border-left: 4px solid #C8102E; background: #f9fafb; color: #374151;">
-              <strong>Deadline:</strong> ${deadlineDate}<br />
-              No account is required. This private link is personal to you.
-            </div>
-            <p style="margin: 0;">
-              <a href="${selfEvaluationLink}" style="display:inline-block;background:#C8102E;color:#ffffff;text-decoration:none;padding:13px 20px;border-radius:8px;font-weight:700;">
-                Complete Self Evaluation
-              </a>
-            </p>
-          </div>
-          ${buildFooterHtml()}
-        </div>
-      </div>
-    `,
-    text: `Hi ${input.staffName},\n\nYour school invited you to complete a self evaluation for ${input.cycleName}. This is not part of your scorecard. It is your opportunity to describe your accomplishments, strengths, challenges, improvement areas, and goals in your own words.\n\nDeadline: ${deadlineDate}\n\nComplete Self Evaluation: ${selfEvaluationLink}\n\nThis private link is personal to you. No account is required.\n\n${buildFooterText()}`,
+    subject: substitutePlaceholders(dbTemplate.subject, substitutions),
+    html: substitutePlaceholders(dbTemplate.htmlContent, substitutions) + buildFooterHtml(),
+    text: substitutePlaceholders(dbTemplate.textContent, substitutions) + `\n\n${buildFooterText()}`,
   };
 }
 
@@ -257,9 +233,12 @@ async function sendMail(
 export async function sendEvaluationInvitationEmail(
   to: string,
   input: InviteTemplateInput,
-  metadata?: { schoolId?: string; cycleId?: string; reviewerId?: string }
+  schoolId: string,
+  metadata?: { cycleId?: string; reviewerId?: string }
 ): Promise<MailDelivery> {
-  return sendMail(to, buildInvitationEmailTemplate(input), {
+  const template = await buildInvitationEmailTemplate(input, schoolId);
+  return sendMail(to, template, {
+    schoolId,
     ...metadata,
     messageType: "invite",
   });
@@ -268,9 +247,12 @@ export async function sendEvaluationInvitationEmail(
 export async function sendEvaluationReminderEmail(
   to: string,
   input: ReminderTemplateInput,
-  metadata?: { schoolId?: string; cycleId?: string; reviewerId?: string }
+  schoolId: string,
+  metadata?: { cycleId?: string; reviewerId?: string }
 ): Promise<MailDelivery> {
-  return sendMail(to, buildReminderEmailTemplate(input), {
+  const template = await buildReminderEmailTemplate(input, schoolId);
+  return sendMail(to, template, {
+    schoolId,
     ...metadata,
     messageType: "reminder",
   });
@@ -279,9 +261,12 @@ export async function sendEvaluationReminderEmail(
 export async function sendSelfEvaluationEmail(
   to: string,
   input: SelfEvaluationTemplateInput,
-  metadata?: { schoolId?: string; cycleId?: string; reviewerId?: string }
+  schoolId: string,
+  metadata?: { cycleId?: string; reviewerId?: string }
 ): Promise<MailDelivery> {
-  return sendMail(to, buildSelfEvaluationEmailTemplate(input), {
+  const template = await buildSelfEvaluationEmailTemplate(input, schoolId);
+  return sendMail(to, template, {
+    schoolId,
     ...metadata,
     messageType: "self-evaluation",
   });
