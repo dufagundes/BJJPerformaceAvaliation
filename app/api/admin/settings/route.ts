@@ -32,20 +32,25 @@ export async function GET(_request: Request) {
     return unauthorizedAdminResponse();
   }
 
-  const config = await getOrCreateAdminConfig(adminSession.schoolId);
   try {
-    const scorecardWeights = await getScorecardWeights(adminSession.schoolId);
-    return NextResponse.json({ config, scorecardWeights }, { status: 200 });
-  } catch {
-    return NextResponse.json(
-      {
-        config,
-        scorecardWeights: null,
-        scorecardWeightsError:
-          "Scorecard weights are unavailable. Run database migrations for scorecard weight tables.",
-      },
-      { status: 200 },
-    );
+    const config = await getOrCreateAdminConfig(adminSession.schoolId);
+    try {
+      const scorecardWeights = await getScorecardWeights(adminSession.schoolId);
+      return NextResponse.json({ config, scorecardWeights }, { status: 200 });
+    } catch {
+      return NextResponse.json(
+        {
+          config,
+          scorecardWeights: null,
+          scorecardWeightsError:
+            "Scorecard weights are unavailable. Run database migrations for scorecard weight tables.",
+        },
+        { status: 200 },
+      );
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to load settings";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
