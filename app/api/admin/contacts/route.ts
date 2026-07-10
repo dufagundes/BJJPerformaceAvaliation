@@ -7,6 +7,7 @@ type CreateContactPayload = {
   type?: string;
   name?: string;
   email?: string;
+  phone?: string;
   studentName?: string;
   status?: "ACTIVE" | "INACTIVE";
 };
@@ -65,6 +66,7 @@ export async function POST(request: Request) {
   const type = normalizeType(payload.type ?? "");
   const name = payload.name?.trim() ?? "";
   const email = payload.email?.trim().toLowerCase() ?? "";
+  const phone = payload.phone?.trim() || null;
   const studentName = payload.studentName?.trim() || null;
   const isActive = (payload.status ?? "ACTIVE") === "ACTIVE";
 
@@ -83,6 +85,7 @@ export async function POST(request: Request) {
         type,
         name,
         email,
+        phone,
         studentName: type === ContactType.PARENT ? studentName : null,
         isActive,
       },
@@ -91,6 +94,7 @@ export async function POST(request: Request) {
         type: true,
         name: true,
         email: true,
+        phone: true,
         studentName: true,
         isActive: true,
       },
