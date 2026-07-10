@@ -3,6 +3,7 @@ import { ReviewerStatus, ReviewerType } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getAdminSession, unauthorizedAdminResponse } from "../../../../../lib/adminAuth";
 import { sendEvaluationInvitationEmail, sendSelfEvaluationEmail } from "../../../../../lib/evaluationWorkflowEmails";
+import { sendEvaluationInviteSms, sendSms } from "../../../../../lib/smsService";
 import { prisma } from "../../../../../lib/prisma";
 
 type StartEvaluationPayload = {
@@ -65,7 +66,7 @@ export async function POST(request: Request) {
   const [subject, peersPool, selectedContacts] = await Promise.all([
     prisma.user.findFirst({
       where: { id: subjectId, schoolId: adminSession.schoolId },
-      select: { id: true, name: true, email: true, role: true },
+      select: { id: true, name: true, email: true, phone: true, role: true },
     }),
     prisma.user.findMany({
       where: {
@@ -83,6 +84,7 @@ export async function POST(request: Request) {
         id: true,
         name: true,
         email: true,
+        phone: true,
       },
     }),
     prisma.contact.findMany({
@@ -95,6 +97,7 @@ export async function POST(request: Request) {
         id: true,
         name: true,
         email: true,
+        phone: true,
         type: true,
       },
     }),
@@ -176,6 +179,19 @@ export async function POST(request: Request) {
       deadline,
       inviteToken: selfEvaluation.inviteToken,
     });
+
+    // Send SMS to subject for self-evaluation if phone is available
+    if (subject.phone?.trim()) {
+      const selfEvalLink = `${process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/self-evaluate/${selfEvaluation.inviteToken}`;
+      const message = `Hi ${subject.name}, your quarterly self-evaluation is ready. Click here to complete it: ${selfEvalLink}`;
+      await sendSms(subject.phone, message, {
+        schoolId: adminSession.schoolId,
+        cycleId: cycle.id,
+        messageType: "invite",
+      }).catch((error) => {
+        console.warn("[sms] Failed to send self-evaluation SMS to subject:", error);
+      });
+    }
   } catch (error) {
     await prisma.evaluationCycle.delete({ where: { id: cycle.id } }).catch(() => null);
     return NextResponse.json(
@@ -216,6 +232,14 @@ export async function POST(request: Request) {
       inviteToken,
     });
 
+    // Send SMS if phone number is available
+    if (peer.phone?.trim()) {
+      const reviewLink = `${process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/evaluate/${inviteToken}`;
+      await sendEvaluationInviteSms(peer.phone, peer.name, reviewLink).catch((error) => {
+        console.warn(`[sms] Failed to send invite SMS to peer ${peer.id}:`, error);
+      });
+    }
+
     reviewerResults.push({
       reviewerId: reviewer.id,
       reviewerType: ReviewerType.PEER,
@@ -254,6 +278,14 @@ export async function POST(request: Request) {
       deadline,
       inviteToken,
     });
+
+    // Send SMS if phone number is available
+    if (contact.phone?.trim()) {
+      const reviewLink = `${process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/evaluate/${inviteToken}`;
+      await sendEvaluationInviteSms(contact.phone, contact.name, reviewLink).catch((error) => {
+        console.warn(`[sms] Failed to send invite SMS to contact ${contact.id}:`, error);
+      });
+    }
 
     reviewerResults.push({
       reviewerId: reviewer.id,

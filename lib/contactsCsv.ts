@@ -2,8 +2,11 @@ export type CsvContactRow = {
   type: "STUDENT" | "PARENT";
   name: string;
   email: string;
+  phone?: string;
   studentName?: string;
 };
+
+import { normalizePhoneNumber } from "./phoneUtils";
 
 function parseCsvLine(line: string): string[] {
   const result: string[] = [];
@@ -63,6 +66,7 @@ export function parseContactsCsv(text: string) {
   const typeIndex = headerCells.indexOf("type");
   const nameIndex = headerCells.indexOf("name");
   const emailIndex = headerCells.indexOf("email");
+  const phoneIndex = headerCells.indexOf("phone");
   const studentNameIndex = headerCells.indexOf("student_name");
 
   if (typeIndex < 0 || nameIndex < 0 || emailIndex < 0) {
@@ -82,6 +86,7 @@ export function parseContactsCsv(text: string) {
     const normalizedType = normalizeType(cells[typeIndex] ?? "");
     const name = (cells[nameIndex] ?? "").trim();
     const email = (cells[emailIndex] ?? "").trim().toLowerCase();
+    const rawPhone = phoneIndex >= 0 ? (cells[phoneIndex] ?? "").trim() : "";
     const studentName = studentNameIndex >= 0 ? (cells[studentNameIndex] ?? "").trim() : "";
 
     if (!normalizedType) {
@@ -104,10 +109,20 @@ export function parseContactsCsv(text: string) {
       continue;
     }
 
+    // Normalize phone number if provided
+    const phone = rawPhone ? normalizePhoneNumber(rawPhone) : undefined;
+    if (rawPhone && !phone) {
+      // If user provided phone but normalization failed, log a warning but don't fail
+      errors.push(
+        `Line ${lineNumber}: phone number "${rawPhone}" could not be normalized. Check format.`
+      );
+    }
+
     rows.push({
       type: normalizedType,
       name,
       email,
+      phone: phone || undefined,
       studentName: normalizedType === "PARENT" ? studentName : undefined,
     });
   }
@@ -115,4 +130,8 @@ export function parseContactsCsv(text: string) {
   return { rows, errors };
 }
 
-export const contactsCsvTemplate = `type,name,email,student_name\nStudent,Jane Student,jane.student@example.com,\nParent,John Parent,john.parent@example.com,Tommy Parent`;
+export const contactsCsvTemplate = `type,name,email,phone,student_name
+Student,Jane Student,jane.student@example.com,415-555-2671,
+Student,John Doe,john.doe@example.com,(415) 555-2672,
+Parent,Mary Parent,mary.parent@example.com,+1 415 555 2673,Tommy Parent
+Parent,Bob Smith,bob.smith@example.com,14155552674,Sarah Smith`;

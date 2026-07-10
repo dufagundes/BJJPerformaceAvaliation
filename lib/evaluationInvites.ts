@@ -1,8 +1,10 @@
 import { Resend } from "resend";
+import { sendEvaluationInviteSms } from "./smsService";
 
 type SendInviteInput = {
   evaluatorEmail: string;
   evaluatorName: string;
+  evaluatorPhone?: string;
   staffFullName: string;
   token: string;
 };
@@ -148,7 +150,8 @@ export async function sendEvaluationInvite(input: SendInviteInput): Promise<Invi
       token: input.token,
     });
 
-    const response = await resend.emails.send({
+    // Send email
+    const emailResponse = await resend.emails.send({
       from,
       to: input.evaluatorEmail,
       subject: template.subject,
@@ -156,15 +159,32 @@ export async function sendEvaluationInvite(input: SendInviteInput): Promise<Invi
       text: template.text,
     });
 
-    if (response.error) {
-      console.error("[email] resend send failed", response.error);
+    if (emailResponse.error) {
+      console.error("[email] resend send failed", emailResponse.error);
       return {
         ok: false,
-        error: response.error.message || "Resend failed to deliver the email.",
+        error: emailResponse.error.message || "Resend failed to deliver the email.",
       };
     }
 
-    return { ok: true, id: response.data?.id };
+    // Send SMS if phone number is provided
+    if (input.evaluatorPhone?.trim()) {
+      const evaluationLink = buildEvaluationLink(input.token);
+      const smsResult = await sendEvaluationInviteSms(
+        input.evaluatorPhone,
+        input.evaluatorName,
+        evaluationLink
+      );
+
+      if (!smsResult.ok) {
+        console.warn("[sms] Failed to send SMS to evaluator:", smsResult.error);
+        // Don't fail the whole invite if SMS fails - email was successful
+      } else {
+        console.log("[sms] Evaluation invite SMS sent successfully");
+      }
+    }
+
+    return { ok: true, id: emailResponse.data?.id };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to send email.";
     console.error("[email] invite send failed", message);

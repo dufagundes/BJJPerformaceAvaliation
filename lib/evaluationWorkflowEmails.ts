@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { logEmailMessage } from "./messageLogging";
 
 type InviteTemplateInput = {
   reviewerName: string;
@@ -190,7 +191,16 @@ export function buildSelfEvaluationEmailTemplate(input: SelfEvaluationTemplateIn
   };
 }
 
-async function sendMail(to: string, template: MailTemplate): Promise<MailDelivery> {
+async function sendMail(
+  to: string,
+  template: MailTemplate,
+  metadata?: {
+    schoolId?: string;
+    cycleId?: string;
+    reviewerId?: string;
+    messageType?: string;
+  }
+): Promise<MailDelivery> {
   try {
     const apiKey = process.env.RESEND_API_KEY?.trim();
     if (!apiKey) {
@@ -218,6 +228,23 @@ async function sendMail(to: string, template: MailTemplate): Promise<MailDeliver
       };
     }
 
+    // Log the email if metadata provided
+    if (metadata?.schoolId && response.data?.id) {
+      await logEmailMessage({
+        schoolId: metadata.schoolId,
+        cycleId: metadata.cycleId,
+        reviewerId: metadata.reviewerId,
+        resendId: response.data.id,
+        toEmail: to,
+        fromEmail: formatFromAddress(from),
+        subject: template.subject,
+        htmlContent: template.html,
+        messageType: metadata.messageType || "other",
+      }).catch((error) => {
+        console.warn("Failed to log email message:", error);
+      });
+    }
+
     return { ok: true, id: response.data?.id };
   } catch (error) {
     return {
@@ -227,14 +254,35 @@ async function sendMail(to: string, template: MailTemplate): Promise<MailDeliver
   }
 }
 
-export async function sendEvaluationInvitationEmail(to: string, input: InviteTemplateInput): Promise<MailDelivery> {
-  return sendMail(to, buildInvitationEmailTemplate(input));
+export async function sendEvaluationInvitationEmail(
+  to: string,
+  input: InviteTemplateInput,
+  metadata?: { schoolId?: string; cycleId?: string; reviewerId?: string }
+): Promise<MailDelivery> {
+  return sendMail(to, buildInvitationEmailTemplate(input), {
+    ...metadata,
+    messageType: "invite",
+  });
 }
 
-export async function sendEvaluationReminderEmail(to: string, input: ReminderTemplateInput): Promise<MailDelivery> {
-  return sendMail(to, buildReminderEmailTemplate(input));
+export async function sendEvaluationReminderEmail(
+  to: string,
+  input: ReminderTemplateInput,
+  metadata?: { schoolId?: string; cycleId?: string; reviewerId?: string }
+): Promise<MailDelivery> {
+  return sendMail(to, buildReminderEmailTemplate(input), {
+    ...metadata,
+    messageType: "reminder",
+  });
 }
 
-export async function sendSelfEvaluationEmail(to: string, input: SelfEvaluationTemplateInput): Promise<MailDelivery> {
-  return sendMail(to, buildSelfEvaluationEmailTemplate(input));
+export async function sendSelfEvaluationEmail(
+  to: string,
+  input: SelfEvaluationTemplateInput,
+  metadata?: { schoolId?: string; cycleId?: string; reviewerId?: string }
+): Promise<MailDelivery> {
+  return sendMail(to, buildSelfEvaluationEmailTemplate(input), {
+    ...metadata,
+    messageType: "self-evaluation",
+  });
 }

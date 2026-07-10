@@ -59,6 +59,7 @@ model User {
   schoolId  String      @db.Uuid
   name      String
   email     String
+  phone     String?
   passwordHash String
   role      UserRole
   isActive  Boolean     @default(true)
@@ -72,6 +73,7 @@ model User {
 
   @@index([schoolId])
   @@index([isActive])
+  @@index([phone])
   @@unique([schoolId, email])
 }
 
@@ -89,6 +91,9 @@ model School {
   evaluationGroups  EvaluationGroup[]
   evaluationSessions EvaluationSession[]
   evaluationFormQuestions EvaluationFormQuestion[]
+  smsMessages       SmsMessage[]
+  smsReplies        SmsReply[]
+  emailMessages     EmailMessage[]
 
   @@index([isActive])
 }
@@ -111,6 +116,7 @@ model Contact {
   type      ContactType
   name      String
   email     String
+  phone     String?
   studentName String?
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -121,6 +127,7 @@ model Contact {
   @@index([schoolId])
   @@index([isActive])
   @@index([email])
+  @@index([phone])
   @@unique([schoolId, email])
 }
 
@@ -130,6 +137,7 @@ model AdminConfig {
   defaultCycleDurationDays    Int    @default(15)
   defaultContactsToInvite     Int    @default(5)
   reminderScheduleDaysBefore  Int[]  @default([3, 1])
+  smsTemplates                Json?
   updatedAt                   DateTime @updatedAt
 
   school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
@@ -142,6 +150,7 @@ model EvaluationCycle {
   description String
   status    EvaluationCycleStatus @default(IN_PROGRESS)
   deadline  DateTime
+  remindersSentAt Json?
   createdAt DateTime             @default(now())
   createdBy String               @db.Uuid
 
@@ -150,6 +159,8 @@ model EvaluationCycle {
   school     School     @relation(fields: [schoolId], references: [id], onDelete: Restrict)
   reviewers  Reviewer[]
   selfEvaluation SelfEvaluation?
+  smsMessages SmsMessage[]
+  emailMessages EmailMessage[]
 
   @@index([schoolId])
   @@index([subjectId])
@@ -189,6 +200,8 @@ model Reviewer {
   user     User?                @relation(fields: [userId], references: [id], onDelete: Restrict)
   contact  Contact?             @relation(fields: [contactId], references: [id], onDelete: Restrict)
   response EvaluationResponse?
+  smsMessages SmsMessage[]
+  emailMessages EmailMessage[]
 
   @@index([cycleId])
   @@index([userId])
@@ -280,4 +293,85 @@ model EvaluationFormQuestion {
   @@index([audienceType])
   @@index([order])
   @@unique([schoolId, staffRole, audienceType, order])
+}
+
+model SmsMessage {
+  id            String   @id @default(uuid()) @db.Uuid
+  schoolId      String   @db.Uuid
+  cycleId       String?  @db.Uuid
+  reviewerId    String?  @db.Uuid
+  
+  // Twilio tracking
+  twilioSid     String   @unique
+  toPhone       String
+  fromPhone     String
+  messageBody   String
+  messageType   String   // "invite", "reminder", "confirmation"
+  
+  // Status
+  status        String   @default("sent") // sent, delivered, failed, replied
+  deliveredAt   DateTime?
+  failureReason String?
+  
+  createdAt     DateTime @default(now())
+
+  school School @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  cycle  EvaluationCycle? @relation(fields: [cycleId], references: [id], onDelete: SetNull)
+  reviewer Reviewer? @relation(fields: [reviewerId], references: [id], onDelete: SetNull)
+
+  @@index([schoolId])
+  @@index([cycleId])
+  @@index([reviewerId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model SmsReply {
+  id            String   @id @default(uuid()) @db.Uuid
+  schoolId      String   @db.Uuid
+  
+  twilioSid     String   @unique
+  originalSid   String   // Reference to original message
+  replyFromPhone String
+  replyToPhone   String
+  messageBody    String
+  
+  createdAt      DateTime @default(now())
+
+  school School @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+
+  @@index([schoolId])
+  @@index([originalSid])
+  @@index([createdAt])
+}
+
+model EmailMessage {
+  id            String   @id @default(uuid()) @db.Uuid
+  schoolId      String   @db.Uuid
+  cycleId       String?  @db.Uuid
+  reviewerId    String?  @db.Uuid
+  
+  // Resend tracking
+  resendId      String   @unique
+  toEmail       String
+  fromEmail     String
+  subject       String
+  htmlContent   String
+  
+  messageType   String   // "invite", "reminder", "confirmation"
+  status        String   @default("sent") // sent, delivered, bounced
+  deliveredAt   DateTime?
+  failureReason String?
+  
+  createdAt     DateTime @default(now())
+
+  school School @relation(fields: [schoolId], references: [id], onDelete: Restrict)
+  cycle  EvaluationCycle? @relation(fields: [cycleId], references: [id], onDelete: SetNull)
+  reviewer Reviewer? @relation(fields: [reviewerId], references: [id], onDelete: SetNull)
+
+  @@index([schoolId])
+  @@index([cycleId])
+  @@index([reviewerId])
+  @@index([status])
+  @@index([createdAt])
 }
