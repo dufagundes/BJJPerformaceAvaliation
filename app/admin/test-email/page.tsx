@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { hasAdminSession } from "../../../lib/adminAuth";
 import SendTestEmailButton from "./send-test-email-button";
+import SendTestSmsButton from "./send-test-sms-button";
 
 export default async function TestEmailPage() {
   const authorized = await hasAdminSession();
@@ -25,8 +26,8 @@ export default async function TestEmailPage() {
     <main className="px-4 py-8">
       <div className="mx-auto max-w-3xl space-y-6">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Test Email</h1>
-          <p className="mt-1 text-sm text-slate-600">Send a one-off test email to any recipient you enter below. Requires RESEND_API_KEY and EMAIL_FROM to be configured.</p>
+          <h1 className="text-2xl font-semibold text-slate-900">Test Email & SMS</h1>
+          <p className="mt-1 text-sm text-slate-600">Send test emails and SMS messages to verify your notification system is working correctly.</p>
         </div>
 
         <Card>
@@ -35,6 +36,15 @@ export default async function TestEmailPage() {
           </CardHeader>
           <CardContent>
             <SendTestEmailButton />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Send Test SMS</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <SendTestSmsButton />
           </CardContent>
         </Card>
       </div>
