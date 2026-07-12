@@ -38,6 +38,9 @@ export async function POST(
       id: true,
       description: true,
       deadline: true,
+      school: {
+        select: { name: true },
+      },
       subject: {
         select: { name: true },
       },
