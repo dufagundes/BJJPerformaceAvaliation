@@ -20,13 +20,25 @@ export async function POST(request: Request) {
   }
 
   try {
+    const orConditions: Array<{ email?: { equals: string; mode: "insensitive" } } | { phone?: string | null }> = [];
+
+    if (email) {
+      orConditions.push({
+        email: { equals: email.toLowerCase(), mode: "insensitive" },
+      });
+    }
+
+    if (phone) {
+      const normalizedPhone = normalizePhoneNumber(phone, "1") || phone;
+      orConditions.push({
+        phone: normalizedPhone,
+      });
+    }
+
     const contact = await prisma.contact.findFirst({
       where: {
         schoolId: adminSession.schoolId,
-        OR: [
-          email ? { email: { equals: email.toLowerCase(), mode: "insensitive" } } : undefined,
-          phone ? { phone: normalizePhoneNumber(phone, "1") || phone } : undefined,
-        ].filter(Boolean),
+        ...(orConditions.length > 0 ? { OR: orConditions } : {}),
       },
       select: {
         id: true,
