@@ -116,7 +116,7 @@ export async function POST(
     smsSendAttempts += 1;
 
     const daysRemaining = Math.max(0, Math.ceil((cycle.deadline.getTime() - Date.now()) / (24 * 60 * 60 * 1000)));
-    const reminderMessage = `Reminder: You have ${daysRemaining} days left to complete the evaluation for ${cycle.subject.name}. Click to respond: ${process.env.APP_URL || "https://bjjstaffvaluation.com"}/evaluate/${reviewer.inviteToken}`;
+    const reminderMessage = `Hello ${name}, here is ${cycle.school.name} with important reminder. You have ${daysRemaining} days left to complete the evaluation for ${cycle.subject.name}. Click to respond: ${process.env.APP_URL || "https://bjjstaffvaluation.com"}/evaluate/${reviewer.inviteToken}`;
 
     const result = await sendSms(normalizedPhone, reminderMessage, {
       schoolId: adminSession.schoolId,
