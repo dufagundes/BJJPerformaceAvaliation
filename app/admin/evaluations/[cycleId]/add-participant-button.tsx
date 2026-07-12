@@ -3,10 +3,21 @@
 import { useState, FormEvent } from "react";
 import { normalizePhoneNumber } from "../../../../lib/phoneUtils";
 
+type ExistingContact = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  type: string;
+  studentName: string | null;
+};
+
 export default function AddParticipantButton({ cycleId }: { cycleId: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [showExistingDialog, setShowExistingDialog] = useState(false);
+  const [existingContact, setExistingContact] = useState<ExistingContact | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -15,18 +26,93 @@ export default function AddParticipantButton({ cycleId }: { cycleId: string }) {
     contactType: "PARENT" as "PARENT" | "STUDENT",
   });
 
+  const handleAddExistingContact = async () => {
+    if (!existingContact) return;
+
+    setIsLoading(true);
+    setMessage("");
+
+    try {
+      // Add existing contact to cycle
+      const addReviewerResponse = await fetch(
+        `/api/admin/evaluations/${cycleId}/add-reviewers`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            reviewerIds: [existingContact.id],
+            type: "PARENT_STUDENT",
+          }),
+        }
+      );
+
+      const addReviewerData = await addReviewerResponse.json();
+
+      if (!addReviewerResponse.ok) {
+        setMessage(`Error adding to cycle: ${addReviewerData.error || "Unknown error"}`);
+        setIsLoading(false);
+        return;
+      }
+
+      setMessage(
+        `✅ Existing participant added! Email and SMS invitation sent to ${existingContact.name}.`
+      );
+
+      // Reset form and close dialogs
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        studentName: "",
+        contactType: "PARENT",
+      });
+      setExistingContact(null);
+      setShowExistingDialog(false);
+
+      // Close modal and refresh after 2 seconds
+      setTimeout(() => {
+        setIsOpen(false);
+        window.location.reload();
+      }, 2000);
+    } catch (error) {
+      setMessage(`Error: ${error instanceof Error ? error.message : "Unknown error"}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     setMessage("");
 
     try {
+      // Step 1: Check if contact already exists
+      const searchResponse = await fetch("/api/admin/contacts/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          phone: formData.phone,
+        }),
+      });
+
+      const searchData = await searchResponse.json();
+
+      if (searchData.exists && searchData.contact) {
+        // Contact already exists - show confirmation dialog
+        setExistingContact(searchData.contact);
+        setShowExistingDialog(true);
+        setIsLoading(false);
+        return;
+      }
+
       // Normalize phone number to E.164 format for Twilio
       const normalizedPhone = formData.phone
         ? normalizePhoneNumber(formData.phone)
         : null;
 
-      // Step 1: Create new contact
+      // Step 2: Create new contact
       const contactResponse = await fetch("/api/admin/contacts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -47,7 +133,7 @@ export default function AddParticipantButton({ cycleId }: { cycleId: string }) {
         return;
       }
 
-      // Step 2: Add contact to cycle as PARENT_STUDENT reviewer
+      // Step 3: Add contact to cycle as PARENT_STUDENT reviewer
       const addReviewerResponse = await fetch(
         `/api/admin/evaluations/${cycleId}/add-reviewers`,
         {
@@ -238,6 +324,75 @@ export default function AddParticipantButton({ cycleId }: { cycleId: string }) {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Existing Contact Confirmation Dialog */}
+      {showExistingDialog && existingContact && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-lg max-w-md w-full mx-4">
+            <h2 className="text-lg font-semibold text-slate-900 mb-3">
+              Participant Already Exists
+            </h2>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+              <p className="text-sm text-slate-700 mb-2">
+                This participant already exists in your system:
+              </p>
+              <div className="text-sm font-medium text-slate-900">
+                <p>{existingContact.name}</p>
+                <p className="text-slate-600 text-xs mt-1">{existingContact.email}</p>
+                {existingContact.phone && (
+                  <p className="text-slate-600 text-xs">{existingContact.phone}</p>
+                )}
+              </div>
+            </div>
+
+            <p className="text-sm text-slate-700 mb-6">
+              Would you like to add this existing participant to the cycle?
+            </p>
+
+            {/* Message */}
+            {message && (
+              <div
+                className={`p-3 rounded-lg text-sm mb-4 ${
+                  message.startsWith("✅")
+                    ? "bg-emerald-50 text-emerald-900 border border-emerald-200"
+                    : "bg-rose-50 text-rose-900 border border-rose-200"
+                }`}
+              >
+                {message}
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setShowExistingDialog(false);
+                  setExistingContact(null);
+                  setFormData({
+                    name: "",
+                    email: "",
+                    phone: "",
+                    studentName: "",
+                    contactType: "PARENT",
+                  });
+                }}
+                disabled={isLoading}
+                className="flex-1 px-4 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 font-medium hover:bg-slate-50 disabled:opacity-50"
+              >
+                Create New
+              </button>
+              <button
+                onClick={handleAddExistingContact}
+                disabled={isLoading}
+                className="flex-1 px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 disabled:opacity-50"
+              >
+                {isLoading ? "Adding..." : "Use Existing"}
+              </button>
+            </div>
           </div>
         </div>
       )}
