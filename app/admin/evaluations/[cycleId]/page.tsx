@@ -4,6 +4,7 @@ import type { ExecutiveReportData, ExecutiveReportScoreItem } from "./executive-
 import ResendInvitesButton from "./resend-invites-button";
 import SendSelfEvaluationButton from "./send-self-evaluation-button";
 import AddReviewersButton from "./add-reviewers-button";
+import AddParticipantButton from "./add-participant-button";
 import ResendEmailButton from "./resend-email-button";
 import ResendSmsButton from "./resend-sms-button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../components/ui/card";
@@ -800,6 +801,8 @@ export default async function EvaluationCycleDetailPage({
                       <a href="#invitation-monitor" className="block rounded-lg px-3 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-950">Invitation monitor</a>
                       <a href="#performance-summary" className="block rounded-lg px-3 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-950">Performance summary</a>
                       <a href="#ai-review-assistant" className="block rounded-lg px-3 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-950">AI review assistant</a>
+                      <div className="border-t border-slate-200 my-1" />
+                      <AddParticipantButton cycleId={cycle.id} />
                     </div>
                   </details>
                 </div>
