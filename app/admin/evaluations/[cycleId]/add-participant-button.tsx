@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import { normalizePhoneNumber } from "../../../../lib/phoneUtils";
 
 export default function AddParticipantButton({ cycleId }: { cycleId: string }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,6 +21,11 @@ export default function AddParticipantButton({ cycleId }: { cycleId: string }) {
     setMessage("");
 
     try {
+      // Normalize phone number to E.164 format for Twilio
+      const normalizedPhone = formData.phone
+        ? normalizePhoneNumber(formData.phone)
+        : null;
+
       // Step 1: Create new contact
       const contactResponse = await fetch("/api/admin/contacts", {
         method: "POST",
@@ -27,7 +33,7 @@ export default function AddParticipantButton({ cycleId }: { cycleId: string }) {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          phone: formData.phone,
+          phone: normalizedPhone || "", // Use normalized phone or empty string
           studentName: formData.studentName,
           type: formData.contactType,
         }),
