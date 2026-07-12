@@ -121,14 +121,27 @@ function fallbackFeedback(): RecentFeedbackData {
   };
 }
 
-export async function getDashboardData(user: DashboardUser): Promise<DashboardData> {
+export async function getDashboardData(user: DashboardUser & { schoolId: string }): Promise<DashboardData> {
   const now = new Date();
   const [totalEmployees, inProgressCycles, completedCycles, completedResponses, reviewers, responses, latestFeedback] = await Promise.all([
-    prisma.staffMember.count({ where: { isActive: true, user: { isActive: true } } }),
-    prisma.evaluationCycle.count({ where: { status: "IN_PROGRESS" } }),
-    prisma.evaluationCycle.count({ where: { status: "COMPLETED" } }),
-    prisma.evaluationResponse.count(),
+    prisma.staffMember.count({ where: { isActive: true, user: { isActive: true, schoolId: user.schoolId } } }),
+    prisma.evaluationCycle.count({ where: { status: "IN_PROGRESS", schoolId: user.schoolId } }),
+    prisma.evaluationCycle.count({ where: { status: "COMPLETED", schoolId: user.schoolId } }),
+    prisma.evaluationResponse.count({
+      where: {
+        reviewer: {
+          cycle: {
+            schoolId: user.schoolId,
+          },
+        },
+      },
+    }),
     prisma.reviewer.findMany({
+      where: {
+        cycle: {
+          schoolId: user.schoolId,
+        },
+      },
       select: {
         id: true,
         status: true,
@@ -147,9 +160,29 @@ export async function getDashboardData(user: DashboardUser): Promise<DashboardDa
         },
       },
     }),
-    prisma.evaluationResponse.findMany({ select: { answers: true } }),
+    prisma.evaluationResponse.findMany({
+      where: {
+        reviewer: {
+          cycle: {
+            schoolId: user.schoolId,
+          },
+        },
+      },
+      select: { answers: true },
+    }),
     prisma.evaluationResponse.findFirst({
-      where: { OR: [{ strengths_text: { not: null } }, { improvements_text: { not: null } }] },
+      where: {
+        AND: [
+          { OR: [{ strengths_text: { not: null } }, { improvements_text: { not: null } }] },
+          {
+            reviewer: {
+              cycle: {
+                schoolId: user.schoolId,
+              },
+            },
+          },
+        ],
+      },
       orderBy: { submittedAt: "desc" },
       select: {
         strengths_text: true,

@@ -13,6 +13,7 @@ import { UpcomingReviews } from "./_components/upcoming-reviews";
 import { getDashboardData } from "./dashboard-data";
 import { goalStatuses, quickActions } from "./mock-data";
 import { authOptions } from "../../lib/auth";
+import { getAdminSession } from "../../lib/adminAuth";
 
 export const dynamic = "force-dynamic";
 
@@ -34,10 +35,16 @@ export default async function DashboardPage() {
     redirect("/admin/login");
   }
 
+  const adminSession = await getAdminSession();
+  if (!adminSession) {
+    redirect("/admin/login");
+  }
+
   const dashboardData = await getDashboardData({
     name: session.user.name ?? "Admin User",
     role: "HR Manager",
     initials: getInitials(session.user.name ?? "Admin User"),
+    schoolId: adminSession.schoolId,
   });
 
   return (
