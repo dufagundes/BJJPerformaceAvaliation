@@ -7,6 +7,7 @@ type UpdateContactPayload = {
   type?: string;
   name?: string;
   email?: string;
+  phone?: string;
   studentName?: string;
   status?: "ACTIVE" | "INACTIVE";
 };
@@ -50,6 +51,7 @@ export async function PATCH(
   const type = normalizeType(payload.type);
   const name = payload.name?.trim();
   const email = payload.email?.trim().toLowerCase();
+  const phone = payload.phone?.trim() || undefined;
   const studentName = payload.studentName?.trim();
   const isActive = payload.status ? payload.status === "ACTIVE" : undefined;
 
@@ -80,6 +82,7 @@ export async function PATCH(
         type: finalType,
         ...(name !== undefined ? { name } : {}),
         ...(email !== undefined ? { email } : {}),
+        ...(phone !== undefined ? { phone: phone || null } : {}),
         studentName: finalStudentName,
         ...(isActive !== undefined ? { isActive } : {}),
       },
@@ -88,6 +91,7 @@ export async function PATCH(
         type: true,
         name: true,
         email: true,
+        phone: true,
         studentName: true,
         isActive: true,
       },

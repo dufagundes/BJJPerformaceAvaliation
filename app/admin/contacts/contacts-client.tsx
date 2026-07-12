@@ -12,6 +12,7 @@ type ContactRow = {
   type: "STUDENT" | "PARENT";
   name: string;
   email: string;
+  phone: string | null;
   studentName: string | null;
   isActive: boolean;
 };
@@ -30,6 +31,7 @@ export default function ContactsClient() {
   const [type, setType] = useState<"STUDENT" | "PARENT">("STUDENT");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [studentName, setStudentName] = useState("");
   const [status, setStatus] = useState<"ACTIVE" | "INACTIVE">("ACTIVE");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -39,12 +41,14 @@ export default function ContactsClient() {
     type: "STUDENT" | "PARENT";
     name: string;
     email: string;
+    phone: string;
     studentName: string;
     status: "ACTIVE" | "INACTIVE";
   }>({
     type: "STUDENT",
     name: "",
     email: "",
+    phone: "",
     studentName: "",
     status: "ACTIVE",
   });
@@ -96,6 +100,7 @@ export default function ContactsClient() {
           type,
           name,
           email,
+          phone: phone || undefined,
           studentName: type === "PARENT" ? studentName : undefined,
           status,
         }),
@@ -108,6 +113,7 @@ export default function ContactsClient() {
 
       setName("");
       setEmail("");
+      setPhone("");
       setStudentName("");
       setStatus("ACTIVE");
       setMessage("Contact created successfully.");
@@ -126,6 +132,7 @@ export default function ContactsClient() {
       type: contact.type,
       name: contact.name,
       email: contact.email,
+      phone: contact.phone ?? "",
       studentName: contact.studentName ?? "",
       status: contact.isActive ? "ACTIVE" : "INACTIVE",
     });
@@ -287,6 +294,11 @@ export default function ContactsClient() {
                   <Input id="contact-email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} required />
                 </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="contact-phone">Phone (optional)</Label>
+                  <Input id="contact-phone" type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} placeholder="+1 (555) 123-4567" />
+                </div>
+
                 {type === "PARENT" ? (
                   <div className="space-y-2">
                     <Label htmlFor="student-name">Student Name</Label>
@@ -320,7 +332,7 @@ export default function ContactsClient() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <p className="text-sm text-slate-600">Required columns: type, name, email. Optional: student_name (required for Parent rows).</p>
+                <p className="text-sm text-slate-600">Required columns: type, name, email. Optional: phone, student_name (required for Parent rows).</p>
 
                 <Button type="button" variant="outline" onClick={handleTemplateDownload}>
                   Download CSV Template
@@ -359,6 +371,7 @@ export default function ContactsClient() {
                             <th className="px-3 py-2">Type</th>
                             <th className="px-3 py-2">Name</th>
                             <th className="px-3 py-2">Email</th>
+                            <th className="px-3 py-2">Phone</th>
                             <th className="px-3 py-2">Student Name</th>
                           </tr>
                         </thead>
@@ -368,6 +381,7 @@ export default function ContactsClient() {
                               <td className="px-3 py-2">{row.type}</td>
                               <td className="px-3 py-2">{row.name}</td>
                               <td className="px-3 py-2">{row.email}</td>
+                              <td className="px-3 py-2">{row.phone ?? "-"}</td>
                               <td className="px-3 py-2">{row.studentName ?? "-"}</td>
                             </tr>
                           ))}
@@ -415,8 +429,9 @@ export default function ContactsClient() {
                     <tr className="border-b border-slate-200 text-slate-500">
                       <th className="py-2 pr-4">Name</th>
                       <th className="py-2 pr-4">Type</th>
-                      <th className="py-2 pr-4">Student Name</th>
                       <th className="py-2 pr-4">Email</th>
+                      <th className="py-2 pr-4">Phone</th>
+                      <th className="py-2 pr-4">Student Name</th>
                       <th className="py-2 pr-4">Status</th>
                       <th className="py-2">Actions</th>
                     </tr>
@@ -461,6 +476,13 @@ export default function ContactsClient() {
                               <Input type="email" value={editForm.email} onChange={(event) => setEditForm((prev) => ({ ...prev, email: event.target.value }))} />
                             ) : (
                               contact.email
+                            )}
+                          </td>
+                          <td className="py-3 pr-4">
+                            {isEditing ? (
+                              <Input type="tel" value={editForm.phone} onChange={(event) => setEditForm((prev) => ({ ...prev, phone: event.target.value }))} />
+                            ) : (
+                              contact.phone ?? "-"
                             )}
                           </td>
                           <td className="py-3 pr-4">

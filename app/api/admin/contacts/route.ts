@@ -38,6 +38,7 @@ export async function GET(_request: Request) {
         type: true,
         name: true,
         email: true,
+        phone: true,
         studentName: true,
         isActive: true,
         createdAt: true,

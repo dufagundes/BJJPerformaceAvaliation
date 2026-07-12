@@ -7,6 +7,7 @@ type ImportContactRow = {
   type: "STUDENT" | "PARENT";
   name: string;
   email: string;
+  phone?: string;
   studentName?: string;
 };
 
@@ -36,6 +37,7 @@ export async function POST(request: Request) {
     type: row.type,
     name: row.name.trim(),
     email: row.email.trim().toLowerCase(),
+    phone: row.phone?.trim(),
     studentName: row.studentName?.trim(),
   }));
 
@@ -52,6 +54,7 @@ export async function POST(request: Request) {
     type: ContactType;
     name: string;
     email: string;
+    phone: string | null;
     studentName: string | null;
     isActive: boolean;
     schoolId: string;
@@ -83,6 +86,7 @@ export async function POST(request: Request) {
       type: row.type === "PARENT" ? ContactType.PARENT : ContactType.STUDENT,
       name: row.name,
       email: row.email,
+      phone: row.phone ?? null,
       studentName: row.type === "PARENT" ? row.studentName ?? null : null,
       isActive: true,
       schoolId: adminSession.schoolId,
