@@ -2,6 +2,7 @@ import { ContactType } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getAdminSession, unauthorizedAdminResponse } from "../../../../../lib/adminAuth";
 import { prisma } from "../../../../../lib/prisma";
+import { normalizePhoneNumber } from "../../../../../lib/phoneUtils";
 
 type ImportContactRow = {
   type: "STUDENT" | "PARENT";
@@ -44,10 +45,10 @@ export async function POST(request: Request) {
   const emails = Array.from(new Set(normalizedRows.map((row) => row.email).filter((email) => email.length > 0)));
   const existing = await prisma.contact.findMany({
     where: { schoolId: adminSession.schoolId, email: { in: emails } },
-    select: { email: true },
+    select: { id: true, email: true },
   });
 
-  const existingEmails = new Set(existing.map((contact) => contact.email.toLowerCase()));
+  const existingMap = new Map(existing.map((contact) => [contact.email.toLowerCase(), contact.id]));
   const seenInFile = new Set<string>();
   const skipped: Array<{ email: string; reason: string }> = [];
   const toCreate = [] as Array<{
@@ -58,6 +59,13 @@ export async function POST(request: Request) {
     studentName: string | null;
     isActive: boolean;
     schoolId: string;
+  }>;
+  const toUpdate = [] as Array<{
+    id: string;
+    type: ContactType;
+    name: string;
+    phone: string | null;
+    studentName: string | null;
   }>;
 
   for (const row of normalizedRows) {
@@ -71,28 +79,55 @@ export async function POST(request: Request) {
       continue;
     }
 
-    if (existingEmails.has(row.email)) {
-      skipped.push({ email: row.email, reason: "Email already exists." });
-      continue;
-    }
-
     if (seenInFile.has(row.email)) {
       skipped.push({ email: row.email, reason: "Duplicate email in upload file." });
       continue;
     }
 
     seenInFile.add(row.email);
-    toCreate.push({
-      type: row.type === "PARENT" ? ContactType.PARENT : ContactType.STUDENT,
-      name: row.name,
-      email: row.email,
-      phone: row.phone ?? null,
-      studentName: row.type === "PARENT" ? row.studentName ?? null : null,
-      isActive: true,
-      schoolId: adminSession.schoolId,
+
+    const normalizedPhone = row.phone ? normalizePhoneNumber(row.phone, "1") : null;
+    const contactType = row.type === "PARENT" ? ContactType.PARENT : ContactType.STUDENT;
+
+    // Check if contact already exists
+    const existingContactId = existingMap.get(row.email);
+    if (existingContactId) {
+      // Update existing contact
+      toUpdate.push({
+        id: existingContactId,
+        type: contactType,
+        name: row.name,
+        phone: normalizedPhone,
+        studentName: contactType === ContactType.PARENT ? (row.studentName ?? null) : null,
+      });
+    } else {
+      // Create new contact
+      toCreate.push({
+        type: contactType,
+        name: row.name,
+        email: row.email,
+        phone: normalizedPhone,
+        studentName: contactType === ContactType.PARENT ? (row.studentName ?? null) : null,
+        isActive: true,
+        schoolId: adminSession.schoolId,
+      });
+    }
+  }
+
+  // Execute updates
+  for (const update of toUpdate) {
+    await prisma.contact.update({
+      where: { id: update.id },
+      data: {
+        type: update.type,
+        name: update.name,
+        phone: update.phone,
+        studentName: update.studentName,
+      },
     });
   }
 
+  // Execute creates
   if (toCreate.length > 0) {
     await prisma.contact.createMany({
       data: toCreate,
@@ -103,7 +138,9 @@ export async function POST(request: Request) {
   return NextResponse.json(
     {
       ok: true,
-      importedCount: toCreate.length,
+      createdCount: toCreate.length,
+      updatedCount: toUpdate.length,
+      importedCount: toCreate.length + toUpdate.length,
       skipped,
     },
     { status: 200 },

@@ -18,6 +18,8 @@ type ContactRow = {
 };
 
 type ImportResult = {
+  createdCount: number;
+  updatedCount: number;
   importedCount: number;
   skipped: Array<{ email: string; reason: string }>;
 };
@@ -332,7 +334,7 @@ export default function ContactsClient() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <p className="text-sm text-slate-600">Required columns: type, name, email. Optional: phone, student_name (required for Parent rows).</p>
+                <p className="text-sm text-slate-600">Email is used as the unique identifier. Existing contacts with matching emails will be updated with new data (name, phone, etc.). Required columns: type, name, email. Optional: phone, student_name (required for Parent rows).</p>
 
                 <Button type="button" variant="outline" onClick={handleTemplateDownload}>
                   Download CSV Template
@@ -397,10 +399,10 @@ export default function ContactsClient() {
 
                 {importResult ? (
                   <div className="space-y-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
-                    <p>Imported: {importResult.importedCount}</p>
+                    <p>Created: {importResult.createdCount}, Updated: {importResult.updatedCount}, Total: {importResult.importedCount}</p>
                     {importResult.skipped.length > 0 ? (
                       <div>
-                        <p className="font-medium text-slate-900">Skipped duplicates/invalid rows:</p>
+                        <p className="font-medium text-slate-900">Skipped/Invalid rows:</p>
                         {importResult.skipped.slice(0, 10).map((item, index) => (
                           <p key={`${item.email}-${index}`}>{item.email}: {item.reason}</p>
                         ))}
