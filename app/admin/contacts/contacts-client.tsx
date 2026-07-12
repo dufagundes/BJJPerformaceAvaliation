@@ -231,16 +231,18 @@ export default function ContactsClient() {
         body: JSON.stringify({ rows: csvRows }),
       });
 
-      const data = (await response.json()) as { error?: string; importedCount: number; skipped: Array<{ email: string; reason: string }> };
+      const data = (await response.json()) as { error?: string; createdCount: number; updatedCount: number; importedCount: number; skipped: Array<{ email: string; reason: string }> };
       if (!response.ok) {
         throw new Error(data.error ?? "Could not import contacts.");
       }
 
       setImportResult({
+        createdCount: data.createdCount,
+        updatedCount: data.updatedCount,
         importedCount: data.importedCount,
         skipped: data.skipped,
       });
-      setMessage(`Import completed. ${data.importedCount} contacts added.`);
+      setMessage(`Import completed. Created: ${data.createdCount}, Updated: ${data.updatedCount}, Total: ${data.importedCount}`);
       await loadContacts();
     } catch (error) {
       setIsError(true);
