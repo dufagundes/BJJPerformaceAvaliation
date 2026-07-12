@@ -428,99 +428,99 @@ export default function ContactsClient() {
               <div className="overflow-x-auto">
                 <table className="min-w-full border-collapse text-left text-sm">
                   <thead>
-                    <tr className="border-b border-slate-200 text-slate-500">
-                      <th className="py-2 pr-4">Name</th>
-                      <th className="py-2 pr-4">Type</th>
-                      <th className="py-2 pr-4">Email</th>
-                      <th className="py-2 pr-4">Phone</th>
-                      <th className="py-2 pr-4">Student Name</th>
-                      <th className="py-2 pr-4">Status</th>
-                      <th className="py-2">Actions</th>
+                    <tr className="border-b border-slate-200 bg-slate-50 text-slate-600 sticky top-0">
+                      <th className="whitespace-nowrap py-3 pl-2 pr-4 font-medium">Actions</th>
+                      <th className="whitespace-nowrap py-3 pl-2 pr-4 font-medium">Name</th>
+                      <th className="whitespace-nowrap py-3 pl-2 pr-4 font-medium">Type</th>
+                      <th className="whitespace-nowrap py-3 pl-2 pr-4 font-medium">Email</th>
+                      <th className="whitespace-nowrap py-3 pl-2 pr-4 font-medium">Phone</th>
+                      <th className="whitespace-nowrap py-3 pl-2 pr-4 font-medium">Student Name</th>
+                      <th className="whitespace-nowrap py-3 pl-2 pr-4 font-medium">Status</th>
                     </tr>
                   </thead>
                   <tbody>
                     {contacts.map((contact) => {
                       const isEditing = editingId === contact.id;
                       return (
-                        <tr key={contact.id} className="border-b border-slate-100 last:border-0">
-                          <td className="py-3 pr-4">
+                        <tr key={contact.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
+                          <td className="whitespace-nowrap py-3 pl-2 pr-4">
+                            <div className="flex gap-1">
+                              {isEditing ? (
+                                <>
+                                  <Button size="sm" onClick={() => void saveEdit(contact.id)}>Save</Button>
+                                  <Button size="sm" variant="outline" onClick={() => setEditingId(null)}>Cancel</Button>
+                                </>
+                              ) : (
+                                <>
+                                  <Button size="sm" variant="outline" onClick={() => startEdit(contact)}>Edit</Button>
+                                  {contact.isActive ? (
+                                    <Button size="sm" variant="outline" onClick={() => void updateContactStatus(contact.id, "INACTIVE")}>Off</Button>
+                                  ) : (
+                                    <Button size="sm" variant="outline" onClick={() => void updateContactStatus(contact.id, "ACTIVE")}>On</Button>
+                                  )}
+                                </>
+                              )}
+                            </div>
+                          </td>
+                          <td className="py-3 pl-2 pr-4">
                             {isEditing ? (
-                              <Input value={editForm.name} onChange={(event) => setEditForm((prev) => ({ ...prev, name: event.target.value }))} />
+                              <Input value={editForm.name} onChange={(event) => setEditForm((prev) => ({ ...prev, name: event.target.value }))} className="h-8" />
                             ) : (
                               contact.name
                             )}
                           </td>
-                          <td className="py-3 pr-4">
+                          <td className="py-3 pl-2 pr-4">
                             {isEditing ? (
                               <select
                                 value={editForm.type}
                                 onChange={(event) => setEditForm((prev) => ({ ...prev, type: event.target.value as "STUDENT" | "PARENT" }))}
-                                className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                className="flex h-8 rounded-md border border-input bg-background px-2 py-1 text-xs"
                               >
                                 <option value="STUDENT">Student</option>
                                 <option value="PARENT">Parent</option>
                               </select>
                             ) : (
-                              <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${contact.type === "PARENT" ? "border border-sky-200 bg-sky-50 text-sky-700" : "border border-violet-200 bg-violet-50 text-violet-700"}`}>
+                              <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${contact.type === "PARENT" ? "border border-sky-200 bg-sky-50 text-sky-700" : "border border-violet-200 bg-violet-50 text-violet-700"}`}>
                                 {contact.type === "PARENT" ? "Parent" : "Student"}
                               </span>
                             )}
                           </td>
-                          <td className="py-3 pr-4">
+                          <td className="py-3 pl-2 pr-4">
                             {isEditing ? (
-                              <Input value={editForm.studentName} onChange={(event) => setEditForm((prev) => ({ ...prev, studentName: event.target.value }))} disabled={editForm.type !== "PARENT"} />
-                            ) : (
-                              contact.studentName ?? "-"
-                            )}
-                          </td>
-                          <td className="py-3 pr-4">
-                            {isEditing ? (
-                              <Input type="email" value={editForm.email} onChange={(event) => setEditForm((prev) => ({ ...prev, email: event.target.value }))} />
+                              <Input type="email" value={editForm.email} onChange={(event) => setEditForm((prev) => ({ ...prev, email: event.target.value }))} className="h-8" />
                             ) : (
                               contact.email
                             )}
                           </td>
-                          <td className="py-3 pr-4">
+                          <td className="py-3 pl-2 pr-4">
                             {isEditing ? (
-                              <Input type="tel" value={editForm.phone} onChange={(event) => setEditForm((prev) => ({ ...prev, phone: event.target.value }))} />
+                              <Input type="tel" value={editForm.phone} onChange={(event) => setEditForm((prev) => ({ ...prev, phone: event.target.value }))} className="h-8" />
                             ) : (
                               contact.phone ?? "-"
                             )}
                           </td>
-                          <td className="py-3 pr-4">
+                          <td className="py-3 pl-2 pr-4">
+                            {isEditing ? (
+                              <Input value={editForm.studentName} onChange={(event) => setEditForm((prev) => ({ ...prev, studentName: event.target.value }))} disabled={editForm.type !== "PARENT"} className="h-8" />
+                            ) : (
+                              contact.studentName ?? "-"
+                            )}
+                          </td>
+                          <td className="py-3 pl-2 pr-4">
                             {isEditing ? (
                               <select
                                 value={editForm.status}
                                 onChange={(event) => setEditForm((prev) => ({ ...prev, status: event.target.value as "ACTIVE" | "INACTIVE" }))}
-                                className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                className="flex h-8 rounded-md border border-input bg-background px-2 py-1 text-xs"
                               >
                                 <option value="ACTIVE">Active</option>
                                 <option value="INACTIVE">Inactive</option>
                               </select>
                             ) : (
-                              <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${contact.isActive ? "border border-emerald-200 bg-emerald-50 text-emerald-700" : "border border-slate-200 bg-slate-100 text-slate-600"}`}>
+                              <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${contact.isActive ? "border border-emerald-200 bg-emerald-50 text-emerald-700" : "border border-slate-200 bg-slate-100 text-slate-600"}`}>
                                 {contact.isActive ? "Active" : "Inactive"}
                               </span>
                             )}
-                          </td>
-                          <td className="py-3">
-                            <div className="flex flex-wrap gap-2">
-                              {isEditing ? (
-                                <>
-                                  <Button type="button" onClick={() => void saveEdit(contact.id)}>Save</Button>
-                                  <Button type="button" variant="outline" onClick={() => setEditingId(null)}>Cancel</Button>
-                                </>
-                              ) : (
-                                <>
-                                  <Button type="button" variant="outline" onClick={() => startEdit(contact)}>Edit</Button>
-                                  {contact.isActive ? (
-                                    <Button type="button" variant="outline" onClick={() => void updateContactStatus(contact.id, "INACTIVE")}>Deactivate</Button>
-                                  ) : (
-                                    <Button type="button" variant="outline" onClick={() => void updateContactStatus(contact.id, "ACTIVE")}>Activate</Button>
-                                  )}
-                                </>
-                              )}
-                            </div>
                           </td>
                         </tr>
                       );
