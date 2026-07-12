@@ -449,16 +449,16 @@ export default function ContactsClient() {
                             <div className="flex gap-1">
                               {isEditing ? (
                                 <>
-                                  <Button size="sm" onClick={() => void saveEdit(contact.id)}>Save</Button>
-                                  <Button size="sm" variant="outline" onClick={() => setEditingId(null)}>Cancel</Button>
+                                  <Button className="px-2 py-1 text-xs" onClick={() => void saveEdit(contact.id)}>Save</Button>
+                                  <Button className="px-2 py-1 text-xs" variant="outline" onClick={() => setEditingId(null)}>Cancel</Button>
                                 </>
                               ) : (
                                 <>
-                                  <Button size="sm" variant="outline" onClick={() => startEdit(contact)}>Edit</Button>
+                                  <Button className="px-2 py-1 text-xs" variant="outline" onClick={() => startEdit(contact)}>Edit</Button>
                                   {contact.isActive ? (
-                                    <Button size="sm" variant="outline" onClick={() => void updateContactStatus(contact.id, "INACTIVE")}>Off</Button>
+                                    <Button className="px-2 py-1 text-xs" variant="outline" onClick={() => void updateContactStatus(contact.id, "INACTIVE")}>Off</Button>
                                   ) : (
-                                    <Button size="sm" variant="outline" onClick={() => void updateContactStatus(contact.id, "ACTIVE")}>On</Button>
+                                    <Button className="px-2 py-1 text-xs" variant="outline" onClick={() => void updateContactStatus(contact.id, "ACTIVE")}>On</Button>
                                   )}
                                 </>
                               )}
