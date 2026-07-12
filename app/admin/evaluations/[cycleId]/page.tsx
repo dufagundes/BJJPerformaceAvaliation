@@ -1,7 +1,6 @@
 import Link from "next/link";
 import AiReviewControls from "./ai-review-controls";
 import type { ExecutiveReportData, ExecutiveReportScoreItem } from "./executive-ai-report";
-import ResendInvitesButton from "./resend-invites-button";
 import SendSelfEvaluationButton from "./send-self-evaluation-button";
 import AddReviewersButton from "./add-reviewers-button";
 import AddParticipantButton from "./add-participant-button";
@@ -783,7 +782,6 @@ export default async function EvaluationCycleDetailPage({
 
               <div className="flex shrink-0 flex-col gap-4 xl:items-end">
                 <div className="flex flex-col gap-2 sm:flex-row xl:justify-end">
-                  <ResendInvitesButton cycleId={cycle.id} />
                   <SendSelfEvaluationButton cycleId={cycle.id} />
                   <ResendEmailButton cycleId={cycle.id} />
                   <ResendSmsButton cycleId={cycle.id} />
