@@ -192,6 +192,7 @@ export default function ExecutiveAiReport({ data, reviewMarkdown, appendixMarkdo
         .executive-report .circle-chart > span { position: relative; z-index: 1; }
         .executive-report .strength-row { border-left: 4px solid #198754; }
         .executive-report .priority-row { border-left: 4px solid #f59e0b; }
+        .executive-report .appendix-content { white-space: pre-wrap; font-family: monospace; background-color: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #dee2e6; }
         @media print {
           body * { visibility: hidden !important; }
           #executive-ai-report, #executive-ai-report * { visibility: visible !important; }
@@ -199,6 +200,7 @@ export default function ExecutiveAiReport({ data, reviewMarkdown, appendixMarkdo
           .modal, .modal-dialog, .modal-content, .modal-body { position: static !important; display: block !important; overflow: visible !important; height: auto !important; max-height: none !important; }
           .report-card { box-shadow: none !important; break-inside: avoid; page-break-inside: avoid; }
           .report-actions, .modal-header, .modal-footer, .modal-backdrop { display: none !important; }
+          .appendix-content { overflow: visible !important; max-height: none !important; height: auto !important; }
           @page { size: letter; margin: 0.45in; }
         }
       `}</style>
@@ -270,7 +272,7 @@ export default function ExecutiveAiReport({ data, reviewMarkdown, appendixMarkdo
           <p className="report-kicker text-danger">FOR INTERNAL USE ONLY</p>
           <h2 id="appendix-title" className="h4 report-navy mb-3">Appendix: Full Open Response Disclosures</h2>
           <p className="small text-secondary mb-4">This appendix contains the complete, unedited responses from all evaluators. This document is confidential and for internal administrative use only. Do not share with the employee.</p>
-          <div className="small" style={{ whiteSpace: "pre-wrap", fontFamily: "monospace", backgroundColor: "#f8f9fa", padding: "12px", borderRadius: "6px", border: "1px solid #dee2e6", maxHeight: "600px", overflow: "auto" }}>
+          <div className="appendix-content">
             {appendixMarkdown}
           </div>
         </section>
