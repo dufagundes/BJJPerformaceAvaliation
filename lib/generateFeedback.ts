@@ -194,12 +194,30 @@ function toFeedbackResult(parsed: FeedbackPayload | null, appendixMarkdown?: str
     );
   }
 
-  if (typeof parsed.reviewMarkdown !== "string" || parsed.reviewMarkdown.trim().length === 0) {
+  const reviewMarkdown = parsed.reviewMarkdown;
+  if (typeof reviewMarkdown !== "string" || reviewMarkdown.trim().length === 0) {
     throw new Error("AI returned an empty evaluation. Please try generating the evaluation again.");
   }
 
+  // Validate that all required sections are present
+  const requiredSections = [
+    "Overall Performance Summary",
+    "Key Strengths",
+    "Development Opportunities",
+    "Manager Feedback",
+    "Development Action Plan",
+    "Future Growth and Potential",
+    "Meeting Talking Points",
+  ];
+  
+  const missingRequiredSections = requiredSections.filter(section => !reviewMarkdown.includes(`# ${section}`));
+  
+  if (missingRequiredSections.length > 0) {
+    console.warn(`[toFeedbackResult] Missing sections: ${missingRequiredSections.join(", ")}`);
+  }
+
   return {
-    reviewMarkdown: parsed.reviewMarkdown.trim(),
+    reviewMarkdown: reviewMarkdown.trim(),
     appendixMarkdown,
   };
 }
@@ -228,7 +246,7 @@ export async function generateFeedback(
   try {
     const response = await client.messages.create({
       model: "claude-opus-4-5",
-      max_tokens: 3000,
+      max_tokens: 4000,
       system: SYSTEM_PROMPT,
       messages: [
         {
@@ -247,6 +265,22 @@ export async function generateFeedback(
 
     const text = extractTextFromClaudeResponse(response.content);
     const parsed = tryParseJson(text);
+    
+    // Debug: Log which sections are present
+    if (parsed?.reviewMarkdown) {
+      const sections = [
+        "Overall Performance Summary",
+        "Key Strengths",
+        "Development Opportunities",
+        "Manager Feedback",
+        "Development Action Plan",
+        "Future Growth and Potential",
+        "Meeting Talking Points",
+      ];
+      const foundSections = sections.filter(s => parsed.reviewMarkdown!.includes(`# ${s}`));
+      console.log(`[generateFeedback] Found ${foundSections.length}/${sections.length} sections:`, foundSections);
+    }
+    
     const appendixMarkdown = buildAppendixMarkdown(openResponses);
     return toFeedbackResult(parsed, appendixMarkdown);
   } catch (error) {
