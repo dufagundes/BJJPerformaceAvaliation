@@ -15,6 +15,10 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: "Gb Staff Performance",
   description: "Quarterly staff performance scorecards",
+  icons: {
+    icon: "/images/favicon.svg",
+    apple: "/images/logo.svg",
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

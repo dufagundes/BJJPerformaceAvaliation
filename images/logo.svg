@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#0b1f3a" stroke="#198754" stroke-width="2"/>
+  
+  <!-- Inner circle accent -->
+  <circle cx="100" cy="100" r="85" fill="none" stroke="#198754" stroke-width="1" opacity="0.3"/>
+  
+  <!-- Person icon (stylized) -->
+  <g transform="translate(100, 100)">
+    <!-- Head -->
+    <circle cx="0" cy="-35" r="15" fill="#ffffff"/>
+    
+    <!-- Shoulders/Body -->
+    <ellipse cx="0" cy="-10" rx="22" ry="20" fill="#ffffff"/>
+    
+    <!-- Upward arrow/progress indicator -->
+    <g transform="translate(25, -15)">
+      <!-- Arrow shaft -->
+      <rect x="-3" y="0" width="6" height="30" fill="#198754" rx="2"/>
+      <!-- Arrow head -->
+      <polygon points="0,-8 -8,8 8,8" fill="#198754"/>
+    </g>
+    
+    <!-- Star (rating indicator) -->
+    <g transform="translate(-28, -10)">
+      <polygon points="0,-8 2,-3 8,-2 4,2 5,8 0,4 -5,8 -4,2 -8,-2 -2,-3" fill="#fbbf24"/>
+    </g>
+  </g>
+  
+  <!-- Text label (optional, can be removed if favicon space is limited) -->
+  <text x="100" y="180" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#198754" letter-spacing="0.5">EVALPRO</text>
+</svg>
