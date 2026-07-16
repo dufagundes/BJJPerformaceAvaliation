@@ -228,7 +228,7 @@ export async function generateFeedback(
   try {
     const response = await client.messages.create({
       model: "claude-opus-4-5",
-      max_tokens: 2200,
+      max_tokens: 3000,
       system: SYSTEM_PROMPT,
       messages: [
         {
