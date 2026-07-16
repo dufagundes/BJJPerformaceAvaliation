@@ -246,7 +246,7 @@ export async function generateFeedback(
   try {
     const response = await client.messages.create({
       model: "claude-opus-4-5",
-      max_tokens: 4000,
+      max_tokens: 4500,
       system: SYSTEM_PROMPT,
       messages: [
         {
@@ -264,6 +264,11 @@ export async function generateFeedback(
     });
 
     const text = extractTextFromClaudeResponse(response.content);
+    
+    // Debug: Log full response and section detection
+    console.log("[generateFeedback] Raw Claude response length:", text.length);
+    console.log("[generateFeedback] Response starts with:", text.substring(0, 200));
+    
     const parsed = tryParseJson(text);
     
     // Debug: Log which sections are present
@@ -279,6 +284,8 @@ export async function generateFeedback(
       ];
       const foundSections = sections.filter(s => parsed.reviewMarkdown!.includes(`# ${s}`));
       console.log(`[generateFeedback] Found ${foundSections.length}/${sections.length} sections:`, foundSections);
+      console.log("[generateFeedback] Full markdown length:", parsed.reviewMarkdown.length);
+      console.log("[generateFeedback] First 300 chars:", parsed.reviewMarkdown.substring(0, 300));
     }
     
     const appendixMarkdown = buildAppendixMarkdown(openResponses);
