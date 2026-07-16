@@ -8,8 +8,17 @@ export type ReviewCategoryInput = {
   responseCount: number;
 };
 
+export type OpenResponseEntry = {
+  reviewerName: string;
+  reviewerType: "Staff/Peer" | "Parent/Student";
+  studentName?: string;
+  strengthsText?: string;
+  improvementsText?: string;
+};
+
 export type FeedbackResult = {
   reviewMarkdown: string;
+  appendixMarkdown?: string;
 };
 
 type FeedbackPayload = Partial<FeedbackResult>;
@@ -21,6 +30,49 @@ function normalizeQuotes(values: string[]): string[] {
   return values
     .map((value) => value.trim())
     .filter((value) => value.length > 0);
+}
+
+function buildAppendixMarkdown(openResponses: OpenResponseEntry[]): string {
+  if (openResponses.length === 0) {
+    return "";
+  }
+
+  const sections: string[] = [
+    "# Appendix: Full Open Response Disclosures",
+    "",
+    "_This appendix contains the full, unedited responses from all evaluators. This document is for internal use only and is not shared with the subject._",
+    "",
+  ];
+
+  for (let i = 0; i < openResponses.length; i++) {
+    const response = openResponses[i];
+    sections.push(`## Response ${i + 1}`);
+    sections.push(`**Reviewer:** ${response.reviewerName}`);
+    sections.push(`**Reviewer Type:** ${response.reviewerType}`);
+    if (response.studentName) {
+      sections.push(`**Student/Child:** ${response.studentName}`);
+    }
+    sections.push("");
+
+    if (response.strengthsText) {
+      sections.push("**Observed Strengths:**");
+      sections.push(response.strengthsText);
+      sections.push("");
+    }
+
+    if (response.improvementsText) {
+      sections.push("**Areas for Improvement:**");
+      sections.push(response.improvementsText);
+      sections.push("");
+    }
+
+    if (!response.strengthsText && !response.improvementsText) {
+      sections.push("_No open-ended responses provided._");
+      sections.push("");
+    }
+  }
+
+  return sections.join("\n");
 }
 
 function buildUserPrompt(
@@ -135,7 +187,7 @@ function tryParseJson(text: string): FeedbackPayload | null {
   return null;
 }
 
-function toFeedbackResult(parsed: FeedbackPayload | null): FeedbackResult {
+function toFeedbackResult(parsed: FeedbackPayload | null, appendixMarkdown?: string): FeedbackResult {
   if (!parsed) {
     throw new Error(
       "AI returned a response that could not be parsed. Please try generating the evaluation again.",
@@ -148,6 +200,7 @@ function toFeedbackResult(parsed: FeedbackPayload | null): FeedbackResult {
 
   return {
     reviewMarkdown: parsed.reviewMarkdown.trim(),
+    appendixMarkdown,
   };
 }
 
@@ -158,6 +211,7 @@ export async function generateFeedback(
   categories: ReviewCategoryInput[],
   strengths: string[],
   improvementAreas: string[],
+  openResponses: OpenResponseEntry[] = [],
 ): Promise<FeedbackResult> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
@@ -193,7 +247,8 @@ export async function generateFeedback(
 
     const text = extractTextFromClaudeResponse(response.content);
     const parsed = tryParseJson(text);
-    return toFeedbackResult(parsed);
+    const appendixMarkdown = buildAppendixMarkdown(openResponses);
+    return toFeedbackResult(parsed, appendixMarkdown);
   } catch (error) {
     if (error instanceof Error && error.message.startsWith("AI ")) {
       throw error;

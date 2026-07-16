@@ -12,6 +12,7 @@ type Props = {
 
 type ApiSuccess = {
   reviewMarkdown: string;
+  appendixMarkdown?: string;
 };
 
 type ApiError = {
@@ -20,6 +21,7 @@ type ApiError = {
 
 type SavedReviewPayload = {
   reviewMarkdown: string;
+  appendixMarkdown?: string;
   savedAt: string;
 };
 
@@ -159,6 +161,7 @@ export default function AiReviewControls({ cycleId, subjectName, reportData }: P
   const [activeTab, setActiveTab] = useState<ReportTab["id"]>("overview");
   const [isGenerating, setIsGenerating] = useState(false);
   const [reviewMarkdown, setReviewMarkdown] = useState("");
+  const [appendixMarkdown, setAppendixMarkdown] = useState("");
   const [error, setError] = useState("");
   const [savedAt, setSavedAt] = useState("");
   const [showFullReport, setShowFullReport] = useState(false);
@@ -185,6 +188,9 @@ export default function AiReviewControls({ cycleId, subjectName, reportData }: P
       ) {
         setReviewMarkdown(saved.reviewMarkdown);
       }
+      if (typeof saved.appendixMarkdown === "string") {
+        setAppendixMarkdown(saved.appendixMarkdown);
+      }
       if (typeof saved.savedAt === "string") {
         setSavedAt(saved.savedAt);
       }
@@ -193,9 +199,10 @@ export default function AiReviewControls({ cycleId, subjectName, reportData }: P
     }
   }, [storageKey]);
 
-  function saveReview(markdown: string) {
+  function saveReview(markdown: string, appendix?: string) {
     const payload: SavedReviewPayload = {
       reviewMarkdown: markdown,
+      appendixMarkdown: appendix,
       savedAt: new Date().toISOString(),
     };
 
@@ -219,7 +226,10 @@ export default function AiReviewControls({ cycleId, subjectName, reportData }: P
 
       const payload = (await response.json()) as ApiSuccess;
       setReviewMarkdown(payload.reviewMarkdown);
-      saveReview(payload.reviewMarkdown);
+      if (payload.appendixMarkdown) {
+        setAppendixMarkdown(payload.appendixMarkdown);
+      }
+      saveReview(payload.reviewMarkdown, payload.appendixMarkdown);
       setActiveTab("overview");
     } catch (caught) {
       const message = caught instanceof Error ? caught.message : "Unable to generate AI evaluation.";
@@ -248,6 +258,9 @@ export default function AiReviewControls({ cycleId, subjectName, reportData }: P
       }
 
       setReviewMarkdown(saved.reviewMarkdown);
+      if (typeof saved.appendixMarkdown === "string") {
+        setAppendixMarkdown(saved.appendixMarkdown);
+      }
       setSavedAt(typeof saved.savedAt === "string" ? saved.savedAt : "");
       setError("");
     } catch {
@@ -260,13 +273,15 @@ export default function AiReviewControls({ cycleId, subjectName, reportData }: P
       return;
     }
 
+    const fullReport = appendixMarkdown ? `${reviewMarkdown}\n\n${appendixMarkdown}` : reviewMarkdown;
+
     try {
       if (navigator.share) {
-        await navigator.share({ title: `${subjectName} AI Performance Report`, text: reviewMarkdown });
+        await navigator.share({ title: `${subjectName} AI Performance Report`, text: fullReport });
         return;
       }
 
-      await navigator.clipboard.writeText(reviewMarkdown);
+      await navigator.clipboard.writeText(fullReport);
       setError("");
     } catch {
       setError("Unable to share the report from this browser.");
