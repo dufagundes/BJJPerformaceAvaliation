@@ -468,7 +468,7 @@ export default function AiReviewControls({ cycleId, subjectName, reportData }: P
                   <button type="button" className="btn-close" aria-label="Close" onClick={() => setShowFullReport(false)} />
                 </div>
                 <div className="modal-body bg-light p-0">
-                  <ExecutiveAiReport data={reportData} reviewMarkdown={reviewMarkdown} reportRef={reportRef} />
+                  <ExecutiveAiReport data={reportData} reviewMarkdown={reviewMarkdown} appendixMarkdown={appendixMarkdown} reportRef={reportRef} />
                 </div>
                 <div className="modal-footer">
                   <button type="button" className="btn btn-outline-secondary" onClick={() => setShowFullReport(false)}>Close</button>

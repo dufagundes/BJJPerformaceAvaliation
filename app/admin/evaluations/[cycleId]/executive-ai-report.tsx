@@ -32,6 +32,7 @@ export type ExecutiveReportData = {
 type Props = {
   data: ExecutiveReportData;
   reviewMarkdown: string;
+  appendixMarkdown?: string;
   reportRef: RefObject<HTMLDivElement | null>;
 };
 
@@ -165,7 +166,7 @@ function ScoreBar({ item, tone = "primary" }: { item: ExecutiveReportScoreItem; 
   );
 }
 
-export default function ExecutiveAiReport({ data, reviewMarkdown, reportRef }: Props) {
+export default function ExecutiveAiReport({ data, reviewMarkdown, appendixMarkdown, reportRef }: Props) {
   const overviewItems = getReadableItems(getSectionContent(reviewMarkdown, "overview"));
   const summaryText = truncateWords(overviewItems.join(" ") || "Generate the AI report to populate the executive summary.", 150);
   const actionColumns = splitActions(getReadableItems(getSectionContent(reviewMarkdown, "actionPlan")));
@@ -263,6 +264,17 @@ export default function ExecutiveAiReport({ data, reviewMarkdown, reportRef }: P
       <section className="report-card p-4 mb-4" aria-labelledby="agreement-title"><h2 id="agreement-title" className="h4 report-navy mb-3">Agreement Section</h2><div className="row g-4 align-items-end"><div className="col-md-4"><div className="border-bottom pb-4" /><p className="small text-secondary mt-2 mb-0">Employee Signature</p></div><div className="col-md-4"><div className="border-bottom pb-4" /><p className="small text-secondary mt-2 mb-0">Manager Signature</p></div><div className="col-md-4"><div className="border-bottom pb-4" /><p className="small text-secondary mt-2 mb-0">Date</p></div></div><div className="d-flex flex-wrap gap-4 mt-4 small">{["Feedback reviewed", "Goals agreed", "Action plan approved"].map((label) => <label className="d-flex align-items-center gap-2" key={label}><input type="checkbox" /> {label}</label>)}</div></section>
 
       <section className="report-card p-4 border-primary-subtle" aria-labelledby="final-recommendation-title"><p className="report-kicker">Final Recommendation</p><h2 id="final-recommendation-title" className="h4 report-navy mb-3">Growth Recommendation</h2><p className="mb-0">{finalRecommendation}</p></section>
+
+      {appendixMarkdown ? (
+        <section className="report-card p-4 mt-5 pt-5 border-top-3 border-secondary" aria-labelledby="appendix-title">
+          <p className="report-kicker text-danger">FOR INTERNAL USE ONLY</p>
+          <h2 id="appendix-title" className="h4 report-navy mb-3">Appendix: Full Open Response Disclosures</h2>
+          <p className="small text-secondary mb-4">This appendix contains the complete, unedited responses from all evaluators. This document is confidential and for internal administrative use only. Do not share with the employee.</p>
+          <div className="small" style={{ whiteSpace: "pre-wrap", fontFamily: "monospace", backgroundColor: "#f8f9fa", padding: "12px", borderRadius: "6px", border: "1px solid #dee2e6", maxHeight: "600px", overflow: "auto" }}>
+            {appendixMarkdown}
+          </div>
+        </section>
+      ) : null}
     </article>
   );
 }
