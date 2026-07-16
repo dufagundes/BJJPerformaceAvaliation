@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAdminApiRequestAuthorized, unauthorizedAdminResponse } from "../../../../../../lib/adminAuth";
-import { generateFeedback, ReviewCategoryInput } from "../../../../../../lib/generateFeedback";
+import { generateFeedback, ReviewCategoryInput, OpenResponseEntry } from "../../../../../../lib/generateFeedback";
 import { calculateCycleScorecard } from "../../../../../../lib/weightedScorecard";
 import { prisma } from "../../../../../../lib/prisma";
 
@@ -96,13 +96,16 @@ export async function POST(
 
     const openResponses = cycle.reviewers
       .filter((reviewer) => reviewer.response?.strengths_text?.trim() || reviewer.response?.improvements_text?.trim())
-      .map((reviewer) => ({
-        reviewerName: reviewer.user?.name || reviewer.contact?.name || "Unknown",
-        reviewerType: reviewer.type === "PEER" ? "Staff/Peer" : "Parent/Student",
-        studentName: reviewer.contact?.studentName || undefined,
-        strengthsText: reviewer.response?.strengths_text?.trim(),
-        improvementsText: reviewer.response?.improvements_text?.trim(),
-      }));
+      .map(
+        (reviewer) =>
+          ({
+            reviewerName: reviewer.user?.name || reviewer.contact?.name || "Unknown",
+            reviewerType: (reviewer.type === "PEER" ? "Staff/Peer" : "Parent/Student") as "Staff/Peer" | "Parent/Student",
+            studentName: reviewer.contact?.studentName || undefined,
+            strengthsText: reviewer.response?.strengths_text?.trim(),
+            improvementsText: reviewer.response?.improvements_text?.trim(),
+          }) as OpenResponseEntry,
+      );
 
     const aiReview = await generateFeedback(
       scorecard.subjectName,
